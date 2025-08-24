@@ -1,0 +1,41 @@
+//=====================================================
+// Projekt: kaeuzchenlager
+// (c) Heike Winkelvoß
+//=====================================================
+
+package de.egladil.web.kaeuzchenlager.domain.exception;
+
+import de.egladil.web.kaeuzchenlager.infrastructure.error.ExceptionUtil;
+import de.egladil.web.kaeuzchenlager.infrastructure.persistence.MariaDbErrorClassifier;
+import de.egladil.web.kaeuzchenlager.infrastructure.persistence.SQLErrorType;
+import jakarta.persistence.OptimisticLockException;
+
+import java.sql.SQLException;
+import java.util.Optional;
+
+public final class HighLevelErrorClassifier {
+
+    /**
+     * Klassifiziert die gegebene Exception, um die, bei denen der Aufrufer sinnvolle Aktionen machen kann, von denen trennen zu können, die weitergewirfen werden müssen.
+     *
+     * @param t
+     * @return ErrorType
+     */
+    public static ErrorType classify(Throwable t) {
+
+        if (ExceptionUtil.unwrap(t, OptimisticLockException.class).isPresent()) {
+            return ErrorType.VERSION_CONFLICT;
+        }
+
+        final Optional<SQLException> optSQL = ExceptionUtil.unwrap(t, SQLException.class);
+
+        if (optSQL.isEmpty()) {
+            return ErrorType.TECHNICAL;
+        }
+
+        SQLException sqlException = optSQL.get();
+        final SQLErrorType sqlErrorType = MariaDbErrorClassifier.classify(sqlException);
+
+        return SQLErrorType.UNIQUE_VIOLATION == sqlErrorType ? ErrorType.UNIQUE_CONSTRAINT : ErrorType.TECHNICAL;
+    }
+}
