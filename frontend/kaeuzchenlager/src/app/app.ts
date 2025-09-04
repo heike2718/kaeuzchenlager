@@ -1,10 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NxWelcome } from './nx-welcome';
+import { NavbarComponent } from './shell/layout/navbar/navbar.component';
+import { SidenavComponent } from './shell/layout/sidenav/sidenav.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 @Component({
-  imports: [NxWelcome, RouterModule],
-  selector: 'app-root',
+  imports: [
+    RouterModule,
+    MatToolbarModule,
+    MatSidenavModule,
+    NavbarComponent,
+    SidenavComponent
+  ],
+  selector: 'kl-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

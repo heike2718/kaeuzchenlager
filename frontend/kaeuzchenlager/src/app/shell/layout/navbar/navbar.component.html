@@ -1,0 +1,39 @@
+<mat-toolbar>
+
+    @if (isHandset$ | async) {
+    <div>
+        <button mat-icon-button (click)="onToggleSidenav()">
+            <mat-icon>menu</mat-icon>
+        </button>
+    </div>
+    } @else {
+
+    <a mat-button routerLink="/home">
+        <mat-icon class="nav-item">home</mat-icon>
+        <span class="nav-caption">Startseite</span>
+    </a>
+
+
+    <a mat-button class="ml-2" routerLink="/gefaesse">
+        <mat-icon class="nav-item">people</mat-icon>
+        <span class="nav-caption">Gefäße</span>
+    </a>
+
+    <span class="toolbar-spacer"></span>
+
+    <div class="mr-2">
+        Moin, Gast!
+    </div>
+
+
+    <span class="ml-2">Version: {{version}}</span>
+
+    <!-- Theme Toggle (Handset) -->
+    <mat-button class="ml-2" (click)="onToggleTheme()"
+        [attr.aria-label]="theme.isDark() ? 'Auf helles Theme umschalten' : 'Auf dunkles Theme umschalten'"
+        matTooltip="umschalten">
+        <mat-icon fontSet="material-icons-outlined">{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        <span class="nav-caption">{{ theme.isDark() ? 'lieber light' : 'lieber dark' }}</span>
+    </mat-button>
+    }
+</mat-toolbar>

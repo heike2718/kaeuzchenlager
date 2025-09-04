@@ -1,0 +1,23 @@
+<mat-nav-list (click)="onSidenavClose()">
+  <a mat-list-item routerLink="/">
+    <mat-icon>home</mat-icon>
+    <span class="nav-caption">Startseite</span>
+  </a>
+  <a mat-list-item routerLink="/raetsel">
+    <mat-icon>library_books</mat-icon>
+    <span class="nav-caption">Gefäße</span>
+  </a>
+
+  <mat-divider inset></mat-divider>
+
+  <button mat-button class="theme-toggle" (click)="theme.toggle()"
+    [attr.aria-label]="theme.isDark() ? 'Auf helles Theme umschalten' : 'Auf dunkles Theme umschalten'"
+    matTooltip="umschalten">
+    <mat-icon fontSet="material-icons-outlined">{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    <span class="nav-caption">{{ theme.isDark() ? 'lieber light' : 'lieber dark' }}</span>
+  </button>
+
+  <mat-divider inset></mat-divider>
+
+  <div class="version nav-caption">V{{version}}</div>
+</mat-nav-list>

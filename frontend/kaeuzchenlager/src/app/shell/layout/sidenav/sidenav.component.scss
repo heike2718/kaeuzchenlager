@@ -1,0 +1,16 @@
+a {
+    text-decoration: none;
+    color: white;
+}
+
+a:hover,
+a:active {
+    color: lightgray;
+}
+
+.version {
+    margin-top: 1rem;
+    margin-left: 1rem;
+}
+
+mat-divider[inset] { margin: 4px 0; }

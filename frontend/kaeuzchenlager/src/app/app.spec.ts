@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
-import { NxWelcome } from './nx-welcome';
+import { HomeComponent } from './home/home.component';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App, NxWelcome],
+      imports: [App, HomeComponent],
     }).compileComponents();
   });
 
@@ -14,7 +14,7 @@ describe('App', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain(
-      'Welcome kaeuzchenlager'
+      'Hier ist das Käuzchenlager'
     );
   });
 });

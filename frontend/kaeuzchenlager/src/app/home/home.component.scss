@@ -1,0 +1,19 @@
+/* Responsive Skalierung */
+.logo-image {
+  width: clamp(80px, 15vw, 200px); /* Min: 80px, Ideal: 15% Viewport, Max: 200px */
+  height: auto;
+}
+
+/* Für Mobile */
+@media (max-width: 768px) {
+  .logo-image {
+    width: 80px;
+  }
+}
+
+/* Für Desktop */
+@media (min-width: 1200px) {
+  .logo-image {
+    width: 150px;
+  }
+}
