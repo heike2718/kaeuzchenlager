@@ -19,7 +19,7 @@ public final class HighLevelErrorClassifier {
     /**
      * Klassifiziert die gegebene Exception, um die, bei denen der Aufrufer sinnvolle Aktionen machen kann, von denen trennen zu können, die weitergewirfen werden müssen.
      *
-     * @param t
+     * @param t Throwable
      * @return ErrorType
      */
     public static ErrorClassification classify(Throwable t) {

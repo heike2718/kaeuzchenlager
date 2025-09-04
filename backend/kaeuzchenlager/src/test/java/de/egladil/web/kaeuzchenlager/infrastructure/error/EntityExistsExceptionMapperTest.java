@@ -27,18 +27,20 @@ public class EntityExistsExceptionMapperTest {
         // arrange
         EntityExistsException ex = new EntityExistsException("gibet schon");
 
-        // act
-        try (Response response = exceptionMapper.toResponse(ex);) {
+        // act + assert
+        try (Response response = exceptionMapper.toResponse(ex)) {
 
             final int status = response.getStatus();
-            final Object entity = response.getEntity();
 
-            assertAll(() -> assertTrue(entity instanceof ErrorResponseDto),
-                    () -> assertEquals(409, status),
-                    () -> assertEquals(ErrorLevel.WARN, ((ErrorResponseDto)entity).getErrorLevel()),
-                    () -> assertEquals("gibet schon", ((ErrorResponseDto)entity).getMessage()));
+            try {
+                final ErrorResponseDto errorResponseDto = (ErrorResponseDto) response.getEntity();
 
+                assertAll(() -> assertEquals(409, status),
+                        () -> assertEquals(ErrorLevel.WARN, errorResponseDto.getErrorLevel()),
+                        () -> assertEquals("gibet schon", errorResponseDto.getMessage()));
+            } catch (ClassCastException e) {
+                fail("Erwarten ErrorResponseDto");
+            }
         }
-
     }
 }

@@ -62,15 +62,6 @@ public class GefaesstypDao {
 
     }
 
-    public Gefaesstyp findByVolumen(Integer volumen) {
-
-
-       return entityManager.createNamedQuery(Gefaesstyp.FIND_BY_VOLUMEN, Gefaesstyp.class)
-               .setParameter("volumen", volumen)
-               .getSingleResult();
-
-    }
-
     /**
      * Persistiert einen neuen Gefäßtyp.
      *
@@ -92,7 +83,7 @@ public class GefaesstypDao {
 
     /**
      * Löscht die gegebene Entity
-     * @param entity
+     * @param entity Gefaesstyp
      */
     @Transactional
     public void remove(Gefaesstyp entity) {

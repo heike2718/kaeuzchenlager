@@ -27,7 +27,7 @@ public class GefaesstypDto {
     @Pattern(
             regexp = ValidationPatternsAndMessages.TECHNISCHE_ID,
             message = "uuid enthält ungültige Zeichen")
-    private String uuid;
+    String uuid;
 
     @Schema(name = "daten", description = "die Daten des Gefäßtyps")
     @JsonProperty

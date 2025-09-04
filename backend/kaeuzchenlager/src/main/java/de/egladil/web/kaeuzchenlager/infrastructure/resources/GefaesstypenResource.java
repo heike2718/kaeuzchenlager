@@ -36,6 +36,7 @@ public class GefaesstypenResource {
     @Inject
     GefaesstypService gefaesstypService;
 
+    @SuppressWarnings("unused")
     @GET
     @Operation(operationId = "loadGefaesstypen", summary = "Gibt alle Gefaesstypen zurück.")
     @Parameters({@Parameter(in = ParameterIn.HEADER, name = "API-Version", description = "Version dieser API. Default = 1"),})
@@ -51,6 +52,7 @@ public class GefaesstypenResource {
         return Response.ok(gefaesstypService.loadGefaesstypen()).build();
     }
 
+    @SuppressWarnings("unused")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(operationId = "gefaesstypAnlegen", summary = "Legt einen neuen Gefäßtyp an.")
@@ -71,6 +73,7 @@ public class GefaesstypenResource {
         return Response.status(201).entity(responsePayload).build();
     }
 
+    @SuppressWarnings("unused")
     @PUT
     @Path("{uuid}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -95,6 +98,7 @@ public class GefaesstypenResource {
         return Response.status(200).entity(responsePayload).build();
     }
 
+    @SuppressWarnings("unused")
     @DELETE
     @Path("{uuid}")
     @Consumes(MediaType.APPLICATION_JSON)

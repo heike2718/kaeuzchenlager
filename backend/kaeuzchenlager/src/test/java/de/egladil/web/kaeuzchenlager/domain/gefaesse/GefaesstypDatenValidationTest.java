@@ -65,7 +65,7 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("name enthält ungültige Zeichen. Erlaubt sind Buchstaben, Ziffern, Leerzeichen, und die Sonderzeichen ( ) , ; _ - \" . : Wenn das nicht ausreicht, bitte an die Entwicklung wenden.", cv.getMessage()),
                     () -> assertEquals("name", cv.getPropertyPath().toString()));
 
@@ -88,7 +88,7 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("name ist erforderlich.", cv.getMessage()),
                     () -> assertEquals("name", cv.getPropertyPath().toString()));
 
@@ -110,7 +110,7 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("name ist erforderlich.", cv.getMessage()),
                     () -> assertEquals("name", cv.getPropertyPath().toString()));
 
@@ -135,7 +135,7 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("name ist zu lang (max. 100 Zeichen).", cv.getMessage()),
                     () -> assertEquals("name", cv.getPropertyPath().toString()));
 
@@ -161,7 +161,7 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("volumen ist erforderlich.", cv.getMessage()),
                     () -> assertEquals("volumen", cv.getPropertyPath().toString()));
         }
@@ -183,7 +183,7 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("volumen muss mindestens 1 sein.", cv.getMessage()),
                     () -> assertEquals("volumen", cv.getPropertyPath().toString()));
         }
@@ -205,11 +205,12 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("volumen muss mindestens 1 sein.", cv.getMessage()),
                     () -> assertEquals("volumen", cv.getPropertyPath().toString()));
         }
 
+        @Test
         void shouldNotPass_when_volumen_10000() {
 
             // arrange
@@ -226,7 +227,7 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("volumen darf höchstens 9999 sein.", cv.getMessage()),
                     () -> assertEquals("volumen", cv.getPropertyPath().toString()));
         }
@@ -251,7 +252,7 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("anzahl darf nicht kleiner als 0 sein.", cv.getMessage()),
                     () -> assertEquals("anzahl", cv.getPropertyPath().toString()));
 
@@ -277,7 +278,7 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("backgroundColor muss ein hex-Farbcode sein.", cv.getMessage()),
                     () -> assertEquals("backgroundColor", cv.getPropertyPath().toString()));
 
@@ -300,7 +301,7 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("backgroundColor muss ein hex-Farbcode sein.", cv.getMessage()),
                     () -> assertEquals("backgroundColor", cv.getPropertyPath().toString()));
 
@@ -322,7 +323,7 @@ public class GefaesstypDatenValidationTest {
             // assert
             assertEquals(1, constraintViolations.size());
 
-            ConstraintViolation cv = constraintViolations.iterator().next();
+            ConstraintViolation<GefaesstypDaten> cv = constraintViolations.iterator().next();
             assertAll(() -> assertEquals("backgroundColor ist erforderlich.", cv.getMessage()),
                     () -> assertEquals("backgroundColor", cv.getPropertyPath().toString()));
 

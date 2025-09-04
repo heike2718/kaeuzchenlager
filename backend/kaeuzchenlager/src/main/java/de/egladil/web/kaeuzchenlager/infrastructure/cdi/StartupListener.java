@@ -37,6 +37,7 @@ public class StartupListener {
     @ConfigProperty(name = "quarkus.application.version")
     String version;
 
+    @SuppressWarnings("unused")
     void onStartup(@Observes final StartupEvent ev) {
 
         LOGGER.info(" ===========> Version {} of the application is starting with profiles {}", version,

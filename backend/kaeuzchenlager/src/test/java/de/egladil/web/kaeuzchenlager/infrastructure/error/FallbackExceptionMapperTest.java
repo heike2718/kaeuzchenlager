@@ -43,20 +43,22 @@ public class FallbackExceptionMapperTest {
 
         NotFoundException ex = new NotFoundException("URI unbekannt");
 
-        // act
-        try (Response response = exceptionMapper.toResponse(ex);) {
+        // act + assert
+        try (Response response = exceptionMapper.toResponse(ex)) {
 
             final int status = response.getStatus();
-            final Object entity = response.getEntity();
 
-            assertAll(() -> assertTrue(entity instanceof ErrorResponseDto),
-                    () -> assertEquals(404, status),
-                    () -> assertEquals(ErrorLevel.ERROR, ((ErrorResponseDto) entity).getErrorLevel()),
-                    () -> assertEquals("diese Ressource gibt es nicht oder nicht mehr", ((ErrorResponseDto) entity).getMessage()),
-                    () -> verify(request).getMethod(),
-                    () -> verify(uriInfo).getPath()
-            );
+            try {
+                final ErrorResponseDto errorResponseDto = (ErrorResponseDto) response.getEntity();
 
+                assertAll(() -> assertEquals(404, status),
+                        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+                        () -> assertEquals("Diese Ressource gibt es nicht oder nicht mehr.", errorResponseDto.getMessage()),
+                        () -> verify(request).getMethod(),
+                        () -> verify(uriInfo).getPath());
+            } catch (ClassCastException e) {
+                fail("Erwarten ErrorResponseDto");
+            }
         }
     }
 
@@ -69,20 +71,22 @@ public class FallbackExceptionMapperTest {
 
         WebApplicationException ex = new WebApplicationException("MethodNotAllowed", 405);
 
-        // act
-        try (Response response = exceptionMapper.toResponse(ex);) {
+        // act + assert
+        try (Response response = exceptionMapper.toResponse(ex)) {
 
             final int status = response.getStatus();
-            final Object entity = response.getEntity();
 
-            assertAll(() -> assertTrue(entity instanceof ErrorResponseDto),
-                    () -> assertEquals(405, status),
-                    () -> assertEquals(ErrorLevel.ERROR, ((ErrorResponseDto) entity).getErrorLevel()),
-                    () -> assertEquals("MethodNotAllowed", ((ErrorResponseDto) entity).getMessage()),
-                    () -> verify(request).getMethod(),
-                    () -> verify(uriInfo).getPath()
-            );
+            try {
+                final ErrorResponseDto errorResponseDto = (ErrorResponseDto) response.getEntity();
 
+                assertAll(() -> assertEquals(405, status),
+                        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+                        () -> assertEquals("MethodNotAllowed", errorResponseDto.getMessage()),
+                        () -> verify(request).getMethod(),
+                        () -> verify(uriInfo).getPath());
+            } catch (ClassCastException e) {
+                fail("Erwarten ErrorResponseDto");
+            }
         }
     }
 
@@ -95,20 +99,22 @@ public class FallbackExceptionMapperTest {
 
         KaeuzchenlagerRuntimeException ex = new KaeuzchenlagerRuntimeException("schlimm! schlimm! schlimm!");
 
-        // act
-        try (Response response = exceptionMapper.toResponse(ex);) {
+        // act + assert
+        try (Response response = exceptionMapper.toResponse(ex)) {
 
             final int status = response.getStatus();
-            final Object entity = response.getEntity();
 
-            assertAll(() -> assertTrue(entity instanceof ErrorResponseDto),
-                    () -> assertEquals(500, status),
-                    () -> assertEquals(ErrorLevel.ERROR, ((ErrorResponseDto) entity).getErrorLevel()),
-                    () -> assertEquals("Ein unerwarteter Fehler ist aufgetreten. Wende Dich bitte vertrauensvoll an Deinen technischen Support, wenn möglich mit Kontext und Screenshots.", ((ErrorResponseDto) entity).getMessage()),
-                    () -> verify(request).getMethod(),
-                    () -> verify(uriInfo).getPath()
-            );
+            try {
+                final ErrorResponseDto errorResponseDto = (ErrorResponseDto) response.getEntity();
 
+                assertAll(() -> assertEquals(500, status),
+                        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+                        () -> assertEquals("Ein unerwarteter Fehler ist aufgetreten. Wende Dich bitte vertrauensvoll an Deinen technischen Support, wenn möglich mit Kontext und Screenshots.", errorResponseDto.getMessage()),
+                        () -> verify(request).getMethod(),
+                        () -> verify(uriInfo).getPath());
+            } catch (ClassCastException e) {
+                fail("Erwarten ErrorResponseDto");
+            }
         }
     }
 
@@ -121,20 +127,22 @@ public class FallbackExceptionMapperTest {
 
         RuntimeException ex = new RuntimeException("schlimm! schlimm! schlimm!");
 
-        // act
-        try (Response response = exceptionMapper.toResponse(ex);) {
+        // act + assert
+        try (Response response = exceptionMapper.toResponse(ex)) {
 
             final int status = response.getStatus();
-            final Object entity = response.getEntity();
 
-            assertAll(() -> assertTrue(entity instanceof ErrorResponseDto),
-                    () -> assertEquals(500, status),
-                    () -> assertEquals(ErrorLevel.ERROR, ((ErrorResponseDto) entity).getErrorLevel()),
-                    () -> assertEquals("Ein unerwarteter Fehler ist aufgetreten. Wende Dich bitte vertrauensvoll an Deinen technischen Support, wenn möglich mit Kontext und Screenshots.", ((ErrorResponseDto) entity).getMessage()),
-                    () -> verify(request).getMethod(),
-                    () -> verify(uriInfo).getPath()
-            );
+            try {
+                final ErrorResponseDto errorResponseDto = (ErrorResponseDto) response.getEntity();
 
+                assertAll(() -> assertEquals(500, status),
+                        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+                        () -> assertEquals("Ein unerwarteter Fehler ist aufgetreten. Wende Dich bitte vertrauensvoll an Deinen technischen Support, wenn möglich mit Kontext und Screenshots.", errorResponseDto.getMessage()),
+                        () -> verify(request).getMethod(),
+                        () -> verify(uriInfo).getPath());
+            } catch (ClassCastException e) {
+                fail("Erwarten ErrorResponseDto");
+            }
         }
     }
 }

@@ -66,6 +66,7 @@ public class Gefaesstyp {
     @Column(name = "version", nullable = false)
     private int version;
 
+    @SuppressWarnings("unused")
     @PrePersist
     void prePersist() {
         if (this.uuid == null || this.uuid.isBlank()) {

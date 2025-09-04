@@ -42,14 +42,13 @@ public class FallbackExceptionMapper implements ExceptionMapper<RuntimeException
 
             ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
                     .errorLevel(ErrorLevel.ERROR)
-                    .message("diese Ressource gibt es nicht oder nicht mehr").build();
+                    .message("Diese Ressource gibt es nicht oder nicht mehr.").build();
 
             return Response.status(Response.Status.NOT_FOUND).entity(errorResponseDto).build();
         }
 
-        if (exception instanceof WebApplicationException) {
+        if (exception instanceof final WebApplicationException wae) {
 
-            WebApplicationException wae = (WebApplicationException) exception;
             LOGGER.error("WebApplicationException bei {} {}: {}", method, url, exception.getMessage());
 
             // 405 kann vorkommen, wenn der Path-Parameter uuid fehlt.

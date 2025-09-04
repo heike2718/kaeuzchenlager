@@ -176,7 +176,7 @@ public class GefaesstypResourceExceptionTest {
 
         // assert
         assertAll(() -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
-                () -> assertEquals("diese Ressource gibt es nicht oder nicht mehr", errorResponseDto.getMessage()));
+                () -> assertEquals("Diese Ressource gibt es nicht oder nicht mehr.", errorResponseDto.getMessage()));
 
     }
 

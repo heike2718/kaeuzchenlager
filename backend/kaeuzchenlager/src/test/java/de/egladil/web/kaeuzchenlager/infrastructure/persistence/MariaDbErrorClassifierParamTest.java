@@ -63,11 +63,10 @@ class MariaDbErrorClassifierParamTest {
     // (3) Unwrapping: erste gefundene SQLException in der Cause-Kette zählt
     @Test
     void unwrapPrefersFirstSqlExceptionInChain() {
-        var deep = new SQLException("Duplicate entry", "23000", 1062);
-        var first = new SQLException("Data too long", "22001", 1406);
-        first.initCause(deep); // first -> cause -> deep
+        SQLException deep = new SQLException("Duplicate entry", "23000", 1062);
+        SQLException first = new SQLException("Data too long", "22001", 1406, deep);
 
-        var wrapped = new RuntimeException(new RuntimeException(first));
+        RuntimeException wrapped = new RuntimeException(new RuntimeException(first));
         assertEquals(SQLErrorType.DATA_TOO_LONG, MariaDbErrorClassifier.classify(wrapped));
     }
 }

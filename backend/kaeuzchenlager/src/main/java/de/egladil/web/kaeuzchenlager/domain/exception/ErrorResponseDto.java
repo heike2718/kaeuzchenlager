@@ -8,7 +8,10 @@ package de.egladil.web.kaeuzchenlager.domain.exception;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.egladil.web.kaeuzchenlager.domain.validation.ValidationPatternsAndMessages;
 import jakarta.validation.constraints.Pattern;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Value;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Data
@@ -20,7 +23,7 @@ public class ErrorResponseDto {
 
     @JsonProperty
     @Schema(name = "errorLevel", examples = {"ERROR", "WARN"})
-    private ErrorLevel errorLevel;
+    ErrorLevel errorLevel;
 
     @JsonProperty
     @Pattern(
@@ -28,5 +31,5 @@ public class ErrorResponseDto {
             message = "message enthält ungültige Zeichen"
     )
     @Schema(name = "message", examples = {"Es ist ein Fehler aufgetreten"})
-    private String message;
+    String message;
 }

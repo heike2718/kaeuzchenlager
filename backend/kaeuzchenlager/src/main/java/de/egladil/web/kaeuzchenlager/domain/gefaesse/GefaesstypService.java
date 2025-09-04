@@ -42,9 +42,7 @@ public class GefaesstypService {
     public List<GefaesstypDto> loadGefaesstypen() {
 
         final List<Gefaesstyp> gefaesstypen = gefaesstypDao.loadAll();
-
-        return gefaesstypen.stream().map(gt -> gefaesstypMapper.toDto(gt)).toList();
-
+        return gefaesstypen.stream().map(gefaesstypMapper::toDto).toList();
     }
 
     /**
@@ -68,9 +66,16 @@ public class GefaesstypService {
             ErrorType errorType = errorClassification.getErrorType();
             switch (errorType) {
                 case UNIQUE_CONSTRAINT: {
-                    String message = "Es gibt bereits einen Gefäßtyp mit diesem Namen. Bitte wähl einen anderen.";
+                    String message = "";
+                    if (UK_NAME.equals(errorClassification.getUniqueConstraintName())) {
+                        message = "Es gibt bereits einen Gefäßtyp mit diesem Namen. Bitte wähl einen anderen.";
+                    }
                     if (UK_VOLUMEN.equals(errorClassification.getUniqueConstraintName())) {
                         message = "Es gibt bereits einen Gefäßtyp mit diesem Volumen.";
+                    }
+                    if (message.isEmpty()) {
+                        message = "Diesen Gefäßtyp gibt es schon.";
+                        LOGGER.error("neues uk in der DB: {}", errorClassification.getUniqueConstraintName());
                     }
                     throw new EntityExistsException(message);
                 }

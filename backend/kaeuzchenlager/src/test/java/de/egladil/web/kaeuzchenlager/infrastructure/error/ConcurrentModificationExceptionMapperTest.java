@@ -28,18 +28,20 @@ public class ConcurrentModificationExceptionMapperTest {
         // arrange
         ConcurrentModificationException ex = new ConcurrentModificationException("wurde zwischenzeitlich geändert");
 
-        // act
-        try (Response response = exceptionMapper.toResponse(ex);) {
+        // act + assert
+        try (Response response = exceptionMapper.toResponse(ex)) {
 
             final int status = response.getStatus();
-            final Object entity = response.getEntity();
 
-            assertAll(() -> assertTrue(entity instanceof ErrorResponseDto),
-                    () -> assertEquals(412, status),
-                    () -> assertEquals(ErrorLevel.ERROR, ((ErrorResponseDto)entity).getErrorLevel()),
-                    () -> assertEquals("wurde zwischenzeitlich geändert", ((ErrorResponseDto)entity).getMessage()));
+            try {
+                final ErrorResponseDto errorResponseDto = (ErrorResponseDto) response.getEntity();
 
+                assertAll(() -> assertEquals(412, status),
+                        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+                        () -> assertEquals("wurde zwischenzeitlich geändert", errorResponseDto.getMessage()));
+            } catch (ClassCastException e) {
+                fail("Erwarten ErrorResponseDto");
+            }
         }
-
     }
 }

@@ -26,6 +26,6 @@ public class GefaesstypLoeschenResult {
     @Pattern(
             regexp = ValidationPatternsAndMessages.TECHNISCHE_ID,
             message = "uuid enthält ungültige Zeichen")
-    private String uuid;
+    String uuid;
 
 }

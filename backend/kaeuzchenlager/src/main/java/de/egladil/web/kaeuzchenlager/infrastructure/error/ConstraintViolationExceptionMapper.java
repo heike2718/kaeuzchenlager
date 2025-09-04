@@ -8,6 +8,7 @@ package de.egladil.web.kaeuzchenlager.infrastructure.error;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorLevel;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorResponseDto;
 import jakarta.annotation.Priority;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -32,8 +33,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
 
     private String extractMessages(ConstraintViolationException exception) {
         return exception.getConstraintViolations().stream()
-                .map(violation ->
-                        violation.getMessage())
+                .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining("; "));
     }
 }

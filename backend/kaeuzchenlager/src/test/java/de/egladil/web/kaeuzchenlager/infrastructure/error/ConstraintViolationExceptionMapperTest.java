@@ -15,7 +15,6 @@ import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
 public class ConstraintViolationExceptionMapperTest {
@@ -29,19 +28,20 @@ public class ConstraintViolationExceptionMapperTest {
         // arrange
         ConstraintViolationException ex = TestUtils.createConstraintViolationException();
 
-        // act
-        try (Response response = exceptionMapper.toResponse(ex);) {
+        // act + assert
+        try (Response response = exceptionMapper.toResponse(ex)) {
 
             final int status = response.getStatus();
-            final Object entity = response.getEntity();
 
-            assertAll(() -> assertTrue(entity instanceof ErrorResponseDto),
-                    () -> assertEquals(400, status),
-                    () -> assertEquals(ErrorLevel.ERROR, ((ErrorResponseDto)entity).getErrorLevel()),
-                    () -> assertEquals("Inputvalidierung fehlgeschlagen: Email must be valid; Name must not be blank", ((ErrorResponseDto)entity).getMessage()));
+            try {
+                final ErrorResponseDto errorResponseDto = (ErrorResponseDto) response.getEntity();
 
+                assertAll(() -> assertEquals(400, status),
+                        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+                        () -> assertEquals("Inputvalidierung fehlgeschlagen: Email must be valid; Name must not be blank", errorResponseDto.getMessage()));
+            } catch (ClassCastException e) {
+                fail("Erwarten ErrorResponseDto");
+            }
         }
-
-
     }
 }

@@ -26,10 +26,7 @@ public class TestUtils {
      */
     public static String createStringWithLength(String letter, int length) {
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.valueOf(letter).repeat(Math.max(0, length)));
-
-        return sb.toString();
+        return String.valueOf(letter).repeat(Math.max(0, length));
 
     }
 
@@ -37,7 +34,7 @@ public class TestUtils {
         Set<ConstraintViolation<?>> violations = new HashSet<>();
 
         // Erste ConstraintViolation
-        violations.add(new ConstraintViolation<Object>() {
+        violations.add(new ConstraintViolation<>() {
             @Override
             public String getMessage() {
                 return "Name must not be blank";
@@ -78,7 +75,8 @@ public class TestUtils {
                 return new Path() {
                     @Override
                     public Iterator<Node> iterator() {
-                        return null;
+                        final Iterator<Node> o = null;
+                        return o;
                     }
 
                     @Override
@@ -115,7 +113,7 @@ public class TestUtils {
         });
 
         // Zweite ConstraintViolation
-        violations.add(new ConstraintViolation<Object>() {
+        violations.add(new ConstraintViolation<>() {
             @Override
             public String getMessage() {
                 return "Email must be valid";
