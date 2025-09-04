@@ -183,7 +183,7 @@ public class GefaesstypResourceAnlegenAendernLoeschenTest {
         final Optional<Gefaesstyp> optEntityDeleted = gefaesstypDao.findById(uuid);
 
         assertAll(() -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
-                () -> assertEquals("", errorResponseDto.getMessage()),
+                () -> assertEquals("Diese Ressource gibt es nicht oder nicht mehr.", errorResponseDto.getMessage()),
                 () -> assertTrue(optEntityDeleted.isEmpty()));
     }
 }

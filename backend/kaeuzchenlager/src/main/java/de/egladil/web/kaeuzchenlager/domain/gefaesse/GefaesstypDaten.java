@@ -33,7 +33,7 @@ public class GefaesstypDaten {
 
     @NotNull(message = "volumen ist erforderlich.")
     @Min(value = 1, message = "volumen muss mindestens {value} sein.")
-    @Max(value = 9999, message = "volumen darf höchestens {value} sein.")
+    @Max(value = 9999, message = "volumen darf höchstens {value} sein.")
     Integer volumen;
 
     @Schema(name = "anzahl", description = "Anzahl Gefäße dieses Typs auf Lager", examples = {"23"})
