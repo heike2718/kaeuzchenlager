@@ -16,37 +16,29 @@ public class GefaesstypMapper {
      */
     public GefaesstypDto toDto(final Gefaesstyp entity) {
 
-        return GefaesstypDto.builder()
-                .uuid(entity.getUuid())
+        GefaesstypDaten daten = GefaesstypDaten.builder()
                 .anzahl(entity.getAnzahl())
                 .name(entity.getName())
+                .volumen(entity.getVolumen())
                 .backgroundColor(entity.getBackgroundColor())
                 .build();
 
-    }
-
-    /**
-     * Dto -> entity
-     * @param dto GefaesstypDto
-     * @return GefaesstypDto
-     */
-    public Gefaesstyp toEntity(final GefaesstypDto dto) {
-        return Gefaesstyp.builder()
-                .uuid(dto.getUuid())
-                .anzahl(dto.getAnzahl())
-                .name(dto.getName())
-                .backgroundColor(dto.getBackgroundColor())
+        return GefaesstypDto.builder()
+                .uuid(entity.getUuid())
+                .daten(daten)
                 .build();
+
     }
 
     /**
-     * Übernimmt alles außer der uuid in die Entity.
-     * @param entity Gefaesstyp
-     * @param dto GefaesstypDto
+     * Übernimmt die Daten in die Entity.
+     * @param target Gefaesstyp
+     * @param source GefaesstypDto
      */
-    public void updateEntityFromDto(final Gefaesstyp entity, final GefaesstypDto dto) {
-        entity.setAnzahl(dto.getAnzahl());
-        entity.setName(dto.getName());
-        entity.setBackgroundColor(dto.getBackgroundColor());
+    public void copyDaten(final Gefaesstyp target, final GefaesstypDaten source) {
+        target.setAnzahl(source.getAnzahl());
+        target.setName(source.getName());
+        target.setVolumen(source.getVolumen());
+        target.setBackgroundColor(source.getBackgroundColor());
     }
 }

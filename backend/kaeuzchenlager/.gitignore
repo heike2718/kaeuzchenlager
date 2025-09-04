@@ -46,5 +46,5 @@ nb-configuration.xml
 
 # generated
 /src/main/resources/META-INF/resources/kaeuzchenlager/
-/src/main/resources/META-INF/resources/open-api/openapi.json
-/src/main/resources/META-INF/resources/open-api/openapi.yaml
+/src/main/resources/META-INF/openapi/openapi.json
+/src/main/resources/META-INF/openapi/openapi.yaml

@@ -5,23 +5,21 @@
 
 package de.egladil.web.kaeuzchenlager.infrastructure.error;
 
-import de.egladil.web.kaeuzchenlager.domain.exception.EntityExistsException;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorLevel;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorResponseDto;
-import jakarta.annotation.Priority;
+import de.egladil.web.kaeuzchenlager.domain.exception.UnsupportedVersionException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
 @Provider
-@Priority(2000)
-public class EntityExistsExceptionMapper implements ExceptionMapper<EntityExistsException> {
-
+public class UnsupportedVersionExceptionMapper
+        implements ExceptionMapper<UnsupportedVersionException> {
 
     @Override
-    public Response toResponse(final EntityExistsException exception) {
-
-        ErrorResponseDto payload = ErrorResponseDto.builder().errorLevel(ErrorLevel.WARN).message(exception.getMessage()).build();
-        return Response.status(Response.Status.CONFLICT).entity(payload).build();
+    public Response toResponse(UnsupportedVersionException e) {
+        return Response.status(Response.Status.NOT_ACCEPTABLE)
+                .entity(ErrorResponseDto.builder().errorLevel(ErrorLevel.ERROR).message(e.getMessage()).build())
+                .build();
     }
 }

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS gefaesstyp (
+CREATE TABLE IF NOT EXISTS gefaesstypen (
   uuid CHAR(36) NOT NULL,
   name VARCHAR(100) COLLATE utf8mb4_german2_ci NOT NULL,
   anzahl INT UNSIGNED NOT NULL DEFAULT 0,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS gefaesstyp (
   updated_by CHAR(36) NOT NULL COMMENT 'uuid des users, der den Datensatz geändert hat',
   version INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (uuid),
-  UNIQUE KEY uk_gefaesstyp_name (name)
+  UNIQUE KEY uk_gefaesstypen_name (name)
 ) ENGINE=InnoDB;
 
 

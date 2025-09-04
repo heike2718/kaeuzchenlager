@@ -5,9 +5,9 @@
 
 package de.egladil.web.kaeuzchenlager.domain.exception;
 
-public class ConcurrentUpdateException extends RuntimeException {
+public class UnsupportedVersionException extends RuntimeException {
 
-    public ConcurrentUpdateException(final String message) {
+    public UnsupportedVersionException(final String message) {
         super(message);
     }
 }

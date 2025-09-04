@@ -1,0 +1,35 @@
+STAGE=DEV
+
+TARGET_ORIGIN=localhost:4200
+QUARKUS_HTTP_CORS_ORIGINS=http://localhost:9400,https://fonts.googleapis.com
+
+#=================================================================#
+#        Database                                                 #
+#=================================================================#
+# falls die IP sich geändert hat, startet Quarkus nicht
+# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadb-all
+#QUARKUS_DATASOURCE_JDBC_URL=jdbc:mariadb://172.18.0.2:3306/kaeuzchen
+
+# für Tests
+QUARKUS_DATASOURCE_JDBC_URL=jdbc:mariadb://172.26.0.2/kaeuzchen
+QUARKUS_DATASOURCE_PASSWORD=ueberschrei-ben
+
+# ---- man muss auch das MIN-Level auf TRACE setzen, wenn man das SQL von namedQueries sehen will ---
+QUARKUS_LOG_MIN_LEVEL=TRACE
+QUARKUS_HIBERNATE_ORM_LOG_BIND_PARAMETERS=true
+QUARKUS_HIBERNATE_ORM_LOG_SQL=true
+
+#=============================================================================================#
+#        Logging                                                                              #
+#=============================================================================================#
+quarkus.log.level=INFO
+QUARKUS_LOG_CATEGORY__ORG_HIBERNATE_SQL__LEVEL=ERROR
+QUARKUS_LOG_CATEGORY__ORG_FLYWAYDB__LEVEL=INFO
+
+QUARKUS_LOG_FILE_ENABLE=false
+QUARKUS_HTTP_ACCESS_LOG_LOG_TO_FILE=false
+
+QUARKUS_SWAGGER_UI_ALWAYS_INCLUDE=true
+QUARKUS_SWAGGER_UI_PATH=/swagger-ui
+
+QUARKUS_HTTP_TEST_TIMEOUT=1m

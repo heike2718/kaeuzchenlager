@@ -50,4 +50,8 @@ public class StartupListener {
         LOGGER.info(" ===========>  quarkusRootPath={}", quarkusRootPath);
         LOGGER.info(" ===========>  port={}", port);
     }
+
+    public String getJdbcUrl() {
+        return jdbcUrl;
+    }
 }

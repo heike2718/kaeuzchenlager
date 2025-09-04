@@ -4,6 +4,7 @@
 //=====================================================
 
 package de.egladil.web.kaeuzchenlager.infrastructure.persistence;
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
@@ -13,6 +14,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@QuarkusTest
 class MariaDbErrorClassifierParamTest {
 
     // (1) Vendor-ErrorCodes + SQLSTATE (typische MariaDB/MySQL-Fälle)

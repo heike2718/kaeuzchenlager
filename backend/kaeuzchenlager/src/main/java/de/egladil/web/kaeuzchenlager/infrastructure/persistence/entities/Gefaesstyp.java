@@ -19,18 +19,16 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(
-        name = "gefaesstyp",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_gefaesstyp_name", columnNames = "name")
-        }
-)
+@Table(name = "gefaesstypen")
 @NamedQueries({
-        @NamedQuery(name = Gefaesstyp.LOAD_PAGE, query = "select g from Gefaesstyp g order by g.name asc")
+        @NamedQuery(name = Gefaesstyp.LOAD_ALL, query = "select g from Gefaesstyp g order by g.name asc"),
+        @NamedQuery(name = Gefaesstyp.FIND_BY_VOLUMEN, query = "select g from Gefaesstyp g where g.volumen = :volumen")
 })
 public class Gefaesstyp {
 
-    public static final String LOAD_PAGE = "Gefaesstyp.LOAD_PAGE";
+   public static final String LOAD_ALL = "Gefaesstyp.LOAD_ALL";
+
+   public static final String FIND_BY_VOLUMEN = "Gefaesstyp.FIND_BY_VOLUMEN";
 
     @Id
     @Column(name = "uuid")
@@ -39,6 +37,9 @@ public class Gefaesstyp {
     // Hinweis: Die deutsche Sortierung kommt aus der DB-Collation (utf8mb4_german2_ci am Spalten-Datentyp).
     @Column(name = "name")
     private String name;
+
+    @Column(name = "volumen")
+    private Integer volumen;
 
     @Column(name = "anzahl")
     private int anzahl;
