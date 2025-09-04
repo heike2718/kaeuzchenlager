@@ -51,8 +51,14 @@ public class FallbackExceptionMapper implements ExceptionMapper<RuntimeException
 
             WebApplicationException wae = (WebApplicationException) exception;
             LOGGER.error("WebApplicationException bei {} {}: {}", method, url, exception.getMessage());
+
             // 405 kann vorkommen, wenn der Path-Parameter uuid fehlt.
-            return wae.getResponse();
+            int status = wae.getResponse().getStatus();
+            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                    .errorLevel(ErrorLevel.ERROR)
+                    .message(wae.getMessage()).build();
+
+            return Response.status(status).entity(errorResponseDto).build();
         }
 
         LOGGER.error("{} {}: {}", method, url, exception.getMessage(), exception);

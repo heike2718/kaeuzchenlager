@@ -5,15 +5,14 @@
 
 package de.egladil.web.kaeuzchenlager.infrastructure.cdi;
 
-import de.egladil.web.kaeuzchenlager.infrastructure.error.GlobalUncaughtExceptionHandler;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.runtime.configuration.ConfigUtils;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.lang3.StringUtils;
 
 @ApplicationScoped
 public class StartupListener {
@@ -39,7 +38,6 @@ public class StartupListener {
     String version;
 
     void onStartup(@Observes final StartupEvent ev) {
-        Thread.setDefaultUncaughtExceptionHandler(new GlobalUncaughtExceptionHandler());
 
         LOGGER.info(" ===========> Version {} of the application is starting with profiles {}", version,
                 StringUtils.join(ConfigUtils.getProfiles()));

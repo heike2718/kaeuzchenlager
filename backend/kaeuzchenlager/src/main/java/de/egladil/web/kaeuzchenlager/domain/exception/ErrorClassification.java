@@ -16,9 +16,9 @@ import lombok.Value;
 @Builder
 public class ErrorClassification {
 
-    private ErrorType errorType;
+    ErrorType errorType;
 
-    private String uniqueConstraintName;
+    String uniqueConstraintName;
 
-    private String errorMessage;
+    String errorMessage;
 }
