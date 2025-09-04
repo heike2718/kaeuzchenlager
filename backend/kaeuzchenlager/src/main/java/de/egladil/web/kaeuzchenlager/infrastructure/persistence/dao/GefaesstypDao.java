@@ -35,6 +35,7 @@ public class GefaesstypDao {
      *
      * @return long
      */
+    @SuppressWarnings("unused")
     public long countAll() {
         String query = "select count(g) from Gefaesstyp g";
         return entityManager.createQuery(query, Long.class).getSingleResult();
@@ -47,6 +48,7 @@ public class GefaesstypDao {
      * @param size int die Anzahl Gefäßtypen auf einer page
      * @return List
      */
+    @SuppressWarnings("unused")
     public List<Gefaesstyp> loadPage(int page, int size) {
 
         return entityManager.createNamedQuery(Gefaesstyp.LOAD_ALL, Gefaesstyp.class).setFirstResult(page * size).setMaxResults(size).getResultList();
