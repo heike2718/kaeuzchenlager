@@ -1,4 +1,3 @@
-// src/app/theme.store.ts
 import { inject, computed } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import {
