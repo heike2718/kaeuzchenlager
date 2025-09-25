@@ -1,11 +1,5 @@
-#!/bin/sh
-
-
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(html|js|ts|jsx|tsx|css|scss|json|md)$')
-
-if [ -z "$STAGED_FILES" ]; then
-  exit 0
-fi
+#!/usr/bin/env sh
+set -e
 
 # PRETTIER
 PRETTIER="./frontend/kaeuzchen-workspace/node_modules/.bin/prettier"
@@ -17,10 +11,28 @@ if [ ! -f "$PRETTIER" ]; then
   exit 1
 fi
 
-for FILE in $STAGED_FILES; do
-  "$PRETTIER" --write "$FILE"
-  git add "$FILE"
-done
+# 1) Gestagte Dateien einmal ermitteln
+STAGED="$(git diff --cached --name-only --diff-filter=ACM)"
 
+# 2) FRONTEND – schnelle Auto-Fixes (lint-staged)
+echo "$STAGED" | grep -E '\.(html|js|ts|jsx|tsx|css|scss|json|md)$' >/dev/null 2>&1 && {
+  echo "🔧 lint-staged (frontend)"
+  (cd frontend/kaeuzchen-workspace && npx lint-staged)
+}
+
+# 3) FRONTEND – Projektweit linten mit Nx (erkennt Tag-/Layer-Regeln projektweit)
+#    -> nx affected nutzt die gestagten Dateien zur Affected-Berechnung
+echo "$STAGED" | grep -E '\.(html|js|ts|jsx|tsx|css|scss|json|md)$' >/dev/null 2>&1 && {
+  echo "🔎 nx affected -t lint (frontend, projektweit)"
+  (cd frontend/kaeuzchen-workspace && npx nx affected -t lint --files="$STAGED" --parallel=3)
+}
+
+# 4) BACKEND – Java formatieren (Spotless; nur ausführen, wenn .java gestagt)
+echo "$STAGED" | grep -E '\.java$' >/dev/null 2>&1 && {
+  echo "☕ mvn spotless:apply (backend)"
+  (cd backend/kaeuzchenlager && mvn -q spotless:apply)
+  # geänderte Java-Dateien erneut zum Commit hinzufügen
+  git ls-files -m | grep -E '\.java$' | xargs -r git add
+}
 
 exit 0

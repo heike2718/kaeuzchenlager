@@ -1,56 +1,36 @@
+// eslint.config.mjs
 import nx from '@nx/eslint-plugin';
+import prettier from 'eslint-config-prettier';
 
 export default [
+  // Basis (ES, TS, JS) – von Nx vordefiniert
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
+
+  // Globale Ignorierliste
   {
     ignores: [
-      '**/dist',
+      '**/dist/**',
+      '**/coverage/**',
+      '**/.nx/**',
       '**/vite.config.*.timestamp*',
       '**/vitest.config.*.timestamp*',
     ],
   },
-  {
-    files: [
-      '**/*.ts',
-      '**/*.tsx',
-      '**/*.cts',
-      '**/*.mts',
-      '**/*.js',
-      '**/*.jsx',
-      '**/*.cjs',
-      '**/*.mjs',
-    ],
-    // Override or add rules here
-    rules: {},
-  },
+
+  // Angular (TS + Templates) – Nx Flat-Configs
   ...nx.configs['flat/angular'],
   ...nx.configs['flat/angular-template'],
-  {
-    files: ['**/*.ts'],
-    rules: {
-      '@angular-eslint/directive-selector': [
-        'error',
-        {
-          type: 'attribute',
-          prefix: 'app',
-          style: 'camelCase',
-        },
-      ],
-      '@angular-eslint/component-selector': [
-        'error',
-        {
-          type: 'element',
-          prefix: 'app',
-          style: 'kebab-case',
-        },
-      ],
-    },
-  },
+
+  // Template-spezifische Regeln (optional erweitern)
   {
     files: ['**/*.html'],
-    // Override or add rules here
-    rules: {},
+    rules: {
+      // Beispiel: '@angular-eslint/template/alt-text': 'error',
+    },
   },
+
+  // Ganz zum Schluss: Prettier-Konfig zum Abschalten formatierender ESLint-Regeln
+  prettier,
 ];

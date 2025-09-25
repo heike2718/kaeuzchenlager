@@ -39,6 +39,10 @@ public class GefaesstypService {
 
     private final GefaesstypMapper gefaesstypMapper = new GefaesstypMapper();
 
+    /**
+     * Läd die Gefäßtypen.
+     * @return List
+     */
     public List<GefaesstypDto> loadGefaesstypen() {
 
         final List<Gefaesstyp> gefaesstypen = gefaesstypDao.loadAll();
