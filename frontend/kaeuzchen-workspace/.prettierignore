@@ -1,0 +1,33 @@
+# Add files here to ignore them from prettier formatting
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Dependencies
+node_modules/
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Nx specific
+/.nx/cache
+.nx/cache/
+/.nx/workspace-data
+.angular
+
+# Angular specific
+*.ngsummary.json
+*.ngfactory.ts
