@@ -5,7 +5,8 @@
   "scripts": {
     "start": "nx serve",
     "build": "nx build",
-    "test": "nx test"
+    "test": "nx test",
+    "prepare": "husky"
   },
   "private": true,
   "dependencies": {
@@ -39,9 +40,9 @@
     "@nx/workspace": "21.5.3",
     "@playwright/test": "^1.36.0",
     "@schematics/angular": "~20.2.0",
-    "@swc-node/register": "~1.9.1",
-    "@swc/core": "~1.5.7",
-    "@swc/helpers": "~0.5.11",
+    "@swc-node/register": "^1.11.1",
+    "@swc/core": "^1.13.19",
+    "@swc/helpers": "^0.5.17",
     "@types/node": "20.19.9",
     "@typescript-eslint/utils": "^8.40.0",
     "@vitest/coverage-v8": "^3.0.5",
@@ -50,6 +51,7 @@
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-playwright": "^1.6.2",
+    "husky": "^9.1.7",
     "jiti": "2.4.2",
     "jsdom": "~22.1.0",
     "nx": "21.5.3",
