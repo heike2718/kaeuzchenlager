@@ -1,7 +1,7 @@
-//=====================================================
+// =====================================================
 // Projekt: kaeuzchenlager
 // (c) Heike Winkelvoß
-//=====================================================
+// =====================================================
 
 package de.egladil.web.kaeuzchenlager.domain.exception;
 
@@ -16,9 +16,9 @@ import lombok.Value;
 @Builder
 public class ErrorClassification {
 
-    ErrorType errorType;
+  ErrorType errorType;
 
-    String uniqueConstraintName;
+  String uniqueConstraintName;
 
-    String errorMessage;
+  String errorMessage;
 }

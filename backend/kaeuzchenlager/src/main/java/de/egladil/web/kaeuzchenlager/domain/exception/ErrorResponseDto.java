@@ -1,7 +1,7 @@
-//=====================================================
+// =====================================================
 // Projekt: kaeuzchenlager
 // (c) Heike Winkelvoß
-//=====================================================
+// =====================================================
 
 package de.egladil.web.kaeuzchenlager.domain.exception;
 
@@ -21,15 +21,18 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Schema(name = "ErrorResponseDto", description = "ein Error-Objekt")
 public class ErrorResponseDto {
 
-    @JsonProperty
-    @Schema(name = "errorLevel", examples = {"ERROR", "WARN"})
-    ErrorLevel errorLevel;
+  @JsonProperty
+  @Schema(
+      name = "errorLevel",
+      examples = {"ERROR", "WARN"})
+  ErrorLevel errorLevel;
 
-    @JsonProperty
-    @Pattern(
-            regexp = ValidationPatternsAndMessages.KAEUZCHEN_INPUT_SECURED,
-            message = "message enthält ungültige Zeichen"
-    )
-    @Schema(name = "message", examples = {"Es ist ein Fehler aufgetreten"})
-    String message;
+  @JsonProperty
+  @Pattern(
+      regexp = ValidationPatternsAndMessages.KAEUZCHEN_INPUT_SECURED,
+      message = "message enthält ungültige Zeichen")
+  @Schema(
+      name = "message",
+      examples = {"Es ist ein Fehler aufgetreten"})
+  String message;
 }

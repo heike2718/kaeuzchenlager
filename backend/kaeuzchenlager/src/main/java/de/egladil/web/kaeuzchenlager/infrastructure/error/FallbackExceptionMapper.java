@@ -1,7 +1,7 @@
-//=====================================================
+// =====================================================
 // Projekt: kaeuzchenlager
 // (c) Heike Winkelvoß
-//=====================================================
+// =====================================================
 
 package de.egladil.web.kaeuzchenlager.infrastructure.error;
 
@@ -23,50 +23,51 @@ import org.slf4j.LoggerFactory;
 @Priority(3000)
 public class FallbackExceptionMapper implements ExceptionMapper<RuntimeException> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FallbackExceptionMapper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FallbackExceptionMapper.class);
 
-    @Context
-    UriInfo uriInfo;
+  @Context UriInfo uriInfo;
 
-    @Context
-    Request request;
+  @Context Request request;
 
-    @Override
-    public Response toResponse(final RuntimeException exception) {
+  @Override
+  public Response toResponse(final RuntimeException exception) {
 
-        final String method = request.getMethod();
-        final String url = uriInfo.getPath();
+    final String method = request.getMethod();
+    final String url = uriInfo.getPath();
 
-        if (exception instanceof NotFoundException) {
-            LOGGER.error("NotFoundException bei {} {}", method, url);
+    if (exception instanceof NotFoundException) {
+      LOGGER.error("NotFoundException bei {} {}", method, url);
 
-            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
-                    .errorLevel(ErrorLevel.ERROR)
-                    .message("Diese Ressource gibt es nicht oder nicht mehr.").build();
+      ErrorResponseDto errorResponseDto =
+          ErrorResponseDto.builder()
+              .errorLevel(ErrorLevel.ERROR)
+              .message("Diese Ressource gibt es nicht oder nicht mehr.")
+              .build();
 
-            return Response.status(Response.Status.NOT_FOUND).entity(errorResponseDto).build();
-        }
-
-        if (exception instanceof final WebApplicationException wae) {
-
-            LOGGER.error("WebApplicationException bei {} {}: {}", method, url, exception.getMessage());
-
-            // 405 kann vorkommen, wenn der Path-Parameter uuid fehlt.
-            int status = wae.getResponse().getStatus();
-            ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
-                    .errorLevel(ErrorLevel.ERROR)
-                    .message(wae.getMessage()).build();
-
-            return Response.status(status).entity(errorResponseDto).build();
-        }
-
-        LOGGER.error("{} {}: {}", method, url, exception.getMessage(), exception);
-
-        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
-                .errorLevel(ErrorLevel.ERROR)
-                .message("Ein unerwarteter Fehler ist aufgetreten. Wende Dich bitte vertrauensvoll an Deinen technischen Support, wenn möglich mit Kontext und Screenshots.")
-                .build();
-
-        return Response.serverError().entity(errorResponseDto).build();
+      return Response.status(Response.Status.NOT_FOUND).entity(errorResponseDto).build();
     }
+
+    if (exception instanceof final WebApplicationException wae) {
+
+      LOGGER.error("WebApplicationException bei {} {}: {}", method, url, exception.getMessage());
+
+      // 405 kann vorkommen, wenn der Path-Parameter uuid fehlt.
+      int status = wae.getResponse().getStatus();
+      ErrorResponseDto errorResponseDto =
+          ErrorResponseDto.builder().errorLevel(ErrorLevel.ERROR).message(wae.getMessage()).build();
+
+      return Response.status(status).entity(errorResponseDto).build();
+    }
+
+    LOGGER.error("{} {}: {}", method, url, exception.getMessage(), exception);
+
+    ErrorResponseDto errorResponseDto =
+        ErrorResponseDto.builder()
+            .errorLevel(ErrorLevel.ERROR)
+            .message(
+                "Ein unerwarteter Fehler ist aufgetreten. Wende Dich bitte vertrauensvoll an Deinen technischen Support, wenn möglich mit Kontext und Screenshots.")
+            .build();
+
+    return Response.serverError().entity(errorResponseDto).build();
+  }
 }

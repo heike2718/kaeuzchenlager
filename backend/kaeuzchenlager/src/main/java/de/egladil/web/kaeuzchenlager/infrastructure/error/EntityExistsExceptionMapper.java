@@ -1,7 +1,7 @@
-//=====================================================
+// =====================================================
 // Projekt: kaeuzchenlager
 // (c) Heike Winkelvoß
-//=====================================================
+// =====================================================
 
 package de.egladil.web.kaeuzchenlager.infrastructure.error;
 
@@ -17,11 +17,14 @@ import jakarta.ws.rs.ext.Provider;
 @Priority(2000)
 public class EntityExistsExceptionMapper implements ExceptionMapper<EntityExistsException> {
 
+  @Override
+  public Response toResponse(final EntityExistsException exception) {
 
-    @Override
-    public Response toResponse(final EntityExistsException exception) {
-
-        ErrorResponseDto payload = ErrorResponseDto.builder().errorLevel(ErrorLevel.WARN).message(exception.getMessage()).build();
-        return Response.status(Response.Status.CONFLICT).entity(payload).build();
-    }
+    ErrorResponseDto payload =
+        ErrorResponseDto.builder()
+            .errorLevel(ErrorLevel.WARN)
+            .message(exception.getMessage())
+            .build();
+    return Response.status(Response.Status.CONFLICT).entity(payload).build();
+  }
 }
