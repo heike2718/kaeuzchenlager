@@ -5,8 +5,9 @@
 
 package de.egladil.web.kaeuzchenlager.infrastructure.error;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import de.egladil.web.kaeuzchenlager.domain.exception.ConcurrentModificationException;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorLevel;

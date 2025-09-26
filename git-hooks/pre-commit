@@ -1,38 +1,41 @@
 #!/usr/bin/env sh
 set -e
 
-# PRETTIER
-PRETTIER="./frontend/kaeuzchen-workspace/node_modules/.bin/prettier"
+FRONTEND_DIR="frontend/kaeuzchen-workspace"
+BACKEND_DIR="backend/kaeuzchenlager"
 
-echo "Running prettier on staged files..."
+# 1) Gestagte Dateien
+STAGED="$(git diff --cached --name-only --diff-filter=ACM || true)"
+[ -z "$STAGED" ] && exit 0
 
-if [ ! -f "$PRETTIER" ]; then
-  echo "Prettier wurde nicht gefunden: $PRETTIER"
-  exit 1
+# Hilfsfunktion: prüft, ob gestagte Dateien ein Pattern matchen
+has_staged() {
+  echo "$STAGED" | grep -E "$1" >/dev/null 2>&1
+}
+
+# CSV-Liste für Nx (kommagetrennt)
+STAGED_CSV="$(printf '%s\n' "$STAGED" | paste -sd, -)"
+
+# 2) FRONTEND – lint-staged (ESLint --fix + Prettier)
+if has_staged '\.(html|js|ts|jsx|tsx|css|scss|json|md|yml|yaml)$'; then
+  echo "🔧 lint-staged (frontend)"
+  (cd "$FRONTEND_DIR" && npx lint-staged --quiet)
 fi
 
-# 1) Gestagte Dateien einmal ermitteln
-STAGED="$(git diff --cached --name-only --diff-filter=ACM)"
-
-# 2) FRONTEND – schnelle Auto-Fixes (lint-staged)
-echo "$STAGED" | grep -E '\.(html|js|ts|jsx|tsx|css|scss|json|md)$' >/dev/null 2>&1 && {
-  echo "🔧 lint-staged (frontend)"
-  (cd frontend/kaeuzchen-workspace && npx lint-staged)
-}
-
-# 3) FRONTEND – Projektweit linten mit Nx (erkennt Tag-/Layer-Regeln projektweit)
-#    -> nx affected nutzt die gestagten Dateien zur Affected-Berechnung
-echo "$STAGED" | grep -E '\.(html|js|ts|jsx|tsx|css|scss|json|md)$' >/dev/null 2>&1 && {
+# 3) FRONTEND – projektweit linten (Tag-/Layer-Regeln etc.)
+if has_staged '\.(html|js|ts|jsx|tsx|css|scss|json|md|yml|yaml)$'; then
   echo "🔎 nx affected -t lint (frontend, projektweit)"
-  (cd frontend/kaeuzchen-workspace && npx nx affected -t lint --files="$STAGED" --parallel=3)
-}
+  (cd "$FRONTEND_DIR" && npx nx affected -t lint --files="$STAGED_CSV" --parallel=3)
+fi
 
-# 4) BACKEND – Java formatieren (Spotless; nur ausführen, wenn .java gestagt)
-echo "$STAGED" | grep -E '\.java$' >/dev/null 2>&1 && {
+# 4) Backend – Format + schneller Lint
+if echo "$STAGED" | grep -qE '\.java$'; then
   echo "☕ mvn spotless:apply (backend)"
   (cd backend/kaeuzchenlager && mvn -q spotless:apply)
-  # geänderte Java-Dateien erneut zum Commit hinzufügen
   git ls-files -m | grep -E '\.java$' | xargs -r git add
-}
+
+  echo "🔍 Checkstyle (schnell)"
+  (cd backend/kaeuzchenlager && mvn -q checkstyle:check)
+fi
 
 exit 0

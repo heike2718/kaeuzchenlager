@@ -7,6 +7,7 @@ package de.egladil.web.kaeuzchenlager.domain.gefaesse;
 
 import de.egladil.web.kaeuzchenlager.infrastructure.persistence.entities.Gefaesstyp;
 
+/** The type Gefaesstyp mapper. */
 public class GefaesstypMapper {
 
   /**
@@ -17,7 +18,7 @@ public class GefaesstypMapper {
    */
   public GefaesstypDto toDto(final Gefaesstyp entity) {
 
-    GefaesstypDaten daten =
+    final GefaesstypDaten daten =
         GefaesstypDaten.builder()
             .anzahl(entity.getAnzahl())
             .name(entity.getName())

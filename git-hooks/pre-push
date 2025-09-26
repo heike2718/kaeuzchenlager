@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+set -e
+
+FRONTEND_DIR="frontend/kaeuzchen-workspace"
+BACKEND_DIR="backend/kaeuzchenlager"
+
+echo "🚀 Running comprehensive pre-push checks..."
+
+# FRONTEND: Build + Tests
+if [ -d "$FRONTEND_DIR" ]; then
+  echo "🔬 Frontend: build + tests"
+  (cd "$FRONTEND_DIR" && npm run build)    # Zyklische Abhängigkeiten finden
+  (cd "$FRONTEND_DIR" && npm run test)     # Unit Tests
+fi
+
+# BACKEND: verify (Tests + Quality Gates)
+if [ -d "$BACKEND_DIR" ]; then
+  echo "☕ Backend: mvn verify (tests + quality gates)"
+  (cd "$BACKEND_DIR" && mvn -q verify)     # Alles in einem!
+fi
+
+echo "✅ All pre-push checks passed!"
+exit 0

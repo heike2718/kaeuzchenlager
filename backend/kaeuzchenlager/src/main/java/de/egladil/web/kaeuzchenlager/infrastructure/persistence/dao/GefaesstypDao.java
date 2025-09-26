@@ -13,10 +13,12 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/** The type Gefaesstyp dao. */
 @RequestScoped
 public class GefaesstypDao {
 
-  @Inject EntityManager entityManager;
+  /** The Entity manager. */
+  @Inject /*default*/ EntityManager entityManager;
 
   /**
    * Gibt den gefäßtyp mit der gegebenen Id zurück.
@@ -24,18 +26,18 @@ public class GefaesstypDao {
    * @param uuid String der technische Schlüssel
    * @return Optional
    */
-  public Optional<Gefaesstyp> findById(String uuid) {
+  public Optional<Gefaesstyp> findById(final String uuid) {
     return Optional.ofNullable(entityManager.find(Gefaesstyp.class, uuid));
   }
 
   /**
-   * Wie viele Gefäßtypen gibt es in der DB
+   * Wie viele Gefäßtypen gibt es in der DB.
    *
    * @return long
    */
   @SuppressWarnings("unused")
   public long countAll() {
-    String query = "select count(g) from Gefaesstyp g";
+    final String query = "select count(g) from Gefaesstyp g";
     return entityManager.createQuery(query, Long.class).getSingleResult();
   }
 
@@ -48,7 +50,7 @@ public class GefaesstypDao {
    * @return List
    */
   @SuppressWarnings("unused")
-  public List<Gefaesstyp> loadPage(int page, int size) {
+  public List<Gefaesstyp> loadPage(final int page, final int size) {
 
     return entityManager
         .createNamedQuery(Gefaesstyp.LOAD_ALL, Gefaesstyp.class)
@@ -72,7 +74,7 @@ public class GefaesstypDao {
    *
    * @param gefaesstyp Gefaesstyp
    */
-  public void insert(Gefaesstyp gefaesstyp) {
+  public void insert(final Gefaesstyp gefaesstyp) {
     entityManager.persist(gefaesstyp);
   }
 
@@ -82,20 +84,21 @@ public class GefaesstypDao {
    * @param gefaesstyp Gefaesstyp
    * @return Gefaesstyp
    */
-  public Gefaesstyp update(Gefaesstyp gefaesstyp) {
+  public Gefaesstyp update(final Gefaesstyp gefaesstyp) {
     return entityManager.merge(gefaesstyp);
   }
 
   /**
-   * Löscht die gegebene Entity
+   * Löscht die gegebene Entity.
    *
    * @param entity Gefaesstyp
    */
   @Transactional
-  public void remove(Gefaesstyp entity) {
-    if (!entityManager.contains(entity)) {
-      entity = entityManager.merge(entity);
+  public void remove(final Gefaesstyp entity) {
+    Gefaesstyp result = entity;
+    if (!entityManager.contains(result)) {
+      result = entityManager.merge(entity);
     }
-    entityManager.remove(entity);
+    entityManager.remove(result);
   }
 }

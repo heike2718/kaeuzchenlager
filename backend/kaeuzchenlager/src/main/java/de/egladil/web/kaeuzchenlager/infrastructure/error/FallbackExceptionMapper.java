@@ -19,15 +19,18 @@ import jakarta.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** The type Fallback exception mapper. */
 @Provider
 @Priority(3000)
 public class FallbackExceptionMapper implements ExceptionMapper<RuntimeException> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FallbackExceptionMapper.class);
 
-  @Context UriInfo uriInfo;
+  /** The Uri info. */
+  @Context /* default*/ UriInfo uriInfo;
 
-  @Context Request request;
+  /** The Request. */
+  @Context /* default*/ Request request;
 
   @Override
   public Response toResponse(final RuntimeException exception) {
@@ -38,7 +41,7 @@ public class FallbackExceptionMapper implements ExceptionMapper<RuntimeException
     if (exception instanceof NotFoundException) {
       LOGGER.error("NotFoundException bei {} {}", method, url);
 
-      ErrorResponseDto errorResponseDto =
+      final ErrorResponseDto errorResponseDto =
           ErrorResponseDto.builder()
               .errorLevel(ErrorLevel.ERROR)
               .message("Diese Ressource gibt es nicht oder nicht mehr.")
@@ -52,8 +55,8 @@ public class FallbackExceptionMapper implements ExceptionMapper<RuntimeException
       LOGGER.error("WebApplicationException bei {} {}: {}", method, url, exception.getMessage());
 
       // 405 kann vorkommen, wenn der Path-Parameter uuid fehlt.
-      int status = wae.getResponse().getStatus();
-      ErrorResponseDto errorResponseDto =
+      final int status = wae.getResponse().getStatus();
+      final ErrorResponseDto errorResponseDto =
           ErrorResponseDto.builder().errorLevel(ErrorLevel.ERROR).message(wae.getMessage()).build();
 
       return Response.status(status).entity(errorResponseDto).build();
@@ -61,11 +64,14 @@ public class FallbackExceptionMapper implements ExceptionMapper<RuntimeException
 
     LOGGER.error("{} {}: {}", method, url, exception.getMessage(), exception);
 
-    ErrorResponseDto errorResponseDto =
+    final ErrorResponseDto errorResponseDto =
         ErrorResponseDto.builder()
             .errorLevel(ErrorLevel.ERROR)
             .message(
-                "Ein unerwarteter Fehler ist aufgetreten. Wende Dich bitte vertrauensvoll an Deinen technischen Support, wenn möglich mit Kontext und Screenshots.")
+                """
+                    Ein unerwarteter Fehler ist aufgetreten.
+                    Wende Dich bitte vertrauensvoll an Deinen technischen Support,
+                    wenn möglich mit Kontext und Screenshots.""")
             .build();
 
     return Response.serverError().entity(errorResponseDto).build();

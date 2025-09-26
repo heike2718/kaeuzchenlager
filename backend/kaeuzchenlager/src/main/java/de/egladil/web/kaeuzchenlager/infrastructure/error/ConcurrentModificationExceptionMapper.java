@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
+/** The type Concurrent modification exception mapper. */
 @Provider
 @Priority(2000)
 public class ConcurrentModificationExceptionMapper
@@ -20,7 +21,7 @@ public class ConcurrentModificationExceptionMapper
 
   @Override
   public Response toResponse(final ConcurrentModificationException exception) {
-    ErrorResponseDto payload =
+    final ErrorResponseDto payload =
         ErrorResponseDto.builder()
             .errorLevel(ErrorLevel.ERROR)
             .message(exception.getMessage())

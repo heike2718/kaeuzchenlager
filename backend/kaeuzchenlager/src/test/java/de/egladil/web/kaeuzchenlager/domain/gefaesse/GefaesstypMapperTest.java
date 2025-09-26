@@ -5,7 +5,10 @@
 
 package de.egladil.web.kaeuzchenlager.domain.gefaesse;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import de.egladil.web.kaeuzchenlager.infrastructure.persistence.entities.Gefaesstyp;
 import io.quarkus.test.junit.QuarkusTest;

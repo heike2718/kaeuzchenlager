@@ -7,25 +7,26 @@ package de.egladil.web.kaeuzchenlager.domain.exception;
 
 import de.egladil.web.kaeuzchenlager.infrastructure.error.ExceptionUtil;
 import de.egladil.web.kaeuzchenlager.infrastructure.persistence.MariaDbErrorClassifier;
-import de.egladil.web.kaeuzchenlager.infrastructure.persistence.SQLErrorType;
+import de.egladil.web.kaeuzchenlager.infrastructure.persistence.SqlErrorType;
 import jakarta.persistence.OptimisticLockException;
 import java.sql.SQLException;
 import java.util.Optional;
 import org.hibernate.exception.ConstraintViolationException;
 
+/** The type High level error classifier. */
 public final class HighLevelErrorClassifier {
 
   /**
    * Klassifiziert die gegebene Exception, um die, bei denen der Aufrufer sinnvolle Aktionen machen
    * kann, von denen trennen zu können, die weitergewirfen werden müssen.
    *
-   * @param t Throwable
+   * @param throwable Throwable
    * @return ErrorType
    */
-  public static ErrorClassification classify(Throwable t) {
+  public static ErrorClassification classify(final Throwable throwable) {
 
     final Optional<OptimisticLockException> optLockException =
-        ExceptionUtil.unwrap(t, OptimisticLockException.class);
+        ExceptionUtil.unwrap(throwable, OptimisticLockException.class);
     if (optLockException.isPresent()) {
       return ErrorClassification.builder()
           .errorType(ErrorType.VERSION_CONFLICT)
@@ -33,10 +34,10 @@ public final class HighLevelErrorClassifier {
           .build();
     }
 
-    final Optional<ConstraintViolationException> optCVE =
-        ExceptionUtil.unwrap(t, ConstraintViolationException.class);
-    if (optCVE.isPresent()) {
-      ConstraintViolationException cve = optCVE.get();
+    final Optional<ConstraintViolationException> optCve =
+        ExceptionUtil.unwrap(throwable, ConstraintViolationException.class);
+    if (optCve.isPresent()) {
+      final ConstraintViolationException cve = optCve.get();
       return ErrorClassification.builder()
           .errorType(ErrorType.UNIQUE_CONSTRAINT)
           .uniqueConstraintName(cve.getConstraintName())
@@ -44,19 +45,20 @@ public final class HighLevelErrorClassifier {
           .build();
     }
 
-    final Optional<SQLException> optSQL = ExceptionUtil.unwrap(t, SQLException.class);
+    final Optional<SQLException> optSqlException =
+        ExceptionUtil.unwrap(throwable, SQLException.class);
 
-    if (optSQL.isEmpty()) {
+    if (optSqlException.isEmpty()) {
       return ErrorClassification.builder()
           .errorType(ErrorType.TECHNICAL)
-          .errorMessage(t.getMessage())
+          .errorMessage(throwable.getMessage())
           .build();
     }
 
-    SQLException sqlException = optSQL.get();
-    final SQLErrorType sqlErrorType = MariaDbErrorClassifier.classify(sqlException);
+    final SQLException sqlException = optSqlException.get();
+    final SqlErrorType sqlErrorType = MariaDbErrorClassifier.classify(sqlException);
 
-    return SQLErrorType.UNIQUE_VIOLATION == sqlErrorType
+    return SqlErrorType.UNIQUE_VIOLATION == sqlErrorType
         ? ErrorClassification.builder()
             .errorType(ErrorType.UNIQUE_CONSTRAINT)
             .uniqueConstraintName("nicht feststellbar")

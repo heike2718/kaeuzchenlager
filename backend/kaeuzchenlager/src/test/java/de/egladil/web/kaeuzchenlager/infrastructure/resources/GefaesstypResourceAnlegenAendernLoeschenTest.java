@@ -6,7 +6,11 @@
 package de.egladil.web.kaeuzchenlager.infrastructure.resources;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorLevel;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorResponseDto;
@@ -22,7 +26,11 @@ import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 @QuarkusTest
 @TestHTTPEndpoint(GefaesstypenResource.class)

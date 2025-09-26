@@ -5,7 +5,14 @@
 
 package de.egladil.web.kaeuzchenlager.infrastructure.persistence.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -13,6 +20,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/** The type Gefaesstyp. */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,8 +35,10 @@ import lombok.NoArgsConstructor;
 })
 public class Gefaesstyp {
 
+  /** The constant LOAD_ALL. */
   public static final String LOAD_ALL = "Gefaesstyp.LOAD_ALL";
 
+  /** The constant FIND_BY_VOLUMEN. */
   public static final String FIND_BY_VOLUMEN = "Gefaesstyp.FIND_BY_VOLUMEN";
 
   @Id
@@ -68,6 +78,7 @@ public class Gefaesstyp {
   @Column(name = "version", nullable = false)
   private int version;
 
+  /** Pre persist. */
   @SuppressWarnings("unused")
   @PrePersist
   void prePersist() {

@@ -7,13 +7,19 @@ package de.egladil.web.kaeuzchenlager.domain.gefaesse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.egladil.web.kaeuzchenlager.domain.validation.ValidationPatternsAndMessages;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Value;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+/** The type Gefaesstyp daten. */
 @Data
 @AllArgsConstructor
 @Value

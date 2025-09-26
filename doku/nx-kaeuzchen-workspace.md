@@ -44,3 +44,7 @@ chmod +x .husky/pre-commit
 # prepare-Script setzen (damit Git-Hooks aktiv sind)
 npm pkg set scripts.prepare="husky"
 ```
+
+## Initialisierung bei vorhandenem code
+
+Siehe [code-quality-checks](./code-quality-checks.md)

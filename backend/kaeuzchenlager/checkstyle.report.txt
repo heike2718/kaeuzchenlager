@@ -1,0 +1,31 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< de.egladil.web:kaeuzchenlager >--------------------
+[INFO] Building kaeuzchenlager 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- checkstyle:3.6.0:check (default-cli) @ kaeuzchenlager ---
+[INFO] Beginne Prüfung...
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/infrastructure/persistence/entities/Gefaesstyp.java:33: Zeile ist 102 Zeichen lang (Obergrenze ist 100). [LineLength]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/infrastructure/persistence/SQLErrorType.java:11:13: Die Abkürzung im Bezeichner 'SQLErrorType' darf höchstens aus '1' Großbuchstaben bestehen. [AbbreviationAsWordInName]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/infrastructure/error/FallbackExceptionMapper.java:79: Zeile ist 164 Zeichen lang (Obergrenze ist 100). [LineLength]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/infrastructure/error/ExceptionUtil.java:11: Nach dem ersten Satz des Javadoc-Kommentars fehlt ein Punkt. [SummaryJavadoc]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/infrastructure/resources/GefaesstypenResource.java:101: Zeile ist 108 Zeichen lang (Obergrenze ist 100). [LineLength]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/infrastructure/resources/GefaesstypenResource.java:171: Zeile ist 108 Zeichen lang (Obergrenze ist 100). [LineLength]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/infrastructure/resources/GefaesstypenResource.java:268: Zeile ist 108 Zeichen lang (Obergrenze ist 100). [LineLength]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/infrastructure/resources/GefaesstypenResource.java:348: Zeile ist 108 Zeichen lang (Obergrenze ist 100). [LineLength]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/domain/gefaesse/GefaesstypService.java:80:7: In der switch-Anweisung fehlt der "default"-Zweig. [MissingSwitchDefault]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/domain/gefaesse/GefaesstypService.java:138:7: In der switch-Anweisung fehlt der "default"-Zweig. [MissingSwitchDefault]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/domain/validation/ValidationPatternsAndMessages.java:27: Zeile ist 155 Zeichen lang (Obergrenze ist 100). [LineLength]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/domain/exception/HighLevelErrorClassifier.java:39:50: Die Abkürzung im Bezeichner 'optCVE' darf höchstens aus '1' Großbuchstaben bestehen. [AbbreviationAsWordInName]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/domain/exception/HighLevelErrorClassifier.java:50:34: Die Abkürzung im Bezeichner 'optSQL' darf höchstens aus '1' Großbuchstaben bestehen. [AbbreviationAsWordInName]
+[WARN] /home/heike/git/kaeuzchenlager/backend/kaeuzchenlager/src/main/java/de/egladil/web/kaeuzchenlager/domain/exception/ConcurrentModificationException.java:8: Nach dem ersten Satz des Javadoc-Kommentars fehlt ein Punkt. [SummaryJavadoc]
+Prüfung beendet.
+[INFO] You have 0 Checkstyle violations.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.015 s
+[INFO] Finished at: 2025-09-25T17:10:53+02:00
+[INFO] ------------------------------------------------------------------------

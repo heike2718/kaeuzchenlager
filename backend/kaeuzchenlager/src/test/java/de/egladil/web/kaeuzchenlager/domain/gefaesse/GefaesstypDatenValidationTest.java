@@ -5,7 +5,9 @@
 
 package de.egladil.web.kaeuzchenlager.domain.gefaesse;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import de.egladil.web.kaeuzchenlager.TestUtils;
 import io.quarkus.test.junit.QuarkusTest;

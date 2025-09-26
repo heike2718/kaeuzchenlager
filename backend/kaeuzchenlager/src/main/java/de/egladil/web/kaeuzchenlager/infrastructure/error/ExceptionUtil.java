@@ -8,7 +8,7 @@ package de.egladil.web.kaeuzchenlager.infrastructure.error;
 import java.sql.SQLException;
 import java.util.Optional;
 
-/** Packt die Exception vom gegebenen Typ aus */
+/** Packt die Exception vom gegebenen Typ aus. */
 public final class ExceptionUtil {
 
   private ExceptionUtil() {}
@@ -16,13 +16,14 @@ public final class ExceptionUtil {
   /**
    * Packt die Exception des gegebenen Typs aus.
    *
-   * @param t Throwable
+   * @param <T> the type parameter
+   * @param throwable Throwable
    * @param type Type
    * @return Optional
-   * @param <T>
    */
-  public static <T extends Throwable> Optional<T> unwrap(Throwable t, Class<T> type) {
-    Throwable cur = t;
+  public static <T extends Throwable> Optional<T> unwrap(
+      final Throwable throwable, final Class<T> type) {
+    Throwable cur = throwable;
     while (cur != null) {
       if (type.isInstance(cur)) {
         return Optional.of(type.cast(cur));
@@ -35,16 +36,15 @@ public final class ExceptionUtil {
   /**
    * Packt die SQLException aus, wenn sie gefunden wird.
    *
-   * @param t
-   * @return
+   * @param throwable the throwable
+   * @return the optional
    */
-  public static Optional<SQLException> unwrapSqlException(Throwable t) {
-    Throwable cur = t;
+  public static Optional<SQLException> unwrapSqlException(final Throwable throwable) {
+    Throwable cur = throwable;
     while (cur != null) {
-      if (cur instanceof SQLException se) {
-        return Optional.of(se);
+      if (cur instanceof SQLException sqlException) {
+        return Optional.of(sqlException);
       }
-      ;
       cur = cur.getCause();
     }
     return Optional.empty();

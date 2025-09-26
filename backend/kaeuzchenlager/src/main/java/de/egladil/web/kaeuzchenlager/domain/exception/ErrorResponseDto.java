@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.Value;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+/** The type Error response dto. */
 @Data
 @Value
 @AllArgsConstructor

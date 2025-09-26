@@ -16,6 +16,7 @@ import jakarta.ws.rs.ext.Provider;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
+/** The type Constraint violation exception mapper. */
 @Provider
 @Priority(1500)
 public class ConstraintViolationExceptionMapper
@@ -23,7 +24,7 @@ public class ConstraintViolationExceptionMapper
 
   @Override
   public Response toResponse(final ConstraintViolationException exception) {
-    ErrorResponseDto responsePayload =
+    final ErrorResponseDto responsePayload =
         ErrorResponseDto.builder()
             .errorLevel(ErrorLevel.ERROR)
             .message("Inputvalidierung fehlgeschlagen: " + extractMessagesSorted(exception))
@@ -32,7 +33,7 @@ public class ConstraintViolationExceptionMapper
     return Response.status(Response.Status.BAD_REQUEST).entity(responsePayload).build();
   }
 
-  private String extractMessagesSorted(ConstraintViolationException exception) {
+  private String extractMessagesSorted(final ConstraintViolationException exception) {
     return exception.getConstraintViolations().stream()
         .sorted(Comparator.comparing(violation -> violation.getPropertyPath().toString()))
         .map(ConstraintViolation::getMessage)

@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Value;
 
+/** The type Error classification. */
 @Data
 @Value
 @AllArgsConstructor
