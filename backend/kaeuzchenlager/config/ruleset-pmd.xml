@@ -14,6 +14,7 @@
   <!-- Basisregeln -->
   <rule ref="category/java/bestpractices.xml">
     <exclude name="GuardLogStatement"/>
+    <exclude name="ExhaustiveSwitchHasDefault"/>
   </rule>
 
   <rule ref="category/java/errorprone.xml"/>

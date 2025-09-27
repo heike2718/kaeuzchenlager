@@ -20,6 +20,9 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import java.util.Set;
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @QuarkusTest
@@ -29,6 +32,26 @@ public class GefaesstypenResourceValidationTest {
   private static final String VALID_UUID = "a003530f-97f9-4a5b-a0a3-f6f139522fa0";
 
   @Inject Validator validator;
+
+  @ConfigProperty(name = "quarkus.datasource.jdbc.url")
+  String jdbcUrl;
+
+  @ConfigProperty(name = "quarkus.datasource.username")
+  String datasoureUsername;
+
+  @ConfigProperty(name = "quarkus.devservices.enabled")
+  boolean devsourceEnabled;
+
+  @Inject Config config;
+
+  @BeforeEach
+  void beforeEach() {
+    System.out.println("=== GefaesstypenResourceTest BEFORE EACH ===");
+    System.out.println("===> devServicesEnabled=" + this.devsourceEnabled);
+    System.out.println("===> jdbcUrl=" + this.jdbcUrl);
+    System.out.println("===> username=" + this.datasoureUsername);
+    System.out.println("=============================================");
+  }
 
   @Test
   void should_gefaesstypAnlegen_return_400_when_allAttributes_invalid() {

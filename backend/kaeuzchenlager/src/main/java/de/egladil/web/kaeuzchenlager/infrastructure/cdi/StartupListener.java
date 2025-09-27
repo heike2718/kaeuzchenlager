@@ -21,7 +21,6 @@ public class StartupListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(StartupListener.class);
 
   /** The Jdbc url. */
-  @lombok.Getter
   @ConfigProperty(name = "quarkus.datasource.jdbc.url")
   String jdbcUrl;
 

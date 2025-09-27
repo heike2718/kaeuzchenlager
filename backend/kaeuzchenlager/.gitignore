@@ -48,3 +48,4 @@ nb-configuration.xml
 /src/main/resources/META-INF/resources/kaeuzchenlager/
 /src/main/resources/META-INF/openapi/openapi.json
 /src/main/resources/META-INF/openapi/openapi.yaml
+/dependency-tree.txt

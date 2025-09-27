@@ -49,7 +49,7 @@ public class GefaesstypService {
    */
   public List<GefaesstypDto> loadGefaesstypen() {
 
-    List<Gefaesstyp> gefaesstypen = this.gefaesstypDao.loadAll();
+    final List<Gefaesstyp> gefaesstypen = this.gefaesstypDao.loadAll();
     return gefaesstypen.stream().map(this.gefaesstypMapper::toDto).toList();
   }
 
@@ -61,11 +61,11 @@ public class GefaesstypService {
    * @throws EntityExistsException - wenn es eine unique constraint violaton gibt
    * @throws KaeuzchenlagerRuntimeException - bei unerwarteten Exceptions
    */
-  public GefaesstypDto gefaesstypAnlegen(GefaesstypDaten daten)
+  public GefaesstypDto gefaesstypAnlegen(final GefaesstypDaten daten)
       throws EntityExistsException, KaeuzchenlagerRuntimeException {
 
     try {
-      Gefaesstyp gefaesstyp = Gefaesstyp.builder().build();
+      final Gefaesstyp gefaesstyp = Gefaesstyp.builder().build();
       this.gefaesstypMapper.copyDaten(gefaesstyp, daten);
       // TODO
       gefaesstyp.setCreatedAt(LocalDateTime.now());
@@ -73,8 +73,8 @@ public class GefaesstypService {
       //            gefaesstyp.setCreatedBy(securityContext.getUserPrincipal().getName());
       return this.doPersist(gefaesstyp);
     } catch (Exception e) {
-      ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
-      ErrorType errorType = errorClassification.getErrorType();
+      final ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
+      final ErrorType errorType = errorClassification.getErrorType();
       switch (errorType) {
         case UNIQUE_CONSTRAINT:
           {
@@ -98,12 +98,13 @@ public class GefaesstypService {
                   + errorClassification.getErrorMessage(),
               e);
         default:
-          throw new KaeuzchenlagerRuntimeException(
-              "ErrorTyp für die Exception konnte nicht ermittelt werden ("
-                  + errorClassification.getErrorMessage()
-                  + ")",
-              e);
+          // nothing
       }
+      throw new KaeuzchenlagerRuntimeException(
+          "ErrorTyp für die Exception konnte nicht ermittelt werden ("
+              + errorClassification.getErrorMessage()
+              + ")",
+          e);
     }
   }
 
@@ -117,18 +118,18 @@ public class GefaesstypService {
    * @throws EntityExistsException - wenn es eine unique constraint violaton gibt
    * @throws KaeuzchenlagerRuntimeException - bei unerwarteten Exceptions
    */
-  public GefaesstypDto gefaesstypAendern(String uuid, GefaesstypDaten daten)
+  public GefaesstypDto gefaesstypAendern(final String uuid, final GefaesstypDaten daten)
       throws NotFoundException, EntityExistsException, KaeuzchenlagerRuntimeException {
 
     try {
-      Optional<Gefaesstyp> optEntity = this.gefaesstypDao.findById(uuid);
+      final Optional<Gefaesstyp> optEntity = this.gefaesstypDao.findById(uuid);
 
       if (optEntity.isEmpty()) {
         LOGGER.error("gefaesstyp mit uuid {} existiert nicht", uuid);
         throw new NotFoundException();
       }
 
-      Gefaesstyp entity = optEntity.get();
+      final Gefaesstyp entity = optEntity.get();
       this.gefaesstypMapper.copyDaten(entity, daten);
       // TODO hier securityContext nutzen!!!
       entity.setUpdatedBy(FAKE_USERE_UUID);
@@ -137,8 +138,8 @@ public class GefaesstypService {
     } catch (NotFoundException e) {
       throw e;
     } catch (Exception e) {
-      ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
-      ErrorType errorType = errorClassification.getErrorType();
+      final ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
+      final ErrorType errorType = errorClassification.getErrorType();
       switch (errorType) {
         case VERSION_CONFLICT:
           throw new ConcurrentModificationException(
@@ -158,12 +159,13 @@ public class GefaesstypService {
                   + errorClassification.getErrorMessage(),
               e);
         default:
-          throw new KaeuzchenlagerRuntimeException(
-              "ErrorTyp für die Exception konnte nicht ermittelt werden ("
-                  + errorClassification.getErrorMessage()
-                  + ")",
-              e);
+          // nothing
       }
+      throw new KaeuzchenlagerRuntimeException(
+          "ErrorTyp für die Exception konnte nicht ermittelt werden ("
+              + errorClassification.getErrorMessage()
+              + ")",
+          e);
     }
   }
 
@@ -174,12 +176,12 @@ public class GefaesstypService {
    * @return GefaesstypLoeschenResult - auch im Fall, dass es die Entity nicht (mehr) gibt.
    * @throws KaeuzchenlagerRuntimeException - bei unerwarteten Exceptions
    */
-  public GefaesstypLoeschenResult gefaesstypLoeschen(String uuid)
+  public GefaesstypLoeschenResult gefaesstypLoeschen(final String uuid)
       throws KaeuzchenlagerRuntimeException {
 
     try {
 
-      Optional<Gefaesstyp> optEntity = this.gefaesstypDao.findById(uuid);
+      final Optional<Gefaesstyp> optEntity = this.gefaesstypDao.findById(uuid);
 
       if (optEntity.isEmpty()) {
         LOGGER.warn("gefaesstyp mit uuid = {} existiert nicht oder nicht mehr", uuid);
@@ -192,7 +194,7 @@ public class GefaesstypService {
     } catch (NotFoundException e) {
       throw e;
     } catch (Exception e) {
-      ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
+      final ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
       throw new KaeuzchenlagerRuntimeException(
           "Beim Löschen ist ein Fehler vom Typ "
               + errorClassification.getErrorType()
@@ -211,7 +213,7 @@ public class GefaesstypService {
    */
   // package-private wegen transactional
   @Transactional
-  /* default */ GefaesstypDto doPersist(Gefaesstyp gefaesstyp) {
+  /* default */ GefaesstypDto doPersist(final Gefaesstyp gefaesstyp) {
 
     Gefaesstyp persisted = gefaesstyp;
 

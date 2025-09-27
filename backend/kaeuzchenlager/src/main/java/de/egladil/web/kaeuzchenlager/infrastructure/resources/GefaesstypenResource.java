@@ -64,6 +64,7 @@ public class GefaesstypenResource {
    */
   @SuppressWarnings(UNUSED)
   @GET
+  // CPD-OFF
   @Operation(operationId = LOAD_GEFAESSTYPEN, summary = "Gibt alle Gefaesstypen zurück.")
   @Parameters({
     @Parameter(
@@ -99,6 +100,7 @@ public class GefaesstypenResource {
           @Content(
               mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
               schema = @Schema(implementation = ErrorResponseDto.class)))
+  // CPD-ON
   public Response loadGefaesstypen(
       @HeaderParam(OpenApiConstants.HEADER_API_VERSION) final int apiVersion) {
 
@@ -119,6 +121,7 @@ public class GefaesstypenResource {
   @SuppressWarnings(UNUSED)
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
+  // CPD-OFF
   @Operation(operationId = GEFAESSTYP_ANLEGEN, summary = "Legt einen neuen Gefäßtyp an.")
   @Parameters({
     @Parameter(
@@ -170,6 +173,7 @@ public class GefaesstypenResource {
           @Content(
               mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
               schema = @Schema(implementation = ErrorResponseDto.class)))
+  // CPD-ON
   public Response gefaesstypAnlegen(
       @HeaderParam(OpenApiConstants.HEADER_API_VERSION) final int apiVersion,
       @Valid final GefaesstypDaten daten) {
@@ -195,6 +199,7 @@ public class GefaesstypenResource {
   @PUT
   @Path("{uuid}")
   @Consumes(MediaType.APPLICATION_JSON)
+  // CPD-OFF
   @Operation(operationId = GEFAESSTYP_AENDERN, summary = "Ändert einen Gefäßtyp.")
   @Parameters({
     @Parameter(
@@ -262,6 +267,7 @@ public class GefaesstypenResource {
           @Content(
               mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
               schema = @Schema(implementation = ErrorResponseDto.class)))
+  // CPD-ON
   public Response gefaesstypAendern(
       @HeaderParam(OpenApiConstants.HEADER_API_VERSION) final int apiVersion,
       @PathParam("uuid")
@@ -292,6 +298,7 @@ public class GefaesstypenResource {
   @DELETE
   @Path("{uuid}")
   @Consumes(MediaType.APPLICATION_JSON)
+  // CPD-OFF
   @Operation(operationId = GEFAESSTYP_LOESCHEN, summary = "Löscht einen Gefäßtyp.")
   @Parameters({
     @Parameter(
@@ -343,6 +350,7 @@ public class GefaesstypenResource {
           @Content(
               mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
               schema = @Schema(implementation = ErrorResponseDto.class)))
+  // CPD-ON
   public Response gefaesstypLoeschen(
       @HeaderParam(OpenApiConstants.HEADER_API_VERSION) final int apiVersion,
       @PathParam("uuid")
