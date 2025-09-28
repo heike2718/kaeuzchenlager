@@ -1,18 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
-import { NxWelcome } from './nx-welcome';
+import { HomeComponent } from './home/home.component';
+import { RouterModule } from '@angular/router';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App, NxWelcome],
+      imports: [App, HomeComponent, RouterModule.forRoot([{ path: '', component: HomeComponent }])],
     }).compileComponents();
   });
 
-  it('should render title', () => {
+  it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Welcome kaeuzchen-workspace');
+    const app = fixture.componentInstance;
+    expect(app).toBeTruthy();
   });
 });

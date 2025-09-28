@@ -5,17 +5,25 @@
   "scripts": {
     "start": "nx serve",
     "build": "nx build",
-    "test": "nx test",
-    "prepare": "husky"
+    "test": "nx test"
   },
   "private": true,
   "dependencies": {
+    "@angular-architects/ngrx-toolkit": "~20.4.0",
+    "@angular/animations": "~20.2.0",
+    "@angular/cdk": "~20.2.0",
     "@angular/common": "~20.2.0",
     "@angular/compiler": "~20.2.0",
     "@angular/core": "~20.2.0",
     "@angular/forms": "~20.2.0",
+    "@angular/material": "~20.2.0",
     "@angular/platform-browser": "~20.2.0",
+    "@angular/platform-browser-dynamic": "~20.2.0",
     "@angular/router": "~20.2.0",
+    "@ngrx/effects": "~20.0.0",
+    "@ngrx/signals": "~20.0.0",
+    "@ngrx/store": "~20.0.0",
+    "material-icons": "^1.13.14",
     "rxjs": "~7.8.0",
     "zone.js": "~0.15.0"
   },
@@ -51,6 +59,7 @@
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-playwright": "^1.6.2",
+    "eslint-plugin-vitest": "^0.5.4",
     "jiti": "2.4.2",
     "jsdom": "~22.1.0",
     "lint-staged": "^16.2.0",

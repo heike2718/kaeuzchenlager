@@ -1,6 +1,7 @@
 // eslint.config.mjs
 import nx from '@nx/eslint-plugin';
 import prettier from 'eslint-config-prettier';
+import vitest from 'eslint-plugin-vitest';
 
 export default [
   // Basis (ES, TS, JS) – von Nx vordefiniert
@@ -28,6 +29,18 @@ export default [
     files: ['**/*.html'],
     rules: {
       // Beispiel: '@angular-eslint/template/alt-text': 'error',
+    },
+  },
+  {
+    files: ['**/*.spec.ts', '**/*.test.ts'],
+    plugins: { vitest },
+    languageOptions: {
+      globals: vitest.environments.env.globals,
+    },
+    rules: {
+      'vitest/no-focused-tests': 'warn', // später via --max-warnings=0 hart schalten
+      'vitest/no-disabled-tests': 'warn', // später via --max-warnings=0 hart schalten
+      'vitest/no-identical-title': 'error',
     },
   },
 

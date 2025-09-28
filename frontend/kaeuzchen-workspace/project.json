@@ -3,7 +3,7 @@
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "includedScripts": [],
   "projectType": "application",
-  "prefix": "app",
+  "prefix": "kl",
   "sourceRoot": "./src",
   "tags": [],
   "targets": {
@@ -16,13 +16,12 @@
         "polyfills": ["zone.js"],
         "tsConfig": "tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "assets": [
-          {
-            "glob": "**/*",
-            "input": "public"
-          }
-        ],
-        "styles": ["./src/styles.scss"]
+        "assets": ["./src/favicon.ico", "./src/assets"],
+        "styles": [
+          "src/app/layout/theme.scss",
+          "src/styles.scss",
+          "node_modules/material-icons/iconfont/material-icons.css"
+        ]
       },
       "configurations": {
         "production": {
