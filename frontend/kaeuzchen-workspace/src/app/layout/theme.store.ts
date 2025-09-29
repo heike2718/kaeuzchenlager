@@ -12,7 +12,7 @@ import {
 import { withDevtools } from '@angular-architects/ngrx-toolkit';
 
 type Theme = 'light' | 'dark';
-const KEY = 'preferred-theme';
+export const PREFERRED_THEME_KEY = 'preferred-theme';
 
 interface ThemeState {
   theme: Theme;
@@ -37,14 +37,14 @@ export const ThemeStore = signalStore(
     },
     persist() {
       try {
-        localStorage.setItem(KEY, store.theme());
+        localStorage.setItem(PREFERRED_THEME_KEY, store.theme());
       } catch {
         console.warn('Could not persist theme preference');
       }
     },
     readInitial() {
-      let saved = localStorage.getItem(KEY) as Theme | null;
-      if (!saved) {
+      let saved = localStorage.getItem(PREFERRED_THEME_KEY) as Theme | null;
+      if (!saved || (saved !== 'light' && saved !== 'dark')) {
         saved = 'dark'; // default
       }
       patchState(store, { theme: saved });
