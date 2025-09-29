@@ -80,3 +80,110 @@ nx affected -t lint -t test --base=origin/develop
 # Backend
 mvn -q spotless:check checkstyle:check pmd:check com.github.spotbugs:spotbugs-maven-plugin:check test
 ```
+
+## Testabdeckung messen
+
+```
+npm install -D @vitest/coverage-v8
+```
+
+In vite.config.mts limits konfigurieren:
+
+```
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      reportsDirectory: './coverage',
+      thresholds: {
+        global: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80
+        },
+        // Optional: Datei-spezifische Grenzwerte
+        each: {
+          branches: 70,
+          functions: 75,
+          lines: 75,
+          statements: 75
+        }
+      }
+    }
+  }
+});
+```
+
+oder für strengere coverage-Regeln:
+
+```
+// vitest.config.ts
+export default defineConfig({
+  test: {
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      reportsDirectory: './coverage',
+      exclude: [
+        '**/*.config.*',
+        '**/*.d.ts',
+        '**/main.ts',
+        '**/test/**',
+        '**/coverage/**'
+      ],
+      thresholds: {
+        global: {
+          branches: 85,
+          functions: 85,
+          lines: 85,
+          statements: 85
+        },
+        // Auto-fail wenn Grenzwerte nicht erreicht werden
+        autoUpdate: false,
+        // 100: false // Keine 100% Anforderung, aber du kannst es aktivieren
+      }
+    }
+  }
+});
+```
+
+Zusätzliche vitest-Features:
+
+```
+// Beispiel für erweiterte Coverage-Konfiguration
+coverage: {
+  provider: 'v8',
+  enabled: true,
+  clean: true,          // Coverage-Verzeichnis vor jedem Run löschen
+  cleanOnRerun: true,   // Beim Rerun cleanen
+  all: true,            // Auch ungetestete Dateien im Report anzeigen
+  skipFull: false,      // Auch 100% gecoverte Dateien anzeigen
+
+  // Watermarks (für HTML Reports)
+  watermarks: {
+    statements: [80, 95],
+    functions: [80, 95],
+    branches: [80, 95],
+    lines: [80, 95]
+  }
+}
+```
+
+In package.json runner scripts ergänzen:
+
+```
+{
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run --coverage --bail=1"
+  }
+}
+```
