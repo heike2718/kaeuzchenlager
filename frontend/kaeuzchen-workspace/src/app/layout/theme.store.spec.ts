@@ -18,111 +18,141 @@ describe('ThemeStore', () => {
     localStorage.clear();
   });
 
-  it('should create and be dark', async () => {
-    expect(themeStore).toBeTruthy();
-    expect(themeStore.theme()).toBe('dark');
-    expect(themeStore.isDark()).toBe(true);
-  });
-
-  it('should toggle to light and persist this state', async () => {
-    const toggleSpy = vi.spyOn(themeStore, 'toggle');
-
-    // arrange: ensure no theme is stored
-    vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(null);
-    const localStorageSpy = vi.spyOn(Storage.prototype, 'setItem');
-
-    expect(themeStore).toBeTruthy();
-    await themeStore.toggle();
-    expect(toggleSpy).toHaveBeenCalled();
-    expect(themeStore.theme()).toBe('light');
-    expect(themeStore.isDark()).toBe(false);
-    expect(localStorageSpy).toHaveBeenCalledWith(PREFERRED_THEME_KEY, 'light');
-  });
-
-  it('should create and be light when value is persisted', async () => {
-    // arrange: ensure theme is stored as light
-    const getSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('light');
-    const setSpy = vi.spyOn(Storage.prototype, 'setItem');
-
-    TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({
-      imports: [],
+  describe('ThemeStore – creation', () => {
+    it('should create and be dark', async () => {
+      // arrange: ensure no theme is stored
+      localStorage.clear();
+      expect(themeStore).toBeTruthy();
+      expect(themeStore.theme()).toBe('dark');
+      expect(themeStore.isDark()).toBe(true);
     });
 
-    themeStore = TestBed.inject(ThemeStore);
-    await Promise.resolve(); // warten, bis onInit durch ist
+    it('should ignore invalid key', async () => {
+      localStorage.setItem(PREFERRED_THEME_KEY, 'banane');
+      const setSpy = vi.spyOn(Storage.prototype, 'setItem');
 
-    expect(getSpy).toHaveBeenCalled(); // nur ob überhaupt
-    expect(getSpy).toHaveBeenCalledWith(PREFERRED_THEME_KEY); // nur der Key);
-    expect(setSpy).not.toHaveBeenCalled();
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [],
+      });
 
-    expect(themeStore).toBeTruthy();
-    expect(themeStore.theme()).toBe('light');
-    expect(themeStore.isDark()).toBe(false);
+      themeStore = TestBed.inject(ThemeStore);
+      expect(setSpy).not.toHaveBeenCalled();
+
+      expect(themeStore).toBeTruthy();
+      expect(themeStore.theme()).toBe('dark');
+      expect(themeStore.isDark()).toBe(true);
+    });
   });
 
-  it('should create and be light when value is persisted - ohne mock', async () => {
-    // arrange: ensure theme is stored as light
-    localStorage.setItem(PREFERRED_THEME_KEY, 'light');
-    const setSpy = vi.spyOn(Storage.prototype, 'setItem');
+  describe('ThemeStore – persistence', () => {
+    it('should create and be light when value is persisted - mit Storage-Mock', async () => {
+      // arrange: ensure theme is stored as light
+      const getSpy = vi.spyOn(Storage.prototype, 'getItem').mockReturnValue('light');
+      const setSpy = vi.spyOn(Storage.prototype, 'setItem');
 
-    TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({
-      imports: [],
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [],
+      });
+
+      themeStore = TestBed.inject(ThemeStore);
+      await Promise.resolve(); // warten, bis onInit durch ist
+
+      expect(getSpy).toHaveBeenCalled(); // nur ob überhaupt
+      expect(getSpy).toHaveBeenCalledWith(PREFERRED_THEME_KEY); // nur der Key);
+      expect(setSpy).not.toHaveBeenCalled();
+
+      expect(themeStore).toBeTruthy();
+      expect(themeStore.theme()).toBe('light');
+      expect(themeStore.isDark()).toBe(false);
     });
 
-    themeStore = TestBed.inject(ThemeStore);
-    expect(setSpy).not.toHaveBeenCalled();
+    it('should be light when value is persisted - ohne mock', async () => {
+      // arrange: ensure theme is stored as light
+      localStorage.setItem(PREFERRED_THEME_KEY, 'light');
 
-    expect(themeStore).toBeTruthy();
-    expect(themeStore.theme()).toBe('light');
-    expect(themeStore.isDark()).toBe(false);
-  });
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [],
+      });
 
-  it('should ignore invalid key', async () => {
-    localStorage.setItem(PREFERRED_THEME_KEY, 'banane');
-    const setSpy = vi.spyOn(Storage.prototype, 'setItem');
+      themeStore = TestBed.inject(ThemeStore);
 
-    TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({
-      imports: [],
+      expect(themeStore).toBeTruthy();
+      expect(themeStore.theme()).toBe('light');
+      expect(themeStore.isDark()).toBe(false);
+      expect(localStorage.getItem(PREFERRED_THEME_KEY)).toBe('light');
     });
 
-    themeStore = TestBed.inject(ThemeStore);
-    expect(setSpy).not.toHaveBeenCalled();
+    it('should persist dark after toggle from light', async () => {
+      // arrange: ensure theme is stored as light
+      localStorage.setItem(PREFERRED_THEME_KEY, 'light');
 
-    expect(themeStore).toBeTruthy();
-    expect(themeStore.theme()).toBe('dark');
-    expect(themeStore.isDark()).toBe(true);
-  });
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [],
+      });
 
-  it('should toggle twice', async () => {
-    localStorage.setItem(PREFERRED_THEME_KEY, 'light');
-    const setSpy = vi.spyOn(Storage.prototype, 'setItem');
+      themeStore = TestBed.inject(ThemeStore);
+      await Promise.resolve(); // warten, bis onInit durch ist
 
-    TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({
-      imports: [],
+      await themeStore.toggle();
+
+      expect(themeStore).toBeTruthy();
+      expect(themeStore.theme()).toBe('dark');
+      expect(themeStore.isDark()).toBe(true);
+      expect(localStorage.getItem(PREFERRED_THEME_KEY)).toBe('dark');
     });
 
-    themeStore = TestBed.inject(ThemeStore);
-    await Promise.resolve(); // warten, bis onInit durch ist
+    it('should persist light after toggle from dark', async () => {
+      // arrange: ensure theme is stored as light
+      localStorage.setItem(PREFERRED_THEME_KEY, 'dark');
 
-    await themeStore.toggle();
-    expect(themeStore.theme()).toBe('dark');
-    expect(themeStore.isDark()).toBe(true);
-    expect(setSpy).toBeCalledTimes(1);
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [],
+      });
 
-    TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({
-      imports: [],
+      themeStore = TestBed.inject(ThemeStore);
+      await Promise.resolve(); // warten, bis onInit durch ist
+
+      await themeStore.toggle();
+
+      expect(themeStore).toBeTruthy();
+      expect(themeStore.theme()).toBe('light');
+      expect(themeStore.isDark()).toBe(false);
+      expect(localStorage.getItem(PREFERRED_THEME_KEY)).toBe('light');
     });
 
-    themeStore = TestBed.inject(ThemeStore);
-    await Promise.resolve(); // warten, bis onInit durch ist
-    await themeStore.toggle();
-    expect(themeStore.theme()).toBe('light');
-    expect(themeStore.isDark()).toBe(false);
-    expect(setSpy).toBeCalledTimes(2);
+    it('should toggle twice reset the state from light to light', async () => {
+      localStorage.setItem(PREFERRED_THEME_KEY, 'light');
+      const setSpy = vi.spyOn(Storage.prototype, 'setItem');
+
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [],
+      });
+
+      themeStore = TestBed.inject(ThemeStore);
+      await Promise.resolve(); // warten, bis onInit durch ist
+
+      await themeStore.toggle();
+      expect(themeStore.theme()).toBe('dark');
+      expect(themeStore.isDark()).toBe(true);
+      expect(setSpy).toBeCalledTimes(1);
+
+      TestBed.resetTestingModule();
+      await TestBed.configureTestingModule({
+        imports: [],
+      });
+
+      themeStore = TestBed.inject(ThemeStore);
+      await Promise.resolve(); // warten, bis onInit durch ist
+      await themeStore.toggle();
+      expect(themeStore.theme()).toBe('light');
+      expect(themeStore.isDark()).toBe(false);
+      expect(setSpy).toBeCalledTimes(2);
+    });
   });
 });
