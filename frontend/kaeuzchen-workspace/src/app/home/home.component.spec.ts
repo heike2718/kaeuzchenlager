@@ -22,8 +22,7 @@ describe('HomeComponent', () => {
   it('should render logo with correct attributes', () => {
     const fixture = TestBed.createComponent(HomeComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const logo = compiled.querySelector('#logo') as HTMLImageElement;
+    const logo = fixture.nativeElement.querySelector('img') as HTMLImageElement;
 
     expect(logo).toBeTruthy();
     expect(logo.src).toContain('assets/images/kl-logo.svg');

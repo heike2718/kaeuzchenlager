@@ -5,10 +5,17 @@ import { RouterLink, RouterLinkWithHref, RouterModule } from '@angular/router';
 import { HomeComponent } from '../../home/home.component';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { MatTooltipHarness } from '@angular/material/tooltip/testing';
+import { MatButtonHarness } from '@angular/material/button/testing';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { ThemeStore } from '../theme.store';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
   let fixture: ComponentFixture<NavbarComponent>;
+  let loader: HarnessLoader;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -17,9 +24,11 @@ describe('NavbarComponent', () => {
         HomeComponent,
         RouterModule.forRoot([{ path: '', component: HomeComponent }]),
       ],
+      providers: [provideNoopAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NavbarComponent);
+    loader = TestbedHarnessEnvironment.loader(fixture);
     component = fixture.componentInstance;
     component.version = '1.2.0'; // Setze die Version für den Test
   });
@@ -144,6 +153,49 @@ describe('NavbarComponent', () => {
       expect(version.tagName.toLowerCase()).toBe('span');
       expect(version.classList.length).toBe(1);
       expect(version.classList[0]).toBe('ml-2');
+    });
+
+    it('should render the theme toggle button', async () => {
+      const allTooltips = await loader.getAllHarnesses(MatTooltipHarness);
+      expect(allTooltips).toBeTruthy();
+      expect(allTooltips.length).toBe(1);
+
+      const tooltipHarness = await loader.getHarness(
+        MatTooltipHarness.with({ selector: 'button.ml-2' })
+      );
+      expect(tooltipHarness).toBeTruthy();
+      await tooltipHarness.show();
+      const ttText = await tooltipHarness.getTooltipText();
+      expect(ttText.trim()).toBe('umschalten');
+    });
+
+    it('toggles aria-label and label text when clicking the theme button - start with dark theme', async () => {
+      const store = TestBed.inject(ThemeStore);
+      const spy = vi.spyOn(store, 'toggle');
+
+      const btn = await loader.getHarness(MatButtonHarness.with({ selector: 'button.ml-2' }));
+      const host = await btn.host();
+
+      // Initial: dark === true
+      await fixture.whenStable();
+      expect(await host.getAttribute('aria-label')).toBe('Auf helles Theme umschalten'); // aus dem Template
+      expect((await btn.getText()).trim()).toContain('lieber light'); // sichtbarer Buttontext
+
+      // Klick -> toggleTheme()
+      await btn.click();
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(await host.getAttribute('aria-label')).toBe('Auf dunkles Theme umschalten');
+      expect((await btn.getText()).trim()).toContain('lieber dark');
+
+      // jetzt ist es light, nochmal klicken
+      await btn.click();
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(await host.getAttribute('aria-label')).toBe('Auf helles Theme umschalten');
+      expect((await btn.getText()).trim()).toContain('lieber light');
     });
   });
 
