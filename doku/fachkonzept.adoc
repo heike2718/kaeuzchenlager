@@ -1,0 +1,46 @@
+= Fachkonzept Käuzchenlager
+Heike Winkelvoß
+:Author Initials: HW
+:toc:
+:icons:
+:numbered:
+:imagesdir: /home/heike/git/kaeuzchenlager/doku/images
+:toc-title: Inhaltsverzeichnis
+
+== Fachdomäne
+
+Gweünscht ist eine Webanwendung, mit der man im ersten Schritt Gefäßtypen und deren Anzahl erfassen kann.
+
+Ein Gefäß hat dabei folgende Attribute:
+
+* Bezeichnung ( "250ml")
+* Anzahl ( "3")
+* backgroundColor ( "#ff0000")
+
+== Anwendungsfälle
+
+=== Gefäßtypen erfassen
+
+In einer Eingabemaske können die Attribute eines Gefäßtypss erfasst werden. Mit einem Button "Hinzufügen" wird das Gefäß gespeichert und als  Crd mit der gewählten Hintergrundfarbe in einer Liste angezeigt.
+
+Die Anzahl soll dabei sowohl eingegeben werden können, als auch über einen Stepper (Plus- und Minus-Button) verändert werden können.
+
+=== Gefäßtypen anzeigen
+
+Nach dem Einloggen werden alle Gefäßtypen in einer Liste angezeigt. Jedes Gefäß wird als Card mit der gewählten Hintergrundfarbe dargestellt. Auf der Card sind die Bezeichnung und die Anzahl zu sehen. Mit Click auf die Card wird das Gefäß ausgewählt und in einer Eingabemaske können die Attribute des Gefäßtypss verändert werden. Mit einem Button "Speichern" werden die Änderungen übernommen und die Card in der Liste aktualisiert.
+
+Die Anzahl soll dabei sowohl eingegeben werden können, als auch über einen Stepper (Plus- und Minus-Button) verändert werden können.
+
+=== Gefäßtypen löschen
+
+Auf jeder Card ist ein Button "Löschen". Mit einem Klick auf den Button wird das Gefäß gelöscht und die Card verschwindet aus der Liste.
+
+== Nicht-funktionale Anforderungen
+
+* Die Anwendung soll als Single-Page-Application (SPA) umgesetzt werden.
+* Die Anwendung soll auf mobilen Geräten und Desktops gleichermaßen gut funktionieren (Responsive Design). 
+* unterstützte Browser: Chrome, Firefox, Edge
+* Safarii wird nicht unterstützt.
+* Nur autorisiert Nutzer können die Anwendung verwenden.
+* Die Authentifizierung erfolgt über das IAM-System.
+* In der Datenbank der Anwendung wird zusätzlich eine USER-Tabelle geführt, in der die User-ID der berechtigten User aus dem IAM-System gespeichert wird. Die Autorisierung erfolgt also in 2 Schritten: 1. Authentifizierung über IAM, 2. Autorisierung über die USER-Tabelle der Anwendung. Die USER-Tabelle in der Anwendung enthält ein Attribut admin, das 0 oder 1 sein kann. Nur User mit admin=1 dürfen Gefäßtypen laden, erfassen und löschen.
