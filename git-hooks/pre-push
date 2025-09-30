@@ -6,11 +6,13 @@ BACKEND_DIR="backend/kaeuzchenlager"
 
 echo "🚀 Running comprehensive pre-push checks..."
 
-# FRONTEND: Build + Tests
+# FRONTEND: Build + Tests mit Vitest Coverage
 if [ -d "$FRONTEND_DIR" ]; then
-  echo "🔬 Frontend: build + tests"
-  (cd "$FRONTEND_DIR" && npm run build)    # Zyklische Abhängigkeiten finden
-  (cd "$FRONTEND_DIR" && npm run test)     # Unit Tests
+  echo "🔬 Frontend: build + tests with coverage"
+  (cd "$FRONTEND_DIR" && npm run build)
+  
+  echo "📊 Running frontend tests with Vitest coverage..."
+  (cd "$FRONTEND_DIR" && npm run test:ci)  # Tests mit Coverage und Abbruch bei Fehler
 fi
 
 # BACKEND: verify (Tests + Quality Gates)

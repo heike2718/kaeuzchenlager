@@ -11,6 +11,4 @@ import { SidenavComponent } from './layout/sidenav/sidenav.component';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
-  protected title = 'kaeuzchenlager';
-}
+export class App {}

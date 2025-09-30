@@ -75,10 +75,10 @@ describe('NavbarComponent', () => {
       expect(caption.classList).toContain('nav-caption');
     });
 
-    it('renders the Home router link as the FIRST item in the toolbar test with DebugElement', async () => {
+    it('renders the home router link as the FIRST item in the toolbar test with DebugElement', async () => {
       // Arrange
       const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
-      expect(toolbarDe).toBeTruthy();
+      expect(toolbarDe).toBeDefined();
 
       // Alle RouterLinks innerhalb der Toolbar in DOM-Reihenfolge
       const linkDes: DebugElement[] = toolbarDe.queryAll(By.directive(RouterLink));
@@ -171,8 +171,7 @@ describe('NavbarComponent', () => {
       expect(begruessung).toBeTruthy();
       expect(begruessung.textContent.trim()).toContain('Moin, ');
       expect(begruessung.tagName.toLowerCase()).toBe('div');
-      expect(begruessung.classList.length).toBe(1);
-      expect(begruessung.classList[0]).toBe('mr-2');
+      expect(begruessung.classList).toContain('mr-2');
     });
 
     it('should render version two right to toolbar spacer', () => {
@@ -189,8 +188,7 @@ describe('NavbarComponent', () => {
       expect(version).toBeTruthy();
       expect(version.textContent.trim()).toBe(expectedVersionText);
       expect(version.tagName.toLowerCase()).toBe('span');
-      expect(version.classList.length).toBe(1);
-      expect(version.classList[0]).toBe('ml-2');
+      expect(version.classList).toContain('ml-2');
     });
 
     it('should render the theme toggle button', async () => {

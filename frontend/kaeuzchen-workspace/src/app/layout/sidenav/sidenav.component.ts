@@ -32,8 +32,4 @@ export class SidenavComponent {
   public onSidenavClose = () => {
     this.sidenavClose.emit();
   };
-
-  onToggleTheme() {
-    this.theme.toggle();
-  }
 }

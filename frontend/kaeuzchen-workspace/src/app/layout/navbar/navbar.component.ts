@@ -44,10 +44,6 @@ export class NavbarComponent {
     this.sidenavToggle.emit();
   }
 
-  onToggleTheme() {
-    this.theme.toggle();
-  }
-
   onMenuItemClick(id: number): void {
     this.#router.navigate(['/home', id]);
   }

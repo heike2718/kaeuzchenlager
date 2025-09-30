@@ -22,7 +22,7 @@
   <button
     mat-button
     class="ml-2"
-    (click)="onToggleTheme()"
+    (click)="theme.toggle()"
     [aria-label]="theme.isDark() ? 'Auf helles Theme umschalten' : 'Auf dunkles Theme umschalten'"
     matTooltip="umschalten"
   >

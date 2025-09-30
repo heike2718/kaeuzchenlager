@@ -21,23 +21,28 @@ export default defineConfig(() => ({
     setupFiles: ['src/test-setup.ts'],
     reporters: ['default'],
     coverage: {
-      reportsDirectory: './coverage/kaeuzchen-workspace',
+      reportsDirectory: './coverage',
       provider: 'v8' as const,
     },
     thresholds: {
       global: {
-        branches: 80,
-        functions: 80,
-        lines: 80,
-        statements: 80,
+        branches: 90,
+        functions: 85,
+        lines: 90,
+        statements: 90,
       },
-      // Optional: Datei-spezifische Grenzwerte
-      each: {
-        branches: 70,
-        functions: 75,
-        lines: 75,
-        statements: 75,
-      },
+      // Datei-spezifische Mindestanforderungen
+      perFile: true,
+      lines: 80,
+      statements: 80,
+      functions: 70, // Realistisch für den Anfang
+      branches: 80,
+    },
+    watermarks: {
+      statements: [70, 90], // Rot < 70%, Gelb 70-89%, Grün ≥ 90%
+      functions: [60, 85], // Rot < 60%, Gelb 60-84%, Grün ≥ 85%
+      branches: [65, 80], // Rot < 65%, Gelb 65-79%, Grün ≥ 80%
+      lines: [70, 90], // Rot < 70%, Gelb 70-89%, Grün ≥ 90%
     },
   },
 }));
