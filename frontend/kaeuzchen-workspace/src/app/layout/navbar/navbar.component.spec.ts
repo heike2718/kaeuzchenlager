@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NavbarComponent } from './navbar.component';
 import { of } from 'rxjs';
-import { RouterLink, RouterLinkWithHref, RouterModule } from '@angular/router';
+import { Router, RouterLink, RouterLinkWithHref, RouterModule, UrlTree } from '@angular/router';
 import { HomeComponent } from '../../home/home.component';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatTooltipHarness } from '@angular/material/tooltip/testing';
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { ThemeStore } from '../theme.store';
+import { MatIcon } from '@angular/material/icon';
 
 describe('NavbarComponent', () => {
   let component: NavbarComponent;
@@ -24,7 +24,6 @@ describe('NavbarComponent', () => {
         HomeComponent,
         RouterModule.forRoot([{ path: '', component: HomeComponent }]),
       ],
-      providers: [provideNoopAnimations()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NavbarComponent);
@@ -76,7 +75,7 @@ describe('NavbarComponent', () => {
       expect(caption.classList).toContain('nav-caption');
     });
 
-    it('renders the Home router link as the FIRST item in the toolbar test with DebugElement', () => {
+    it('renders the Home router link as the FIRST item in the toolbar test with DebugElement', async () => {
       // Arrange
       const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
       expect(toolbarDe).toBeTruthy();
@@ -119,6 +118,45 @@ describe('NavbarComponent', () => {
 
       // 5) (A11y) Wenn das Icon dekorativ sein soll
       expect(iconDe.nativeElement.getAttribute('aria-hidden')).toBe('true');
+    });
+
+    it('navigates to /home when clicking the Home link', async () => {
+      const router = TestBed.inject(Router);
+      const navSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+
+      const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
+      const linkDe = toolbarDe.query(By.css('a[routerLink="/home"]'));
+      (linkDe.nativeElement as HTMLAnchorElement).click();
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(navSpy).toHaveBeenCalledTimes(1);
+
+      const [arg] = navSpy.mock.calls[0];
+      expect(arg).toBeTruthy();
+
+      const path =
+        typeof arg === 'string'
+          ? arg
+          : arg instanceof UrlTree
+          ? router.serializeUrl(arg)
+          : (() => {
+              throw new Error('Unexpected argument type');
+            })();
+
+      expect(path).toBe('/home');
+    });
+
+    it('onMenuItemClick navigates to /home/:id', async () => {
+      const router = TestBed.inject(Router);
+      const navigateSpy = vi.spyOn(router, 'navigate');
+      navigateSpy.mockResolvedValue(true);
+
+      component.onMenuItemClick(42);
+
+      expect(navigateSpy).toHaveBeenCalledTimes(1);
+      expect(navigateSpy).toHaveBeenCalledWith(['/home', 42]);
     });
 
     it('should render a toolbar spacer', () => {
@@ -205,12 +243,27 @@ describe('NavbarComponent', () => {
       fixture.detectChanges();
     });
 
-    it('should render begrüßungstext', () => {
-      // ...
-    });
+    it('should show hamburger menu button', async () => {
+      const spy = vi.spyOn(component.sidenavToggle, 'emit');
+      const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
+      expect(toolbarDe).toBeTruthy();
 
-    it('should render version', () => {
-      // ...
+      const buttonDe = toolbarDe.query(By.css('button[mat-icon-button]'));
+      expect(buttonDe).toBeTruthy();
+
+      const buttonEl = buttonDe.nativeElement as HTMLButtonElement;
+      buttonEl.click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      // Alle MatIcons innerhalb der Toolbar in DOM-Reihenfolge
+      const iconDes: DebugElement[] = toolbarDe.queryAll(By.directive(MatIcon));
+      expect(iconDes.length).toBe(1);
+
+      const menuIcon = iconDes[0].nativeElement as HTMLElement;
+      expect(menuIcon.textContent.trim()).toBe('menu');
     });
   });
 });
