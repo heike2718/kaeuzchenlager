@@ -26,6 +26,7 @@ describe('ThemeStore', () => {
   }
 
   afterEach(async () => {
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
     localStorage.clear();
   });
@@ -145,6 +146,26 @@ describe('ThemeStore', () => {
       expect(themeStore.theme()).toBe('light');
       expect(themeStore.isDark()).toBe(false);
       expect(localStorage.getItem(PREFERRED_THEME_KEY)).toBe('light');
+    });
+
+    it('warns when a stubbed localStorage throws on setItem', async () => {
+      const fakeStorage = {
+        getItem: vi.fn(() => null),
+        setItem: vi.fn(() => {
+          throw new Error('boom');
+        }),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
+      };
+      vi.stubGlobal('localStorage', fakeStorage);
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+        return;
+      });
+
+      const store = setupStore(); // liest getItem() -> null (default dark)
+      await store.toggle(); // persist() -> setItem() -> throw -> catch
+
+      expect(warnSpy).toHaveBeenCalledOnce();
     });
   });
 

@@ -24,5 +24,20 @@ export default defineConfig(() => ({
       reportsDirectory: './coverage/kaeuzchen-workspace',
       provider: 'v8' as const,
     },
+    thresholds: {
+      global: {
+        branches: 80,
+        functions: 80,
+        lines: 80,
+        statements: 80,
+      },
+      // Optional: Datei-spezifische Grenzwerte
+      each: {
+        branches: 70,
+        functions: 75,
+        lines: 75,
+        statements: 75,
+      },
+    },
   },
 }));
