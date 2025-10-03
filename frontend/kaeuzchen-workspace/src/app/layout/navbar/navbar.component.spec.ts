@@ -75,7 +75,7 @@ describe('NavbarComponent', () => {
       expect(caption.classList).toContain('nav-caption');
     });
 
-    it('renders the home router link as the FIRST item in the toolbar test with DebugElement', async () => {
+    it('renders the home router link as the FIRST item in the toolbar - test with DebugElement', async () => {
       // Arrange
       const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
       expect(toolbarDe).toBeDefined();
@@ -148,15 +148,77 @@ describe('NavbarComponent', () => {
       expect(path).toBe('/home');
     });
 
-    it('onMenuItemClick navigates to /home/:id', async () => {
+    it('renders the gefaesstypen router link as the SECOND item in the toolbar', async () => {
+      // Arrange
+      const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
+      expect(toolbarDe).toBeDefined();
+
+      // Alle RouterLinks innerhalb der Toolbar in DOM-Reihenfolge
+      const linkDes: DebugElement[] = toolbarDe.queryAll(By.directive(RouterLink));
+      expect(linkDes.length).toBeGreaterThan(0);
+
+      // Wir wollen explizit den ZWEITEN Link validieren (links außen)
+      const firstLinkDe = linkDes[1];
+
+      // 1) Strukturelle Strenge: es MUSS ein <a> bleiben (kein <button> etc.)
+      const native = firstLinkDe.nativeElement as HTMLElement;
+      expect(native.tagName).toBe('A'); // bricht, wenn später ein Button verwendet wird
+
+      // 2) Ziel prüfen – bevorzugt über das gerenderte href-Attribut (roh, nicht absolut)
+      const hrefAttr = (native as HTMLAnchorElement).getAttribute('href');
+      expect(hrefAttr).toBe('/gefaesstypen');
+
+      // 3) Optionaler Gegencheck über die Directive (robust gg. absolute URLs)
+      const rl =
+        firstLinkDe.injector.get(RouterLink, null) ??
+        firstLinkDe.injector.get(RouterLinkWithHref, null);
+      expect(rl).toBeTruthy();
+
+      // Wenn du zusätzlich die „logische“ Zieldefinition prüfen willst (nicht nötig, aber möglich):
+      // const reactiveHref = (rl as any)?.reactiveHref?.(); // Signal-Getter -> aufrufen!
+      // if (typeof reactiveHref === 'string') {
+      //   expect(reactiveHref).toBe('/gefaesstypen');
+      // }
+
+      // 4) Kinder prüfen: Icon + Caption innerhalb GENAU dieses Links
+      const iconDe = firstLinkDe.query(By.css('mat-icon'));
+      expect(iconDe).toBeTruthy();
+      expect(iconDe.nativeElement.textContent.trim()).toBe('liquor');
+
+      const captionDe = firstLinkDe.query(By.css('span.nav-caption'));
+      expect(captionDe).toBeTruthy();
+      expect(captionDe.nativeElement.textContent.trim()).toBe('Gefäßtypen');
+
+      // 5) (A11y) Wenn das Icon dekorativ sein soll
+      expect(iconDe.nativeElement.getAttribute('aria-hidden')).toBe('true');
+    });
+
+    it('navigates to /gefaesstypen when clicking the gefaesstypen link', async () => {
       const router = TestBed.inject(Router);
-      const navigateSpy = vi.spyOn(router, 'navigate');
-      navigateSpy.mockResolvedValue(true);
+      const navSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
 
-      component.onMenuItemClick(42);
+      const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
+      const linkDe = toolbarDe.query(By.css('a[routerLink="/gefaesstypen"]'));
+      (linkDe.nativeElement as HTMLAnchorElement).click();
 
-      expect(navigateSpy).toHaveBeenCalledTimes(1);
-      expect(navigateSpy).toHaveBeenCalledWith(['/home', 42]);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(navSpy).toHaveBeenCalledTimes(1);
+
+      const [arg] = navSpy.mock.calls[0];
+      expect(arg).toBeTruthy();
+
+      const path =
+        typeof arg === 'string'
+          ? arg
+          : arg instanceof UrlTree
+          ? router.serializeUrl(arg)
+          : (() => {
+              throw new Error('Unexpected argument type');
+            })();
+
+      expect(path).toBe('/gefaesstypen');
     });
 
     it('should render a toolbar spacer', () => {

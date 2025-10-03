@@ -8,17 +8,17 @@ echo "🚀 Running comprehensive pre-push checks..."
 
 # FRONTEND: Build + Tests mit Vitest Coverage
 if [ -d "$FRONTEND_DIR" ]; then
-  echo "🔬 Frontend: build + tests with coverage"
+  echo "🔬 Frontend: running build..."
   (cd "$FRONTEND_DIR" && npm run build)
   
   echo "📊 Running frontend tests with Vitest coverage..."
-  (cd "$FRONTEND_DIR" && npm run test:ci)  # Tests mit Coverage und Abbruch bei Fehler
+  (cd "$FRONTEND_DIR" && npm run test:ci)
 fi
 
 # BACKEND: verify (Tests + Quality Gates)
 if [ -d "$BACKEND_DIR" ]; then
   echo "☕ Backend: mvn verify (tests + quality gates)"
-  (cd "$BACKEND_DIR" && mvn -q verify)     # Alles in einem!
+  (cd "$BACKEND_DIR" && mvn -q verify)
 fi
 
 echo "✅ All pre-push checks passed!"

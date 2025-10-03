@@ -6,6 +6,8 @@ npx nx g @nx/angular:component --name=home --path=src/app/home/home --style=scss
 npx nx g @nx/angular:component --name=sidenav --path=src/app/layout/sidenav/sidenav --style=scss --dry-run
 
 npx nx g @nx/angular:component --name=navbar --path=src/app/layout/navbar/navbar --style=scss --dry-run
+
+npx nx g @nx/angular:component --name=gaefaesstypen-list --path=src/app/gefaesstypen/features/gaefaesstypen-list/gaefaesstypen-list --style=scss --dry-run
 ```
 
 ```

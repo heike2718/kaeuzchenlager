@@ -5,7 +5,11 @@
     "target": "es2022",
     "module": "preserve",
     "lib": ["es2020", "dom"],
-    "paths": {},
+    "paths": {
+      "@gefaesstypen/features/gefaesstypen-list": [
+        "./src/app/gefaesstypen/features/gaefaesstypen-list/index.ts"
+      ]
+    },
     "isolatedModules": true
   },
   "angularCompilerOptions": {
