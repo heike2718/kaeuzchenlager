@@ -178,7 +178,7 @@ describe('gefaesstypenFeature', () => {
           gefaesstypen: [...previousState.gefaesstypen, neuerGefaesstyp],
           gefaesstypenLoaded: false,
         },
-        gefaesstypenActions.gefaesstypAdded({ gefaesstyp: addedGefaesstyp, navigateTo })
+        gefaesstypenActions.gefaesstypAdded({ gefaesstyp: addedGefaesstyp })
       );
 
       expect(state.selectedUuid).toBe('8574');
@@ -212,7 +212,7 @@ describe('gefaesstypenFeature', () => {
           ...previousState,
           gefaesstypenLoaded: false,
         },
-        gefaesstypenActions.gefaesstypChanged({ gefaesstyp: changedGefaesstyp, navigateTo })
+        gefaesstypenActions.gefaesstypChanged({ gefaesstyp: changedGefaesstyp })
       );
 
       expect(state.selectedUuid).toBe('9876');

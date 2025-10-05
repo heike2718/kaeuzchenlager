@@ -1,5 +1,6 @@
 import {
   Gefaesstyp,
+  GefaesstypConflict,
   GefaesstypError,
   sortGefaesstypenByName,
   TEMP_UUID_PREFIX,
@@ -12,6 +13,7 @@ export interface GefaesstypenState {
   readonly selectedUuid: string | null;
   readonly gefaesstypenLoaded: boolean;
   readonly error: GefaesstypError | null;
+  readonly conflict: GefaesstypConflict | null;
 }
 
 // exported for tests
@@ -20,6 +22,7 @@ export const initialState: GefaesstypenState = {
   selectedUuid: null,
   gefaesstypenLoaded: false,
   error: null,
+  conflict: null,
 };
 
 export const gefaesstypenFeature = createFeature({

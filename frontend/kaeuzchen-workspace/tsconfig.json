@@ -6,9 +6,12 @@
     "module": "preserve",
     "lib": ["es2020", "dom"],
     "paths": {
+      "@core/model": ["./src/app/core/model/index.ts"],
+      "@core/services": ["./src/app/core/services/index.ts"],
       "@gefaesstypen/model": ["./src/app/gefaesstypen/model/index.ts"],
+      "@gefaesstypen/data": ["./src/app/gefaesstypen/data/index.ts"],
       "@gefaesstypen/features/gefaesstypen-list": [
-        "./src/app/gefaesstypen/features/gaefaesstypen-list/index.ts"
+        "./src/app/gefaesstypen/features/gefaesstypen-list/index.ts"
       ]
     },
     "isolatedModules": true

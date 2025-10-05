@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GaefaesstypenList } from './gaefaesstypen-list';
+import { GefaesstypenList } from './gefaesstypen-list';
 
-describe('GaefaesstypenList', () => {
-  let component: GaefaesstypenList;
-  let fixture: ComponentFixture<GaefaesstypenList>;
+describe('GefaesstypenList', () => {
+  let component: GefaesstypenList;
+  let fixture: ComponentFixture<GefaesstypenList>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GaefaesstypenList],
+      imports: [GefaesstypenList],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(GaefaesstypenList);
+    fixture = TestBed.createComponent(GefaesstypenList);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

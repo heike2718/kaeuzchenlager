@@ -1,6 +1,6 @@
-export const TEMP_UUID_PREFIX = 'temp-';
+import { ErrorType } from '@core/model';
 
-export type ErrorType = 'VALIDATION' | 'CONCURRENT_UPDATE' | 'NOT_FOUND' | 'DUPLICATE';
+export const TEMP_UUID_PREFIX = 'temp-';
 
 export interface GefaesstypDaten {
   readonly name: string;
@@ -21,6 +21,11 @@ export interface GefaesstypError {
   readonly type: ErrorType;
   readonly uuid: string | null; // Nur bei Updates/Deletes
   readonly serverVersion: GefaesstypDaten | null; // Nur bei CONCURRENT_UPDATE
+}
+
+export interface GefaesstypConflict {
+  readonly serverVersion: Gefaesstyp;
+  readonly userInput: GefaesstypDaten;
 }
 
 export function createInitialGefaesstyp(): Gefaesstyp {
