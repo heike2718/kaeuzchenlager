@@ -38,7 +38,7 @@ public class ConcurrentModificationExceptionMapperTest {
         final ErrorResponseDto errorResponseDto = (ErrorResponseDto) response.getEntity();
 
         assertAll(
-            () -> assertEquals(412, status),
+            () -> assertEquals(409, status),
             () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
             () -> assertEquals("wurde zwischenzeitlich geändert", errorResponseDto.getMessage()));
       } catch (ClassCastException e) {

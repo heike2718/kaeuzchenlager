@@ -24,13 +24,14 @@ public class GefaesstypMapper {
             .name(entity.getName())
             .volumen(entity.getVolumen())
             .backgroundColor(entity.getBackgroundColor())
+            .version(entity.getVersion())
             .build();
 
     return GefaesstypDto.builder().uuid(entity.getUuid()).daten(daten).build();
   }
 
   /**
-   * Übernimmt die Daten in die Entity.
+   * Übernimmt die Daten in die Entity bis auf die Version.
    *
    * @param target Gefaesstyp
    * @param source GefaesstypDto

@@ -183,7 +183,7 @@ describe('NavbarComponent', () => {
       // 4) Kinder prüfen: Icon + Caption innerhalb GENAU dieses Links
       const iconDe = firstLinkDe.query(By.css('mat-icon'));
       expect(iconDe).toBeTruthy();
-      expect(iconDe.nativeElement.textContent.trim()).toBe('liquor');
+      expect(iconDe.nativeElement.textContent.trim()).toBe('inventory_2');
 
       const captionDe = firstLinkDe.query(By.css('span.nav-caption'));
       expect(captionDe).toBeTruthy();

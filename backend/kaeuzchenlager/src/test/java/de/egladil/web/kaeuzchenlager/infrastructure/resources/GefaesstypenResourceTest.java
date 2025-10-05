@@ -16,7 +16,6 @@ import de.egladil.web.kaeuzchenlager.domain.exception.ErrorLevel;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorResponseDto;
 import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypDaten;
 import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypDto;
-import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypLoeschenResult;
 import de.egladil.web.kaeuzchenlager.infrastructure.persistence.dao.GefaesstypDao;
 import de.egladil.web.kaeuzchenlager.infrastructure.persistence.entities.Gefaesstyp;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
@@ -95,6 +94,7 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp")
             .backgroundColor("#ccffff")
             .anzahl(4)
+            .version(null)
             .build();
 
     // act
@@ -159,6 +159,7 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp 7")
             .backgroundColor("#ffccff")
             .anzahl(14)
+            .version(0)
             .build();
 
     GefaesstypDto gefaesstypUpdated =
@@ -195,44 +196,25 @@ public class GefaesstypenResourceTest {
     final String uuid = "ac29258e-a6be-49e1-8ae4-953cbb1fe1c0";
 
     // act 3
-    GefaesstypLoeschenResult gefaesstypLoeschenResult =
-        given()
-            .header("API-Version", 1)
-            .delete(uuid)
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(GefaesstypLoeschenResult.class);
+    given().header("API-Version", 1).delete(uuid).then().statusCode(204);
 
     Optional<Gefaesstyp> optEntityDeleted = this.gefaesstypDao.findById(uuid);
 
-    assertAll(
-        () -> assertEquals(uuid, gefaesstypLoeschenResult.getUuid()),
-        () -> assertTrue(optEntityDeleted.isEmpty()));
+    assertTrue(optEntityDeleted.isEmpty());
   }
 
   @Test
   @Order(4)
-  void should_loeschen_return_200_when_unknown_uuid() {
+  void should_loeschen_return_204_when_unknown_uuid() {
 
     // arrange
     final String uuid = "5c29258e-a6be-49e1-8ae4-953cbb1fe1c0";
 
-    // act 3
-    GefaesstypLoeschenResult gefaesstypLoeschenResult =
-        given()
-            .header("API-Version", 1)
-            .delete(uuid)
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(GefaesstypLoeschenResult.class);
-
     Optional<Gefaesstyp> optEntityDeleted = this.gefaesstypDao.findById(uuid);
+    assertTrue(optEntityDeleted.isEmpty());
 
-    assertAll(
-        () -> assertEquals(uuid, gefaesstypLoeschenResult.getUuid()),
-        () -> assertTrue(optEntityDeleted.isEmpty()));
+    // act
+    given().header("API-Version", 1).delete(uuid).then().statusCode(204);
   }
 
   @Test
@@ -246,6 +228,7 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp 3")
             .backgroundColor("#ccffff")
             .anzahl(4)
+            .version(null)
             .build();
 
     // act
@@ -256,7 +239,7 @@ public class GefaesstypenResourceTest {
             .body(daten)
             .post()
             .then()
-            .statusCode(409)
+            .statusCode(412)
             .extract()
             .as(ErrorResponseDto.class);
 
@@ -280,6 +263,7 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp 1")
             .backgroundColor("#ccffff")
             .anzahl(4)
+            .version(null)
             .build();
 
     // act
@@ -290,7 +274,7 @@ public class GefaesstypenResourceTest {
             .body(daten)
             .post()
             .then()
-            .statusCode(409)
+            .statusCode(412)
             .extract()
             .as(ErrorResponseDto.class);
 
@@ -314,6 +298,7 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp 3")
             .backgroundColor("#ccffff")
             .anzahl(4)
+            .version(0)
             .build();
 
     // act
@@ -324,7 +309,7 @@ public class GefaesstypenResourceTest {
             .body(daten)
             .put(AENDERN_UUID)
             .then()
-            .statusCode(409)
+            .statusCode(412)
             .extract()
             .as(ErrorResponseDto.class);
 
@@ -348,6 +333,7 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp 1")
             .backgroundColor("#ccffff")
             .anzahl(4)
+            .version(0)
             .build();
 
     // act
@@ -358,7 +344,7 @@ public class GefaesstypenResourceTest {
             .body(daten)
             .put(AENDERN_UUID)
             .then()
-            .statusCode(409)
+            .statusCode(412)
             .extract()
             .as(ErrorResponseDto.class);
 
@@ -384,6 +370,7 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp 6")
             .backgroundColor("#ccffff")
             .anzahl(2)
+            .version(0)
             .build();
 
     // act
@@ -419,6 +406,7 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp 2")
             .backgroundColor("#ffffcc")
             .anzahl(19)
+            .version(0)
             .build();
 
     // act
@@ -437,5 +425,42 @@ public class GefaesstypenResourceTest {
     assertAll(
         () -> assertEquals(19, dto.getDaten().getAnzahl()),
         () -> assertEquals("#ffffcc", dto.getDaten().getBackgroundColor()));
+  }
+
+  @Test
+  @Order(11)
+  void should_gefaesstypAendern_return_409_when_concurrent_update() {
+
+    // arrange
+    String uuid = "5aad23ff-3983-459e-9431-b23969394051";
+
+    GefaesstypDaten daten =
+        GefaesstypDaten.builder()
+            .volumen(2)
+            .name("Gefäßtyp 1")
+            .backgroundColor("#ccccff")
+            .anzahl(5)
+            .version(0)
+            .build();
+
+    // act
+    final ErrorResponseDto errorResponseDto =
+        given()
+            .header("API-Version", 1)
+            .contentType(ContentType.JSON)
+            .body(daten)
+            .put(uuid)
+            .then()
+            .statusCode(409)
+            .extract()
+            .as(ErrorResponseDto.class);
+
+    // assert
+    assertAll(
+        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+        () ->
+            assertEquals(
+                "Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.",
+                errorResponseDto.getMessage()));
   }
 }

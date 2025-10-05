@@ -67,8 +67,8 @@ public class GefaesstypService {
     try {
       final Gefaesstyp gefaesstyp = Gefaesstyp.builder().build();
       this.gefaesstypMapper.copyDaten(gefaesstyp, daten);
-      // TODO
       gefaesstyp.setCreatedAt(LocalDateTime.now());
+      // TODO
       gefaesstyp.setCreatedBy(FAKE_USERE_UUID);
       //            gefaesstyp.setCreatedBy(securityContext.getUserPrincipal().getName());
       return this.doPersist(gefaesstyp);
@@ -130,12 +130,18 @@ public class GefaesstypService {
       }
 
       final Gefaesstyp entity = optEntity.get();
+
+      if (daten.getVersion() != null && daten.getVersion() < entity.getVersion()) {
+        throw new ConcurrentModificationException(
+            "Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.");
+      }
+
       this.gefaesstypMapper.copyDaten(entity, daten);
       // TODO hier securityContext nutzen!!!
       entity.setUpdatedBy(FAKE_USERE_UUID);
       entity.setUpdatedAt(LocalDateTime.now());
       return this.doPersist(entity);
-    } catch (NotFoundException e) {
+    } catch (NotFoundException | ConcurrentModificationException e) {
       throw e;
     } catch (Exception e) {
       final ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
@@ -176,8 +182,7 @@ public class GefaesstypService {
    * @return GefaesstypLoeschenResult - auch im Fall, dass es die Entity nicht (mehr) gibt.
    * @throws KaeuzchenlagerRuntimeException - bei unerwarteten Exceptions
    */
-  public GefaesstypLoeschenResult gefaesstypLoeschen(final String uuid)
-      throws KaeuzchenlagerRuntimeException {
+  public void gefaesstypLoeschen(final String uuid) throws KaeuzchenlagerRuntimeException {
 
     try {
 
@@ -185,12 +190,10 @@ public class GefaesstypService {
 
       if (optEntity.isEmpty()) {
         LOGGER.warn("gefaesstyp mit uuid = {} existiert nicht oder nicht mehr", uuid);
-        return GefaesstypLoeschenResult.builder().uuid(uuid).build();
+        return;
       }
 
       this.gefaesstypDao.remove(optEntity.get());
-
-      return GefaesstypLoeschenResult.builder().uuid(uuid).build();
     } catch (NotFoundException e) {
       throw e;
     } catch (Exception e) {

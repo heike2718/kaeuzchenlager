@@ -6,6 +6,7 @@
     "module": "preserve",
     "lib": ["es2020", "dom"],
     "paths": {
+      "@gefaesstypen/model": ["./src/app/gefaesstypen/model/index.ts"],
       "@gefaesstypen/features/gefaesstypen-list": [
         "./src/app/gefaesstypen/features/gaefaesstypen-list/index.ts"
       ]

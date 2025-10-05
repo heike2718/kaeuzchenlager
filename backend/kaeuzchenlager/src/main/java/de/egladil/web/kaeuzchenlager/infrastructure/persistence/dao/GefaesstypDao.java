@@ -12,10 +12,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** The type Gefaesstyp dao. */
 @RequestScoped
 public class GefaesstypDao {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(GefaesstypDao.class);
 
   /** The Entity manager. */
   @Inject /*default*/ EntityManager entityManager;
@@ -98,7 +102,9 @@ public class GefaesstypDao {
     Gefaesstyp result = entity;
     if (!entityManager.contains(result)) {
       result = entityManager.merge(entity);
+      LOGGER.info("====> entity merged into the persistence context");
     }
     entityManager.remove(result);
+    LOGGER.info("====> entity with uuid {} deleted", entity.getUuid());
   }
 }

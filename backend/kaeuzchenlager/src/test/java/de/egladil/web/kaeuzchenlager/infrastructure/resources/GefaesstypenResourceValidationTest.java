@@ -46,7 +46,7 @@ public class GefaesstypenResourceValidationTest {
 
   @BeforeEach
   void beforeEach() {
-    System.out.println("=== GefaesstypenResourceTest BEFORE EACH ===");
+    System.out.println("=== GefaesstypenResourceValidationTest BEFORE EACH ===");
     System.out.println("===> devServicesEnabled=" + this.devsourceEnabled);
     System.out.println("===> jdbcUrl=" + this.jdbcUrl);
     System.out.println("===> username=" + this.datasoureUsername);
@@ -157,6 +157,7 @@ public class GefaesstypenResourceValidationTest {
             .volumen(0)
             .anzahl(-3)
             .backgroundColor("hallo")
+            .version(0)
             .build();
 
     // act
@@ -189,6 +190,7 @@ public class GefaesstypenResourceValidationTest {
             .anzahl(1)
             .volumen(100)
             .backgroundColor("#f99999")
+            .version(0)
             .build();
 
     // act
@@ -225,6 +227,7 @@ public class GefaesstypenResourceValidationTest {
             .anzahl(1)
             .volumen(200)
             .backgroundColor("#f99999")
+            .version(0)
             .build();
 
     // act
@@ -247,6 +250,7 @@ public class GefaesstypenResourceValidationTest {
             .anzahl(1)
             .volumen(100)
             .backgroundColor("#ffffff")
+            .version(0)
             .build();
 
     // act

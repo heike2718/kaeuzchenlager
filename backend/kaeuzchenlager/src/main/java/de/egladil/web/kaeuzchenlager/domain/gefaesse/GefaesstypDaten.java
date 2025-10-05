@@ -62,4 +62,6 @@ public class GefaesstypDaten {
   @NotNull(message = "backgroundColor ist erforderlich.")
   @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "backgroundColor muss ein hex-Farbcode sein.")
   String backgroundColor;
+
+  @JsonProperty Integer version;
 }

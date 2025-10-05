@@ -158,9 +158,9 @@ public class GefaesstypenResource {
               mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
               schema = @Schema(implementation = ErrorResponseDto.class)))
   @APIResponse(
-      name = OpenApiConstants.CONFLICT_ERROR,
-      responseCode = OpenApiConstants.CONFLICT_STATUS,
-      description = OpenApiConstants.CONFLICT_DESC,
+      name = OpenApiConstants.PRECONDITION_FAILED_ERROR,
+      responseCode = OpenApiConstants.PRECONDITION_FAILED_STATUS,
+      description = OpenApiConstants.PRECONDITION_FAILED_DESC,
       content =
           @Content(
               mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
@@ -308,11 +308,7 @@ public class GefaesstypenResource {
   })
   @APIResponse(
       name = OpenApiConstants.OK_OUTCOME,
-      responseCode = OpenApiConstants.OK_STATUS,
-      content =
-          @Content(
-              mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
-              schema = @Schema(type = SchemaType.ARRAY, implementation = GefaesstypDto.class)))
+      responseCode = OpenApiConstants.NO_CONTENT_STATUS)
   @APIResponse(
       name = OpenApiConstants.BAD_REQUEST_ERROR,
       responseCode = OpenApiConstants.BAD_REQUEST_STATUS,
@@ -364,6 +360,8 @@ public class GefaesstypenResource {
           MessageFormat.format(OpenApiConstants.API_VERSION_MF, STRING_1));
     }
 
-    return Response.status(Status.OK).entity(gefaesstypService.gefaesstypLoeschen(uuid)).build();
+    gefaesstypService.gefaesstypLoeschen(uuid);
+
+    return Response.status(Status.NO_CONTENT).build();
   }
 }

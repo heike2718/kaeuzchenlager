@@ -10,6 +10,7 @@ import de.egladil.web.kaeuzchenlager.domain.exception.ErrorLevel;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorResponseDto;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
@@ -26,6 +27,6 @@ public class EntityExistsExceptionMapper implements ExceptionMapper<EntityExists
             .errorLevel(ErrorLevel.WARN)
             .message(exception.getMessage())
             .build();
-    return Response.status(Response.Status.CONFLICT).entity(payload).build();
+    return Response.status(Status.PRECONDITION_FAILED).entity(payload).build();
   }
 }
