@@ -1,5 +1,27 @@
 # Wo geht es weiter?
 
+## nach dem 05.10.2025
+
+- neue action conflictDetected im reducer verarbeiten (+tests)
+- effects: changeGefaesstyp$ catch-Block:
+
+```
+changeGefaesstyp
+ └─(409)→ loadGefaesstypForConflict({ uuid, userInput })
+         └→ gefaesstypForConflictLoaded({ gefaesstyp: server, userInput })
+             └→ conflictDetected({ server, userInput })   // optional reine UI/State-Action
+                 (UI zeigt Dialog mit 3 Optionen)
+
+```
+
+nebst tests
+
+- selectors definieren (einer muss aus selectedUuid den selectedGefaesstyp ermitteln, z.B.)
+- tests für selectors
+- Tests für andere actions mit backend-calls
+- list-component: Darstellung mit cards und Buttons
+- edit-component
+
 ## nach dem 21.09.2025
 
 - workspace neu generiert
