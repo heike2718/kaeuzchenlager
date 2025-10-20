@@ -1,7 +1,12 @@
 import { Action } from '@ngrx/store';
 import { gefaesstypenFeature, GefaesstypenState, initialState } from './gefaesstypen.reducer';
 import { gefaesstypenActions } from './gefaesstypen.actions';
-import { createInitialGefaesstyp, Gefaesstyp, GefaesstypError } from '@gefaesstypen/model';
+import {
+  createInitialGefaesstyp,
+  Gefaesstyp,
+  GefaesstypConflict,
+  GefaesstypError,
+} from '@gefaesstypen/model';
 
 describe('gefaesstypenFeature', () => {
   const unknownAction = { type: 'UNKNOWN_ACTION' } as Action;
@@ -57,6 +62,7 @@ describe('gefaesstypenFeature', () => {
     selectedUuid: '7564',
     gefaesstypenLoaded: true,
     error: someError,
+    conflict: null,
   };
 
   describe('ngrx sanity checks', () => {
@@ -73,11 +79,28 @@ describe('gefaesstypenFeature', () => {
       expect(state).toEqual(previousState);
     });
     it('returns the same reference, when unknown action', () => {
+      const serverVersion: Gefaesstyp = {
+        uuid: '1234',
+        daten: {
+          anzahl: 4,
+          backgroundColor: '#b9ee3eff',
+          name: 'Gefäßtyp 1',
+          volumen: 5,
+          version: 3,
+        },
+      };
+
+      const conflict: GefaesstypConflict = {
+        serverVersion: serverVersion,
+        userInput: firstGefaesstyp.daten,
+      };
+
       const previousState: GefaesstypenState = {
         gefaesstypen: mockedGefaesstypen,
         selectedUuid: '7564',
         gefaesstypenLoaded: true,
         error: null,
+        conflict: conflict,
       };
 
       const state = gefaesstypenFeature.reducer(previousState, unknownAction);
@@ -318,6 +341,36 @@ describe('gefaesstypenFeature', () => {
       );
       expect(state).toEqual(initialState);
       expect(state).not.toBe(previousState);
+    });
+  });
+
+  describe('gefaesstypForConflictDialogLoaded', () => {
+    it('should add the conflict', () => {
+      const serverVersion = { ...firstGefaesstyp, version: 5 };
+      const userInput = firstGefaesstyp.daten;
+
+      const expectedConflict: GefaesstypConflict = {
+        serverVersion: serverVersion,
+        userInput: userInput,
+      };
+
+      // gefaesstypenLoaded ist zwar unsinnig, aber es soll sichergestellt sein, dass gefaesstypenLoaded nicht geändert wird
+      const state = gefaesstypenFeature.reducer(
+        {
+          ...previousState,
+          gefaesstypenLoaded: false,
+        },
+        gefaesstypenActions.gefaesstypForConflictDialogLoaded({
+          gefaesstypFromServer: serverVersion,
+          userInput: userInput,
+        })
+      );
+
+      expect(state.gefaesstypen).toEqual(mockedGefaesstypen);
+      expect(state.gefaesstypenLoaded).toBe(false);
+      expect(state.selectedUuid).toEqual('7564');
+      expect(state.error).toBeNull();
+      expect(state.conflict).toEqual(expectedConflict);
     });
   });
 });

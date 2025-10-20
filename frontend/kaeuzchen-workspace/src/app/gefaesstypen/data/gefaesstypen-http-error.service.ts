@@ -10,7 +10,7 @@ export class GefaesstypenHttpErrorService {
 
   public toGefaesstypError(
     error: NonNullable<unknown>,
-    userInput: GefaesstypDaten
+    userInput: GefaesstypDaten | undefined
   ): GefaesstypError {
     const kaeuzchenError = this.#errorService.toKaeuzchenError(error);
 

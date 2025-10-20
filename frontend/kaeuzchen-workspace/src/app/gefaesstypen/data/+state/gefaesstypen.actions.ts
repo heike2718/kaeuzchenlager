@@ -6,12 +6,15 @@ export const gefaesstypenActions = createActionGroup({
   events: {
     loadGefaesstypen: emptyProps(),
     gefaesstypenLoaded: props<{ gefaesstypen: Gefaesstyp[] }>(),
-    loadGefaesstypForConflict: props<{ uuid: string; userInput: GefaesstypDaten }>(),
-    gefaesstypForConflictLoaded: props<{
+    loadGefaesstypForConflictDialog: props<{ uuid: string; userInput: GefaesstypDaten }>(),
+    gefaesstypForConflictDialogLoaded: props<{
       gefaesstypFromServer: Gefaesstyp;
       userInput: GefaesstypDaten;
     }>(),
     conflictDetected: props<{ gefaesstypFromServer: Gefaesstyp; userInput: GefaesstypDaten }>(),
+    // resolveConflictUseServer: emptyProps(),
+    // resolveConflictOverrideServer: emptyProps(),
+    // resolveConflictAddNewGefaesstyp: emptyProps(),
     selectGefaesstyp: props<{ uuid: string; navigateTo: string }>(),
     gefaesstypSelected: props<{ gefaesstyp: Gefaesstyp; navigateTo: string }>(),
     neuerGefaesstypInitialized: props<{ neuerGefaesstyp: Gefaesstyp; navigateTo: string }>(),
@@ -22,7 +25,7 @@ export const gefaesstypenActions = createActionGroup({
     gefaesstypChanged: props<{ gefaesstyp: Gefaesstyp }>(),
     removeGefaesstyp: props<{ uuid: string; navigateTo: string }>(),
     gefaesstypRemoved: props<{ uuid: string; navigateTo: string }>(),
-    saveError: props<{ error: GefaesstypError }>(),
+    gefaesstypenServerError: props<{ error: GefaesstypError }>(),
     resetGefaesstypenState: emptyProps(),
   },
 });

@@ -62,4 +62,19 @@ export class GefaesstypenHttpService {
 
     return of();
   }
+
+  public loadGefaesstypWithId(uuid: string): Observable<Gefaesstyp> {
+    const serverDaten: GefaesstypDaten = {
+      name: 'Miniglas',
+      volumen: 2,
+      anzahl: 1,
+      backgroundColor: '#f30c0cff',
+      version: 4,
+    };
+
+    return of({
+      uuid: uuid,
+      daten: serverDaten,
+    });
+  }
 }

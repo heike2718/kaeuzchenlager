@@ -92,6 +92,14 @@ export const gefaesstypenFeature = createFeature({
         error: null,
       };
     }),
+    on(gefaesstypenActions.gefaesstypForConflictDialogLoaded, (state, action) => {
+      const conflict: GefaesstypConflict = {
+        serverVersion: action.gefaesstypFromServer,
+        userInput: action.userInput,
+      };
+
+      return { ...state, error: null, conflict: conflict };
+    }),
     on(gefaesstypenActions.gefaesstypRemoved, (state, action) => {
       const removedGefaesstypen = state.gefaesstypen.filter(gt => gt.uuid === action.uuid);
 
