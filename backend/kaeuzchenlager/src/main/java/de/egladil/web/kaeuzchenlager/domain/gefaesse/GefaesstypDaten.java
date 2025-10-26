@@ -20,10 +20,9 @@ import lombok.Value;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /** The type Gefaesstyp daten. */
-@Data
-@AllArgsConstructor
 @Value
 @Builder
+@lombok.extern.jackson.Jacksonized
 @Schema(name = "GefaesstypDaten", description = "Daten des Gefäßtyps")
 public class GefaesstypDaten {
 

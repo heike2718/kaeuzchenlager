@@ -5,21 +5,20 @@
 
 package de.egladil.web.kaeuzchenlager.domain.gefaesse;
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import de.egladil.web.kaeuzchenlager.domain.validation.ValidationPatternsAndMessages;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Value;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /** The type Gefaesstyp dto. */
-@Data
-@AllArgsConstructor
 @Value
 @Builder
+@lombok.extern.jackson.Jacksonized
 @Schema(name = "GefaesstypDto", description = "Daten des Gefäßtyps")
 public class GefaesstypDto {
 

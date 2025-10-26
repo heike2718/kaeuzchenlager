@@ -5,20 +5,19 @@
 
 package de.egladil.web.kaeuzchenlager.domain.exception;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import de.egladil.web.kaeuzchenlager.domain.validation.ValidationPatternsAndMessages;
-import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Value;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.egladil.web.kaeuzchenlager.domain.validation.ValidationPatternsAndMessages;
+import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
+import lombok.Value;
+
 /** The type Error response dto. */
-@Data
 @Value
-@AllArgsConstructor
 @Builder
+@lombok.extern.jackson.Jacksonized
 @Schema(name = "ErrorResponseDto", description = "ein Error-Objekt")
 public class ErrorResponseDto {
 
