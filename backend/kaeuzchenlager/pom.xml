@@ -8,25 +8,24 @@
   <version>1.0.0-SNAPSHOT</version>
 
   <properties>
-    <compiler-plugin.version>3.14.0</compiler-plugin.version>
-    <maven.compiler.release>21</maven.compiler.release>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!-- Start mixin-properties -->
+    <pmd.failOnViolation>true</pmd.failOnViolation>
+    <spotbugs.failOnError>true</spotbugs.failOnError>
+    <jacoco.exclusion-1>**/*Dto*.class</jacoco.exclusion-1>
+    <jacoco.exclusion-2>**/*Application*.class</jacoco.exclusion-2>
+    <jacoco.exclusion-3>**/ResponseStatus.class</jacoco.exclusion-3>
+    <jacoco.exclusion-4>**/healthchecks/**</jacoco.exclusion-4>
+    <dependency-check.version>12.1.6</dependency-check.version>
+
+    <mixin-maven-plugin.version>1.0.6</mixin-maven-plugin.version>
+    <egladil-maven-mixins.version>0.0.1-SNAPSHOT</egladil-maven-mixins.version>
+    <!-- Ende mixin-propetries -->
+
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>3.27.0</quarkus.platform.version>
     <lombock.version>1.18.38</lombock.version>
-    <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
-    <skipITs>true</skipITs>
-    <surefire-plugin.version>3.5.3</surefire-plugin.version>
-    <dependency-check.version>12.1.6</dependency-check.version>
-    <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-    <spotless-maven-plugin.version>3.0.0</spotless-maven-plugin.version>
-    <google-java-format.version>1.28.0</google-java-format.version>
-    <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-    <checkstyle.tool.version>10.12.5</checkstyle.tool.version>
-    <maven-pmd-plugin.version>3.27.0</maven-pmd-plugin.version>
-    <spotbugs-maven-plugin.version>4.9.6.0</spotbugs-maven-plugin.version>
+
   </properties>
 
   <dependencyManagement>
@@ -156,266 +155,40 @@
         </executions>
       </plugin>
       <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler-plugin.version}</version>
+        <groupId>com.playtika.maven.plugins</groupId>
+        <artifactId>mixin-maven-plugin</artifactId>
+        <version>${mixin-maven-plugin.version}</version>
+        <extensions>true</extensions>
         <configuration>
-          <parameters>true</parameters>
+          <mixins>
+            <mixin>
+              <groupId>de.egladil</groupId>
+              <artifactId>java-core-mixin</artifactId>
+              <version>${egladil-maven-mixins.version}</version>
+            </mixin>
+            <mixin>
+              <groupId>de.egladil</groupId>
+              <artifactId>java-linting-mixin</artifactId>
+              <version>${egladil-maven-mixins.version}</version>
+            </mixin>
+            <mixin>
+              <groupId>de.egladil</groupId>
+              <artifactId>java-code-quality-mixin</artifactId>
+              <version>${egladil-maven-mixins.version}</version>
+            </mixin>
+            <mixin>
+              <groupId>de.egladil</groupId>
+              <artifactId>java-quarkustest-coverage-mixin</artifactId>
+              <version>${egladil-maven-mixins.version}</version>
+            </mixin>
+            <mixin>
+              <groupId>de.egladil</groupId>
+              <artifactId>java-security-mixin</artifactId>
+              <version>${egladil-maven-mixins.version}</version>
+            </mixin>
+          </mixins>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>${maven-resources-plugin.version}</version>
-        <configuration>
-          <resources>
-            <resource>
-              <excludes>
-                <exclude>*.sql</exclude>
-              </excludes>
-              <filtering>true</filtering>
-            </resource>
-          </resources>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.diffplug.spotless</groupId>
-        <artifactId>spotless-maven-plugin</artifactId>
-        <version>${spotless-maven-plugin.version}</version>
-        <configuration>
-          <java>
-            <googleJavaFormat>
-              <version>${google-java-format.version}</version>
-            </googleJavaFormat>
-          </java>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire-plugin.version}</version>
-        <configuration>
-          <parallel>none</parallel>
-          <forkCount>1</forkCount>
-          <reuseForks>true</reuseForks>
-          <systemPropertyVariables>
-            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-            <maven.home>${maven.home}</maven.home>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-
-      <!--
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>${surefire-plugin.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <parallel>none</parallel>
-          <forkCount>1</forkCount>
-          <reuseForks>true</reuseForks>
-          <systemPropertyVariables>
-            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-            <maven.home>${maven.home}</maven.home>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-      -->
-
-      <plugin>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${jacoco-maven-plugin.version}</version>
-        <configuration>
-          <excludes>
-            <exclude>**/session/*</exclude>
-          </excludes>
-        </configuration>
-        <executions>
-          <execution>
-            <id>prepare-agent</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-            <configuration>
-              <destFile>
-                ${project.build.directory}/coverage-reports/jacoco-ut.exec
-              </destFile>
-              <propertyName>surefireArgLine</propertyName>
-            </configuration>
-          </execution>
-          <execution>
-            <id>report</id>
-            <phase>test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-            <configuration>
-              <dataFile>
-                ${project.build.directory}/coverage-reports/jacoco-ut.exec
-              </dataFile>
-              <outputDirectory>
-                ${project.reporting.outputDirectory}/jacoco-ut
-              </outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>jacoco-check</id>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <phase>post-integration-test</phase>
-            <configuration>
-              <dataFile>
-                ${project.build.directory}/jacoco-quarkus.exec
-              </dataFile>
-              <rules>
-                <rule>
-                  <element>BUNDLE</element>
-                  <limits>
-                    <limit>
-                      <counter>LINE</counter>
-                      <value>COVEREDRATIO</value>
-                      <minimum>0.3</minimum>
-                    </limit>
-                    <limit>
-                      <counter>BRANCH</counter>
-                      <value>COVEREDRATIO</value>
-                      <minimum>0.2</minimum>
-                    </limit>
-                  </limits>
-                </rule>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.owasp</groupId>
-        <artifactId>dependency-check-maven</artifactId>
-        <version>${dependency-check.version}</version>
-        <configuration>
-          <nvdApiKey>${NVD_API_KEY}</nvdApiKey>
-          <nvdApiDelay>8000</nvdApiDelay>
-          <suppressionFiles>
-            <suppressionFile>./suppressions.xml</suppressionFile>
-          </suppressionFiles>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${maven-checkstyle-plugin.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>${checkstyle.tool.version}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <!-- Google-Style als Basis -->
-          <!-- https://google.github.io/styleguide/javaguide.html -->
-          <configLocation>google_checks.xml</configLocation>
-          <consoleOutput>true</consoleOutput>
-          <failsOnError>true</failsOnError>
-          <linkXRef>false</linkXRef>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>verify</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>${maven-pmd-plugin.version}</version>
-        <configuration>
-          <linkXRef>false</linkXRef>
-          <failOnViolation>true</failOnViolation>
-          <rulesets>
-            <ruleset>${project.basedir}/config/ruleset-pmd.xml</ruleset>
-          </rulesets>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>verify</phase>
-            <goals>
-              <goal>check</goal>
-              <goal>cpd-check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>com.github.spotbugs</groupId>
-        <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>${spotbugs-maven-plugin.version}</version>
-        <configuration>
-          <includeFilterFile>${project.basedir}/config/spotbugs-include-filter.xml
-          </includeFilterFile>
-          <excludeFilterFile>${project.basedir}/config/spotbugs-exclude-filter.xml
-          </excludeFilterFile>
-          <effort>Default</effort>  <!-- Nicht "Max" -->
-          <threshold>Medium</threshold>  <!-- Nicht "Low" -->
-          <failOnError>true</failOnError>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>verify</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>migrate</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>./scripts/backup-database.sh</executable>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
