@@ -45,6 +45,28 @@ describe('gefaesstypen.model', () => {
       },
     };
 
+    const gefasesstyp2: Gefaesstyp = {
+      uuid: '9876',
+      daten: {
+        anzahl: 3,
+        backgroundColor: '#ccffcc',
+        name: 'Typ 2',
+        volumen: 20,
+        version: 0,
+      },
+    };
+
+    const gefasesstyp10: Gefaesstyp = {
+      uuid: '9876',
+      daten: {
+        anzahl: 3,
+        backgroundColor: '#ccffcc',
+        name: 'Typ 10',
+        volumen: 20,
+        version: 0,
+      },
+    };
+
     it('should sort an empty array', () => {
       // act
       const sorted = sortGefaesstypenByName([]);
@@ -71,6 +93,16 @@ describe('gefaesstypen.model', () => {
       expect(sorted.length).toBe(2);
       expect(sorted[0]).toEqual(secondGefaesstyp);
       expect(sorted[1]).toEqual(firstGefaesstyp);
+    });
+
+    it('should sort namen mit Ziffern', () => {
+      // act
+      const sorted = sortGefaesstypenByName([gefasesstyp10, gefasesstyp2]);
+
+      // assert
+      expect(sorted.length).toBe(2);
+      expect(sorted[0]).toEqual(gefasesstyp2);
+      expect(sorted[1]).toEqual(gefasesstyp10);
     });
   });
 });

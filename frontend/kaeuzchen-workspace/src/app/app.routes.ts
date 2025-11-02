@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { HomeComponent } from './home/home.component';
-import { GefaesstypenList } from '@gefaesstypen/features/gefaesstypen-list';
+import { GefaesstypenListComponent } from '@gefaesstypen/features/gefaesstypen-list';
 
 export const appRoutes: Route[] = [
   {
@@ -9,7 +9,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: 'gefaesstypen',
-    component: GefaesstypenList,
+    component: GefaesstypenListComponent,
   },
   {
     path: '',

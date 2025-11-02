@@ -10,6 +10,7 @@ import { Gefaesstyp, GefaesstypDaten, GefaesstypError } from '@gefaesstypen/mode
 import { GefaesstypenHttpErrorService } from '../gefaesstypen-http-error.service';
 import { provideStore } from '@ngrx/store';
 import { ErrorType } from '@core/model';
+import { firstGefaesstyp } from '@testing';
 
 describe('GefaesstypenEffects', () => {
   let actions$: ReplaySubject<unknown>;
@@ -320,17 +321,6 @@ describe('GefaesstypenEffects', () => {
 
   describe('Test gefaesstypSelected$', () => {
     it('should stop dispatch and navigate on gefaesstypSelected', async () => {
-      const firstGefaesstyp: Gefaesstyp = {
-        uuid: '1234',
-        daten: {
-          anzahl: 4,
-          backgroundColor: '#ff0066',
-          name: 'Erster Gefäßtyp',
-          volumen: 5,
-          version: 2,
-        },
-      };
-
       const navigateTo = '/gefaesstypen/1234';
 
       const sub = effects.gefaesstypSeleced$.subscribe(); // dispatch:false → manuell subscriben

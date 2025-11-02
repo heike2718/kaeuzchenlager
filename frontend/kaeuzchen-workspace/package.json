@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nx serve",
     "build": "nx build",
+    "test": "npx nx test",
     "test:coverage": "vitest --coverage",
     "test:ci": "vitest run --coverage --bail=1"
   },

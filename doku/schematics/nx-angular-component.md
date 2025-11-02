@@ -7,7 +7,9 @@ npx nx g @nx/angular:component --name=sidenav --path=src/app/layout/sidenav/side
 
 npx nx g @nx/angular:component --name=navbar --path=src/app/layout/navbar/navbar --style=scss --dry-run
 
-npx nx g @nx/angular:component --name=gaefaesstypen-list --path=src/app/gefaesstypen/features/gaefaesstypen-list/gaefaesstypen-list --style=scss --dry-run
+npx nx g @nx/angular:component --name=gaefaesstypen-list.component --path=src/app/gefaesstypen/features/gaefaesstypen-list/gaefaesstypen-list --style=scss --dry-run
+
+npx nx g @nx/angular:component --name=gefaesstyp-overview.component --path=src/app/gefaesstypen/features/gaefaesstyp-overview/gefaesstyp-overview.component --style=scss --dry-run
 ```
 
 ```

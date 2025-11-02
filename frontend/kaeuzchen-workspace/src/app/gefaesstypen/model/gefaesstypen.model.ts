@@ -1,5 +1,7 @@
 import { ErrorType } from '@core/model';
 
+export const DEFAULT_GEFAESSTYP_BG_COLOR = '#ffffff';
+
 export const TEMP_UUID_PREFIX = 'temp-';
 
 export interface GefaesstypDaten {
@@ -33,7 +35,7 @@ export function createInitialGefaesstyp(): Gefaesstyp {
     uuid: TEMP_UUID_PREFIX + (globalThis.crypto?.randomUUID?.() ?? 'tmp'),
     daten: {
       anzahl: 0,
-      backgroundColor: '#ffffff',
+      backgroundColor: DEFAULT_GEFAESSTYP_BG_COLOR,
       name: '',
       version: null,
       volumen: 0,
@@ -41,6 +43,12 @@ export function createInitialGefaesstyp(): Gefaesstyp {
   };
 }
 
-export function sortGefaesstypenByName(gefaesstypen: Gefaesstyp[]): Gefaesstyp[] {
-  return [...gefaesstypen].sort((a, b) => a.daten.name.localeCompare(b.daten.name, 'de'));
+const deCollator = new Intl.Collator('de', {
+  sensitivity: 'variant', // Ä !== A, ß !== ss
+  ignorePunctuation: false,
+  numeric: true, // 'Typ 2' < 'Typ 10'
+});
+
+export function sortGefaesstypenByName(list: Gefaesstyp[]): Gefaesstyp[] {
+  return [...list].sort((a, b) => deCollator.compare(a.daten.name, b.daten.name));
 }

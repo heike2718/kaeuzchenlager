@@ -15,6 +15,24 @@ export class GefaesstypenEffects {
   #errorService = inject(GefaesstypenHttpErrorService);
   #router = inject(Router);
 
+  loadGefaesstypen$ = createEffect(() =>
+    this.#actions$.pipe(
+      ofType(gefaesstypenActions.loadGefaesstypen),
+      switchMap(() =>
+        this.#httpService.loadGefaesstypen().pipe(
+          map(gefaesstypen => gefaesstypenActions.gefaesstypenLoaded({ gefaesstypen })),
+          catchError(error =>
+            of(
+              gefaesstypenActions.gefaesstypenServerError({
+                error: this.#errorService.toGefaesstypError(error, null),
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   addGefaesstyp$ = createEffect(() =>
     this.#actions$.pipe(
       ofType(gefaesstypenActions.addGefaesstyp),

@@ -1,0 +1,10 @@
+<div class="page">
+  <h1>Gefäßtypen</h1>
+
+  @if (gefaesstypenFacade.gefaesstypenLoaded$ | async) { @if (gefaesstypenFacade.gefaesstypen$ |
+  async; as gefaesstypen) { @for (gefaesstyp of gefaesstypen; track $index) {
+  <kl-gefaesstyp-overview [gefaesstyp]="gefaesstyp"></kl-gefaesstyp-overview>
+  } } } @else {
+  <p>Lade Daten…</p>
+  }
+</div>

@@ -7,33 +7,12 @@ import {
   GefaesstypConflict,
   GefaesstypError,
 } from '@gefaesstypen/model';
+import { firstGefaesstyp, secondGefaesstyp } from '@testing';
 
 describe('gefaesstypenFeature', () => {
   const unknownAction = { type: 'UNKNOWN_ACTION' } as Action;
 
   const navigateTo = 'gefaesstypen/3839';
-
-  const firstGefaesstyp: Gefaesstyp = {
-    uuid: '1234',
-    daten: {
-      anzahl: 4,
-      backgroundColor: '#ff0066',
-      name: 'Erster Gefäßtyp',
-      volumen: 5,
-      version: 2,
-    },
-  };
-
-  const secondGefaesstyp: Gefaesstyp = {
-    uuid: '9876',
-    daten: {
-      anzahl: 3,
-      backgroundColor: '#ccffcc',
-      name: 'Zweiter Gefäßtyp',
-      volumen: 20,
-      version: 0,
-    },
-  };
 
   const mockedGefaesstypen: Gefaesstyp[] = [firstGefaesstyp, secondGefaesstyp];
 

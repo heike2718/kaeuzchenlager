@@ -1,1 +1,1 @@
-export { GefaesstypenList } from './gefaesstypen-list';
+export { GefaesstypenListComponent } from './gefaesstypen-list.component';
