@@ -9,20 +9,24 @@ describe('deep-freeze', () => {
       assertDeepFrozen(frozen);
 
       expect(() => {
-        (frozen as any).a = 1;
+        (frozen as unknown as { a: unknown }).a = 1;
       }).toThrow(TypeError);
+
       expect(() => {
-        (frozen as any).a.b.push({ c: 2 });
+        (frozen as unknown as { a: { b: Array<unknown> } }).a.b.push({ c: 2 });
       }).toThrow(TypeError);
+
       expect(() => {
-        (frozen as any).a.b[0].c = 9;
+        (frozen as unknown as { a: { b: Array<{ c: number }> } }).a.b[0].c = 9;
       }).toThrow(TypeError);
     });
   });
 
   describe('cycles', () => {
+    type Cyclic = { a: number; self?: Cyclic };
+
     it('handles cycles', () => {
-      const x: any = { a: 1 };
+      const x: Cyclic = { a: 1 };
       x.self = x;
       deepFreeze(x); // kein Crash
       expect(Object.isFrozen(x)).toBe(true);

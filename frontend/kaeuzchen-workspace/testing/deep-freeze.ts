@@ -1,15 +1,16 @@
-// testing/deep-freeze.ts
-export function deepFreeze<T>(obj: T, seen = new WeakSet()): T {
-  if (obj && typeof obj === 'object') {
-    if (seen.has(obj as any)) return obj;
-    seen.add(obj as any);
-    Object.freeze(obj as object);
-    for (const key of Object.getOwnPropertyNames(obj as object)) {
-      const val: unknown = (obj as any)[key];
-      if (val && typeof val === 'object' && !Object.isFrozen(val as object)) {
-        deepFreeze(val as any, seen);
-      }
+export function deepFreeze<T>(obj: T, seen: WeakSet<object> = new WeakSet()): T {
+  if (obj === null || typeof obj !== 'object') return obj;
+
+  const o = obj as unknown as object;
+  if (seen.has(o)) return obj;
+  seen.add(o);
+
+  // Alle eigenen Keys inkl. Symbolen
+  for (const key of Reflect.ownKeys(o)) {
+    const value = (o as Record<PropertyKey, unknown>)[key as PropertyKey];
+    if (value && typeof value === 'object') {
+      deepFreeze(value, seen);
     }
   }
-  return obj;
+  return Object.freeze(o) as unknown as T;
 }
