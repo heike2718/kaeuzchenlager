@@ -3,6 +3,7 @@
   grid-template-columns: max-content 1fr; /* schmale Labelspalte */
   column-gap: 10px;
   row-gap: 6px;
+  margin-top: 6px;
   align-items: center;
 }
 
@@ -22,7 +23,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Kontrastklassen */
+/* Weißer Standardtext auf dunklem Hintergrund */
 .dark-background {
   color: #ffffff;
 }
@@ -32,7 +33,7 @@
   color: #ffffff;
 }
 
-/* Heller Standardtext auf hellem Hintergrund */
+/* Schwarzer Standardtext auf hellem Hintergrund */
 .gefaesstyp-card:not(.dark-background) {
   color: rgba(0, 0, 0, 0.87);
 }

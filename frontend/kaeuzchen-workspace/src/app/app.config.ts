@@ -6,7 +6,7 @@ import {
 import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
 import { provideStore } from '@ngrx/store';
-import { gefaesstypenDataProvider } from './gefaesstypen/api/gefaesstypen-data.provider';
+import { gefaesstypenDataProvider } from '@gefaesstypen/api';
 import { provideEffects } from '@ngrx/effects';
 
 export const appConfig: ApplicationConfig = {

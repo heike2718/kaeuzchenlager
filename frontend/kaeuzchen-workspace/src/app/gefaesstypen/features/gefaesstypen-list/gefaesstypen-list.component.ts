@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { GefaesstypenFacade } from '../../api/gefaesstypen.facade';
-import { GefaesstypOverviewComponent } from '../gaefaesstyp-overview/gefaesstyp-overview.component';
+import { GefaesstypenFacade } from '@gefaesstypen/api';
+import { GefaesstypOverviewComponent } from '../gefaesstyp-overview/gefaesstyp-overview.component';
 import { AsyncPipe } from '@angular/common';
 
 @Component({
