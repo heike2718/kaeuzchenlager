@@ -43,7 +43,8 @@ describe('GefaesstypOverviewComponent', () => {
         const card: HTMLElement = fixture.debugElement.query(By.css('mat-card')).nativeElement;
         expect(card.style.backgroundColor).toBe('rgb(255, 0, 102)');
 
-        expect(card.classList).toContain('dark-background');
+        expect(card.classList).toContain('gt-card--dark');
+        expect(card.classList).toContain('gt-card');
     });
 
     it('rendert die Farben des zweiten Gefäßtyps korrekt', () => {
@@ -53,7 +54,8 @@ describe('GefaesstypOverviewComponent', () => {
         const card: HTMLElement = fixture.debugElement.query(By.css('mat-card')).nativeElement;
         expect(card.style.backgroundColor).toBe('rgb(204, 255, 204)');
 
-        expect(card.classList).not.toContain('dark-background');
+        expect(card.classList).not.toContain('gt-card--dark');
+        expect(card.classList).toContain('gt-card');
     });
 
     it('ist robust gegen hex-errors', () => {
@@ -78,9 +80,9 @@ describe('GefaesstypOverviewComponent', () => {
         expect(cardContent).toBeDefined();
 
         const classAttribute = cardContent.getAttribute('class');
-        expect(classAttribute).toContain('content-grid');
+        expect(classAttribute).toContain('gt-card__grid');
 
-        const gridRows: HTMLCollectionOf<Element> = cardContent.getElementsByClassName('grid-row');
+        const gridRows: HTMLCollectionOf<Element> = cardContent.getElementsByClassName('gt-card__row');
         expect(gridRows.length).toBe(2);
 
         const ersteGridRow = gridRows[0];
@@ -88,11 +90,11 @@ describe('GefaesstypOverviewComponent', () => {
         expect(spanElements1.length).toBe(2);
 
         const spanElement11 = spanElements1[0];
-        expect(spanElement11.getAttribute('class')).toContain('label');
+        expect(spanElement11.getAttribute('class')).toContain('gt-card__label');
         expect(spanElement11.textContent.trim()).toBe('Volumen:');
 
         const spanElement12 = spanElements1[1];
-        expect(spanElement12.getAttribute('class')).toContain('value');
+        expect(spanElement12.getAttribute('class')).toContain('gt-card__value');
         expect(spanElement12.textContent.trim()).toBe('5 ml');
 
         const zweiteGridRow = gridRows[1];

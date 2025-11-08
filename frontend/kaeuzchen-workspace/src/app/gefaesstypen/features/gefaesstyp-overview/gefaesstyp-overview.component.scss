@@ -1,44 +1,69 @@
-.content-grid {
-    display: grid;
-    grid-template-columns: max-content 1fr; /* schmale Labelspalte */
-    column-gap: 10px;
-    row-gap: 6px;
-    margin-top: 6px;
-    align-items: center;
-}
-
-.grid-row {
-    display: contents;
-}
-
-.label {
-    justify-self: start; /* links in Spalte 1 */
-    text-align: left;
-    opacity: 0.9;
-}
-
-.value {
-    justify-self: start; /* links in Spalte 2 */
-    text-align: left;
-    font-variant-numeric: tabular-nums;
-}
-
-/* Weißer Standardtext auf dunklem Hintergrund */
-.dark-background {
-    color: #ffffff;
-}
-.dark-background .title,
-.dark-background .label,
-.dark-background .value {
-    color: #ffffff;
-}
-
-/* Schwarzer Standardtext auf hellem Hintergrund */
-.gefaesstyp-card:not(.dark-background) {
+/* Block: Gefäßtyp-Karte (BEM) */
+.gt-card {
+    /* Standard: schwarzer Text auf hellem Hintergrund */
     color: rgba(0, 0, 0, 0.87);
+    padding: var(--space-4, 1rem);
+    border-radius: var(--radius-3, 0.75rem);
+
+    /* Elemente erben die Blockfarbe */
+    &__title,
+    &__label,
+    &__value {
+        color: inherit;
+    }
+
+    /* Kopfbereich */
+    &__header {
+        margin-block-end: var(--space-3, 0.75rem);
+    }
+
+    &__title {
+        margin: 0;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    /* Inhalt als Grid */
+    &__grid {
+        display: grid;
+        gap: var(--space-2, 0.5rem);
+    }
+
+    /* Zeilen mit schmalem Label und bündigem Wert */
+    &__row {
+        display: grid;
+        grid-template-columns: 10ch 1fr;
+        align-items: baseline;
+        gap: var(--space-2, 0.5rem);
+    }
+
+    /* Labels leicht abgeschwächt, bleibt kontrast-sicher durch inherit */
+    &__label {
+        font-weight: 600;
+        text-align: right; /* falls linksbündig gewünscht: entfernen */
+        white-space: nowrap;
+    }
+
+    &__value {
+        min-width: 0; /* verhindert Textüberlauf */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Modifier: dunkler Hintergrund -> weißer Text */
+    &--dark {
+        color: #fff;
+    }
 }
-.gefaesstyp-card:not(.dark-background) .title,
-.gefaesstyp-card:not(.dark-background) .label,
-.gefaesstyp-card:not(.dark-background) .value {
-    color: rgba(0, 0, 0, 0.87);
+
+/* Responsive Feinschliff */
+@media (min-width: 48rem) {
+    .gt-card {
+        &__grid {
+            gap: var(--space-3, 0.75rem);
+        }
+        &__row {
+            grid-template-columns: 12ch 1fr;
+        }
+    }
 }
