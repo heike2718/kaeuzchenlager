@@ -1,63 +1,60 @@
-/* Mobile first */
-.page {
-    padding-top: max(15px, env(safe-area-inset-top));
-    padding-bottom: max(15px, env(safe-area-inset-bottom));
-    padding-inline: max(15px, env(safe-area-inset-left)) max(15px, env(safe-area-inset-right));
-    margin: 0 auto;
-    max-width: 100%;
-}
+/* Block: Liste der Gefäßtypen */
+.gt-list {
+    box-sizing: border-box;
+    padding: clamp(0.75rem, 2vw, 1.25rem);
+    inline-size: 100%;
 
-.title {
-    margin: 0 0 15px 0;
-    font-size: 1.25rem; /* ~20px */
-    line-height: 1.2;
-}
-
-/* 1-spaltig, volle Breite mit angenehmem Abstand */
-.cards {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
-    justify-items: stretch;
-}
-
-/* Child-Komponente füllt die Spalte */
-kl-gefaesstyp-overview {
-    width: 100%;
-}
-
-/* Tablet quer */
-@media (min-width: 480px) {
-    .title {
-        font-size: 1.375rem;
+    &__header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: end;
+        gap: 0.75rem;
+        margin-block-end: clamp(0.5rem, 2vw, 1rem);
     }
-    .page {
-        max-width: 640px;
-    }
-}
 
-/* Tablet/kleine Laptops */
-@media (min-width: 768px) {
-    .page {
-        max-width: 900px;
+    &__title {
+        margin: 0;
+        font-weight: 700;
+        line-height: 1.2;
     }
-    .cards {
-        grid-template-columns: repeat(2, minmax(260px, 1fr));
-        gap: 16px;
-        justify-items: center;
+
+    /* Grid für Karten, mobile first */
+    &__grid {
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(28rem, 100%), 1fr));
+        gap: clamp(0.75rem, 2vw, 1rem);
+        margin: 0;
+        padding: 0;
+        justify-items: stretch; /* Karten füllen die Spalte */
     }
-    kl-gefaesstyp-overview {
-        max-width: 360px;
+
+    &__item {
+        /* Platzhalter für zukünftige Varianten */
+        min-width: 0;
+    }
+
+    /* Host der Child-Card kann optional begrenzt werden */
+    &__card {
+        display: block; /* verhindert inline-Gaps */
+        max-inline-size: 48rem; /* Sicherheits-Deckel für sehr breite Screens */
+        margin-inline: auto; /* mittig, wenn Spalte breiter als Card */
+    }
+
+    &__loading {
+        margin: 0;
+        opacity: 0.8;
     }
 }
 
-/* Desktop breit */
-@media (min-width: 1024px) {
-    .page {
-        max-width: 1200px;
-    }
-    .cards {
-        grid-template-columns: repeat(3, minmax(280px, 1fr));
-        gap: 20px;
+/* breitere Screens: etwas luftiger */
+@media (min-width: 48rem) {
+    .gt-list {
+        &__header {
+            margin-block-end: 1.25rem;
+        }
+        &__grid {
+            gap: 1.25rem;
+        }
     }
 }

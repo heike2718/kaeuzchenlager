@@ -1,13 +1,20 @@
-<div class="page">
-    <h1>Gefäßtypen</h1>
+<section class="gt-list">
+    <header class="gt-list__header">
+        <h1 class="gt-list__title">Gefäßtypen</h1>
+    </header>
 
     @if (gefaesstypenFacade.gefaesstypenLoaded$ | async) {
         @if (gefaesstypenFacade.gefaesstypen$ | async; as gefaesstypen) {
-            @for (gefaesstyp of gefaesstypen; track $index) {
-                <kl-gefaesstyp-overview [gefaesstyp]="gefaesstyp"></kl-gefaesstyp-overview>
-            }
+            <ul class="gt-list__grid" role="list">
+                @for (gefaesstyp of gefaesstypen; track $index) {
+                    <li class="gt-list__item" role="listitem">
+                        <kl-gefaesstyp-overview class="gt-list__card" [gefaesstyp]="gefaesstyp">
+                        </kl-gefaesstyp-overview>
+                    </li>
+                }
+            </ul>
         }
     } @else {
-        <p>Lade Daten…</p>
+        <p class="gt-list__loading">Lade Daten…</p>
     }
-</div>
+</section>
