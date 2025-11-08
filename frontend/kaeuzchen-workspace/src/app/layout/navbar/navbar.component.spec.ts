@@ -58,9 +58,12 @@ describe('NavbarComponent', () => {
             const icon = icons[0] as HTMLElement;
             expect(icon.textContent);
             expect(icon.textContent.trim()).toBe('home');
-            const classListOfIcon = icon.classList;
-            expect(classListOfIcon).toContain('mat-icon');
-            expect(classListOfIcon).toContain('nav-item');
+
+            // const classListOfIcon = icon.classList;
+            expect(icon.classList.contains('mat-icon')).toBe(true);
+            expect(icon.classList.contains('nav__icon')).toBe(true);
+            // expect(classListOfIcon).toContain('mat-icon');
+            // expect(classListOfIcon).toContain('nav__item');
             expect(icon.getAttribute('role')).toBe('img');
             expect(icon.getAttribute('aria-hidden')).toBe('true');
 
@@ -68,13 +71,14 @@ describe('NavbarComponent', () => {
             expect(spanElements.length).toBe(1);
             const caption = spanElements[0] as HTMLElement;
             expect(caption.textContent.trim()).toBe('Startseite');
-            expect(caption.classList).toContain('nav-caption');
+            expect(caption.classList).toContain('nav__caption');
         });
 
         it('renders the home router link as the FIRST item in the toolbar - test with DebugElement', async () => {
             // Arrange
             const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
             expect(toolbarDe).toBeDefined();
+            expect(toolbarDe).not.toBeNull();
 
             // Alle RouterLinks innerhalb der Toolbar in DOM-Reihenfolge
             const linkDes: DebugElement[] = toolbarDe.queryAll(By.directive(RouterLink));
@@ -106,7 +110,7 @@ describe('NavbarComponent', () => {
             expect(iconDe).toBeTruthy();
             expect(iconDe.nativeElement.textContent.trim()).toBe('home');
 
-            const captionDe = firstLinkDe.query(By.css('span.nav-caption'));
+            const captionDe = firstLinkDe.query(By.css('span.nav__caption'));
             expect(captionDe).toBeTruthy();
             expect(captionDe.nativeElement.textContent.trim()).toBe('Startseite');
 
@@ -177,7 +181,7 @@ describe('NavbarComponent', () => {
             expect(iconDe).toBeTruthy();
             expect(iconDe.nativeElement.textContent.trim()).toBe('inventory_2');
 
-            const captionDe = firstLinkDe.query(By.css('span.nav-caption'));
+            const captionDe = firstLinkDe.query(By.css('span.nav__caption'));
             expect(captionDe).toBeTruthy();
             expect(captionDe.nativeElement.textContent.trim()).toBe('Gefäßtypen');
 
@@ -216,7 +220,7 @@ describe('NavbarComponent', () => {
         it('should render a toolbar spacer', () => {
             const spacer = findToolbarSpacer(fixture);
             expect(spacer).toBeTruthy();
-            expect(spacer.classList.contains('toolbar-spacer')).toBe(true);
+            expect(spacer.classList.contains('nav__spacer')).toBe(true);
         });
 
         it('should render begrüßungstext next right to toolbar spacer', () => {
@@ -225,7 +229,7 @@ describe('NavbarComponent', () => {
             expect(begruessung).toBeTruthy();
             expect(begruessung.textContent.trim()).toContain('Moin, ');
             expect(begruessung.tagName.toLowerCase()).toBe('div');
-            expect(begruessung.classList).toContain('mr-2');
+            expect(begruessung.classList).toContain('nav__greeting');
         });
 
         it('should render version two right to toolbar spacer', () => {
@@ -241,8 +245,8 @@ describe('NavbarComponent', () => {
             const version = begruessung.nextElementSibling as HTMLElement;
             expect(version).toBeTruthy();
             expect(version.textContent.trim()).toBe(expectedVersionText);
-            expect(version.tagName.toLowerCase()).toBe('span');
-            expect(version.classList).toContain('ml-2');
+            expect(version.tagName.toLowerCase()).toBe('div');
+            expect(version.classList).toContain('nav__version');
         });
 
         it('should render the theme toggle button', async () => {
@@ -250,7 +254,7 @@ describe('NavbarComponent', () => {
             expect(allTooltips).toBeTruthy();
             expect(allTooltips.length).toBe(1);
 
-            const tooltipHarness = await loader.getHarness(MatTooltipHarness.with({ selector: 'button.ml-2' }));
+            const tooltipHarness = await loader.getHarness(MatTooltipHarness.with({ selector: 'button.nav__toggle' }));
             expect(tooltipHarness).toBeTruthy();
             await tooltipHarness.show();
             const ttText = await tooltipHarness.getTooltipText();
@@ -261,7 +265,7 @@ describe('NavbarComponent', () => {
             const store = TestBed.inject(ThemeStore);
             const spy = vi.spyOn(store, 'toggle');
 
-            const btn = await loader.getHarness(MatButtonHarness.with({ selector: 'button.ml-2' }));
+            const btn = await loader.getHarness(MatButtonHarness.with({ selector: 'button.nav__toggle' }));
             const host = await btn.host();
 
             // Initial: dark === true
@@ -330,7 +334,7 @@ function findMatToolbar(fixture: ComponentFixture<NavbarComponent>): HTMLElement
 
 function findToolbarSpacer(fixture: ComponentFixture<NavbarComponent>): HTMLElement {
     const matToolbar = findMatToolbar(fixture);
-    const toolbarSpacer = matToolbar.querySelector('.toolbar-spacer') as HTMLElement;
+    const toolbarSpacer = matToolbar.querySelector('.nav__spacer') as HTMLElement;
 
     if (!toolbarSpacer) {
         throw new Error('No toolbar spacer found');
