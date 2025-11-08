@@ -10,6 +10,8 @@ npx nx g @nx/angular:component --name=navbar --path=src/app/layout/navbar/navbar
 npx nx g @nx/angular:component --name=gaefaesstypen-list.component --path=src/app/gefaesstypen/features/gaefaesstypen-list/gaefaesstypen-list --style=scss --dry-run
 
 npx nx g @nx/angular:component --name=gefaesstyp-overview.component --path=src/app/gefaesstypen/features/gaefaesstyp-overview/gefaesstyp-overview.component --style=scss --dry-run
+
+npx nx g @nx/angular:component --name=edit-gefaesstyp.component --path=src/app/gefaesstypen/features/edit-gefaesstyp/edit-gefaesstyp.component --style=scss --dry-run
 ```
 
 ```
