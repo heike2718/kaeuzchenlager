@@ -1,13 +1,13 @@
 <div class="app-shell mat-app-background">
-  <mat-sidenav-container>
-    <mat-sidenav #sidenav mode="push" [opened]="false" role="navigation">
-      <kl-sidenav (sidenavClose)="sidenav.close()"></kl-sidenav>
-    </mat-sidenav>
-    <mat-sidenav-content>
-      <kl-navbar #navbar (sidenavToggle)="sidenav.toggle()"></kl-navbar>
-      <main>
-        <router-outlet></router-outlet>
-      </main>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+    <mat-sidenav-container>
+        <mat-sidenav #sidenav mode="push" [opened]="false" role="navigation">
+            <kl-sidenav (sidenavClose)="sidenav.close()"></kl-sidenav>
+        </mat-sidenav>
+        <mat-sidenav-content>
+            <kl-navbar #navbar (sidenavToggle)="sidenav.toggle()"></kl-navbar>
+            <main>
+                <router-outlet></router-outlet>
+            </main>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
 </div>

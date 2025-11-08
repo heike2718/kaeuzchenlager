@@ -5,50 +5,50 @@ export const DEFAULT_GEFAESSTYP_BG_COLOR = '#ffffff';
 export const TEMP_UUID_PREFIX = 'temp-';
 
 export interface GefaesstypDaten {
-  readonly name: string;
-  readonly volumen: number;
-  readonly anzahl: number;
-  readonly backgroundColor: string;
-  readonly version: number | null;
+    readonly name: string;
+    readonly volumen: number;
+    readonly anzahl: number;
+    readonly backgroundColor: string;
+    readonly version: number | null;
 }
 
 export interface Gefaesstyp {
-  readonly uuid: string;
-  readonly daten: GefaesstypDaten;
+    readonly uuid: string;
+    readonly daten: GefaesstypDaten;
 }
 
 export interface GefaesstypError {
-  readonly message: string;
-  readonly userInput: GefaesstypDaten | null;
-  readonly type: ErrorType;
-  readonly uuid: string | null; // Nur bei Updates/Deletes
-  readonly serverVersion: GefaesstypDaten | null; // Nur bei CONCURRENT_UPDATE
+    readonly message: string;
+    readonly userInput: GefaesstypDaten | null;
+    readonly type: ErrorType;
+    readonly uuid: string | null; // Nur bei Updates/Deletes
+    readonly serverVersion: GefaesstypDaten | null; // Nur bei CONCURRENT_UPDATE
 }
 
 export interface GefaesstypConflict {
-  readonly serverVersion: Gefaesstyp;
-  readonly userInput: GefaesstypDaten;
+    readonly serverVersion: Gefaesstyp;
+    readonly userInput: GefaesstypDaten;
 }
 
 export function createInitialGefaesstyp(): Gefaesstyp {
-  return {
-    uuid: TEMP_UUID_PREFIX + (globalThis.crypto?.randomUUID?.() ?? 'tmp'),
-    daten: {
-      anzahl: 0,
-      backgroundColor: DEFAULT_GEFAESSTYP_BG_COLOR,
-      name: '',
-      version: null,
-      volumen: 0,
-    },
-  };
+    return {
+        uuid: TEMP_UUID_PREFIX + (globalThis.crypto?.randomUUID?.() ?? 'tmp'),
+        daten: {
+            anzahl: 0,
+            backgroundColor: DEFAULT_GEFAESSTYP_BG_COLOR,
+            name: '',
+            version: null,
+            volumen: 0,
+        },
+    };
 }
 
 const deCollator = new Intl.Collator('de', {
-  sensitivity: 'variant', // Ä !== A, ß !== ss
-  ignorePunctuation: false,
-  numeric: true, // 'Typ 2' < 'Typ 10'
+    sensitivity: 'variant', // Ä !== A, ß !== ss
+    ignorePunctuation: false,
+    numeric: true, // 'Typ 2' < 'Typ 10'
 });
 
 export function sortGefaesstypenByName(list: Gefaesstyp[]): Gefaesstyp[] {
-  return [...list].sort((a, b) => deCollator.compare(a.daten.name, b.daten.name));
+    return [...list].sort((a, b) => deCollator.compare(a.daten.name, b.daten.name));
 }

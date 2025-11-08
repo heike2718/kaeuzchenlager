@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root',
+    providedIn: 'root',
 })
 export class NavigationService {
-  public getRouteGefaesstypenList(): string {
-    return 'gefaesstypen';
-  }
+    public getRouteGefaesstypenList(): string {
+        return 'gefaesstypen';
+    }
 
-  public getRouteGefaesstypEditor(): string {
-    return 'gefaesstypen/editor';
-  }
+    public getRouteGefaesstypEditor(): string {
+        return 'gefaesstypen/editor';
+    }
 }

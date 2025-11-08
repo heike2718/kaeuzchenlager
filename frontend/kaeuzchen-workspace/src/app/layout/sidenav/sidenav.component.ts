@@ -9,27 +9,27 @@ import { RouterLinkWithHref } from '@angular/router';
 import { ThemeStore } from '../theme.store';
 
 @Component({
-  selector: 'kl-sidenav',
-  imports: [
-    MatButtonModule,
-    MatIconModule,
-    MatListModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    MatSidenavModule,
-    RouterLinkWithHref,
-  ],
-  templateUrl: './sidenav.component.html',
-  styleUrl: './sidenav.component.scss',
+    selector: 'kl-sidenav',
+    imports: [
+        MatButtonModule,
+        MatIconModule,
+        MatListModule,
+        MatToolbarModule,
+        MatTooltipModule,
+        MatSidenavModule,
+        RouterLinkWithHref,
+    ],
+    templateUrl: './sidenav.component.html',
+    styleUrl: './sidenav.component.scss',
 })
 export class SidenavComponent {
-  version = '1.0.0-SNAPSHOT';
-  readonly theme = inject(ThemeStore);
+    version = '1.0.0-SNAPSHOT';
+    readonly theme = inject(ThemeStore);
 
-  @Output()
-  sidenavClose = new EventEmitter();
+    @Output()
+    sidenavClose = new EventEmitter();
 
-  public onSidenavClose = () => {
-    this.sidenavClose.emit();
-  };
+    public onSidenavClose = () => {
+        this.sidenavClose.emit();
+    };
 }

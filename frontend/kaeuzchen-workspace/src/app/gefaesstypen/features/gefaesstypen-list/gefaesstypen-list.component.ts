@@ -4,15 +4,15 @@ import { GefaesstypOverviewComponent } from '../gefaesstyp-overview/gefaesstyp-o
 import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'kl-gefaesstypen-list',
-  imports: [GefaesstypOverviewComponent, AsyncPipe],
-  templateUrl: './gefaesstypen-list.component.html',
-  styleUrl: './gefaesstypen-list.component.scss',
+    selector: 'kl-gefaesstypen-list',
+    imports: [GefaesstypOverviewComponent, AsyncPipe],
+    templateUrl: './gefaesstypen-list.component.html',
+    styleUrl: './gefaesstypen-list.component.scss',
 })
 export class GefaesstypenListComponent implements OnInit {
-  gefaesstypenFacade = inject(GefaesstypenFacade);
+    gefaesstypenFacade = inject(GefaesstypenFacade);
 
-  ngOnInit(): void {
-    this.gefaesstypenFacade.loadGefaesstypen();
-  }
+    ngOnInit(): void {
+        this.gefaesstypenFacade.loadGefaesstypen();
+    }
 }

@@ -1,44 +1,44 @@
 .content-grid {
-  display: grid;
-  grid-template-columns: max-content 1fr; /* schmale Labelspalte */
-  column-gap: 10px;
-  row-gap: 6px;
-  margin-top: 6px;
-  align-items: center;
+    display: grid;
+    grid-template-columns: max-content 1fr; /* schmale Labelspalte */
+    column-gap: 10px;
+    row-gap: 6px;
+    margin-top: 6px;
+    align-items: center;
 }
 
 .grid-row {
-  display: contents;
+    display: contents;
 }
 
 .label {
-  justify-self: start; /* links in Spalte 1 */
-  text-align: left;
-  opacity: 0.9;
+    justify-self: start; /* links in Spalte 1 */
+    text-align: left;
+    opacity: 0.9;
 }
 
 .value {
-  justify-self: start; /* links in Spalte 2 */
-  text-align: left;
-  font-variant-numeric: tabular-nums;
+    justify-self: start; /* links in Spalte 2 */
+    text-align: left;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Weißer Standardtext auf dunklem Hintergrund */
 .dark-background {
-  color: #ffffff;
+    color: #ffffff;
 }
 .dark-background .title,
 .dark-background .label,
 .dark-background .value {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 /* Schwarzer Standardtext auf hellem Hintergrund */
 .gefaesstyp-card:not(.dark-background) {
-  color: rgba(0, 0, 0, 0.87);
+    color: rgba(0, 0, 0, 0.87);
 }
 .gefaesstyp-card:not(.dark-background) .title,
 .gefaesstyp-card:not(.dark-background) .label,
 .gefaesstyp-card:not(.dark-background) .value {
-  color: rgba(0, 0, 0, 0.87);
+    color: rgba(0, 0, 0, 0.87);
 }

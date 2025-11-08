@@ -13,392 +13,384 @@ import { ErrorType } from '@core/model';
 import { firstGefaesstyp } from '@testing';
 
 describe('GefaesstypenEffects', () => {
-  let actions$: ReplaySubject<unknown>;
-  let effects: GefaesstypenEffects;
+    let actions$: ReplaySubject<unknown>;
+    let effects: GefaesstypenEffects;
 
-  const httpServiceMock = {
-    loadGefaesstypen: vi.fn(),
-    insertGefaesstyp: vi.fn(),
-    updateGefaesstyp: vi.fn(),
-    loadGefaesstypWithId: vi.fn(),
-    removeGefaesstyp: vi.fn(),
-  };
+    const httpServiceMock = {
+        loadGefaesstypen: vi.fn(),
+        insertGefaesstyp: vi.fn(),
+        updateGefaesstyp: vi.fn(),
+        loadGefaesstypWithId: vi.fn(),
+        removeGefaesstyp: vi.fn(),
+    };
 
-  const errorServiceMock = { toGefaesstypError: vi.fn() };
+    const errorServiceMock = { toGefaesstypError: vi.fn() };
 
-  const routerMock = {
-    navigateByUrl: vi.fn(),
-  };
+    const routerMock = {
+        navigateByUrl: vi.fn(),
+    };
 
-  beforeEach(() => {
-    actions$ = new ReplaySubject<unknown>(1);
+    beforeEach(() => {
+        actions$ = new ReplaySubject<unknown>(1);
 
-    TestBed.configureTestingModule({
-      providers: [
-        provideStore(),
-        GefaesstypenEffects,
-        provideMockActions(() => actions$),
-        { provide: GefaesstypenHttpService, useValue: httpServiceMock },
-        { provide: Router, useValue: routerMock },
-        { provide: GefaesstypenHttpErrorService, useValue: errorServiceMock },
-      ],
+        TestBed.configureTestingModule({
+            providers: [
+                provideStore(),
+                GefaesstypenEffects,
+                provideMockActions(() => actions$),
+                { provide: GefaesstypenHttpService, useValue: httpServiceMock },
+                { provide: Router, useValue: routerMock },
+                { provide: GefaesstypenHttpErrorService, useValue: errorServiceMock },
+            ],
+        });
+
+        effects = TestBed.inject(GefaesstypenEffects);
+        vi.resetAllMocks();
     });
 
-    effects = TestBed.inject(GefaesstypenEffects);
-    vi.resetAllMocks();
-  });
+    describe('Test addGefaesstyp$', () => {
+        it('should call httpService and map to gefaesstypAdded', async () => {
+            const daten: GefaesstypDaten = {
+                name: 'temp-12345',
+                volumen: 2,
+                anzahl: 1,
+                backgroundColor: '#000000',
+                version: null,
+            };
+            const created: Gefaesstyp = { uuid: 'u-1', daten };
+            httpServiceMock.insertGefaesstyp.mockReturnValue(of(created));
 
-  describe('Test addGefaesstyp$', () => {
-    it('should call httpService and map to gefaesstypAdded', async () => {
-      const daten: GefaesstypDaten = {
-        name: 'temp-12345',
-        volumen: 2,
-        anzahl: 1,
-        backgroundColor: '#000000',
-        version: null,
-      };
-      const created: Gefaesstyp = { uuid: 'u-1', daten };
-      httpServiceMock.insertGefaesstyp.mockReturnValue(of(created));
+            actions$.next(gefaesstypenActions.addGefaesstyp({ daten }));
 
-      actions$.next(gefaesstypenActions.addGefaesstyp({ daten }));
+            const emitted = await firstValueFrom(effects.addGefaesstyp$);
 
-      const emitted = await firstValueFrom(effects.addGefaesstyp$);
+            expect(emitted).toEqual(gefaesstypenActions.gefaesstypAdded({ gefaesstyp: created }));
 
-      expect(emitted).toEqual(gefaesstypenActions.gefaesstypAdded({ gefaesstyp: created }));
+            expect(httpServiceMock.insertGefaesstyp).toHaveBeenCalledWith(daten);
+            expect(httpServiceMock.insertGefaesstyp).toBeCalledTimes(1);
+        });
 
-      expect(httpServiceMock.insertGefaesstyp).toHaveBeenCalledWith(daten);
-      expect(httpServiceMock.insertGefaesstyp).toBeCalledTimes(1);
+        it('should handle error DUPLICATE', async () => {
+            const errorType: ErrorType = 'DUPLICATE';
+
+            const error = {
+                status: 412,
+                error: { level: 'ERROR', message: 'Duplikat' },
+            };
+
+            const daten: GefaesstypDaten = {
+                name: 'temp-12345',
+                volumen: 2,
+                anzahl: 1,
+                backgroundColor: '#000000',
+                version: null,
+            };
+            const gefaesstypError: GefaesstypError = {
+                message: '',
+                serverVersion: null,
+                type: errorType,
+                userInput: daten,
+                uuid: null,
+            };
+
+            httpServiceMock.insertGefaesstyp.mockReturnValue(throwError(() => error));
+            errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
+
+            actions$.next(gefaesstypenActions.addGefaesstyp({ daten }));
+            const emitted = await firstValueFrom(effects.addGefaesstyp$);
+
+            expect(emitted).toEqual(gefaesstypenActions.gefaesstypenServerError({ error: gefaesstypError }));
+
+            expect(httpServiceMock.insertGefaesstyp).toHaveBeenCalledWith(daten);
+            expect(httpServiceMock.insertGefaesstyp).toBeCalledTimes(1);
+
+            expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, daten);
+            expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledTimes(1);
+        });
     });
 
-    it('should handle error DUPLICATE', async () => {
-      const errorType: ErrorType = 'DUPLICATE';
+    describe('Test changeGefaesstyp$', () => {
+        it('should call httpService and map to gefaesstypChanged', async () => {
+            const uuid = '1234';
+            const daten: GefaesstypDaten = {
+                name: 'temp-12345',
+                volumen: 2,
+                anzahl: 1,
+                backgroundColor: '#000000',
+                version: 3,
+            };
 
-      const error = {
-        status: 412,
-        error: { level: 'ERROR', message: 'Duplikat' },
-      };
+            const changed: Gefaesstyp = { uuid: uuid, daten };
+            httpServiceMock.updateGefaesstyp.mockReturnValue(of(changed));
 
-      const daten: GefaesstypDaten = {
-        name: 'temp-12345',
-        volumen: 2,
-        anzahl: 1,
-        backgroundColor: '#000000',
-        version: null,
-      };
-      const gefaesstypError: GefaesstypError = {
-        message: '',
-        serverVersion: null,
-        type: errorType,
-        userInput: daten,
-        uuid: null,
-      };
+            actions$.next(gefaesstypenActions.changeGefaesstyp({ uuid, daten }));
 
-      httpServiceMock.insertGefaesstyp.mockReturnValue(throwError(() => error));
-      errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
+            const emitted = await firstValueFrom(effects.changeGefaesstyp$);
 
-      actions$.next(gefaesstypenActions.addGefaesstyp({ daten }));
-      const emitted = await firstValueFrom(effects.addGefaesstyp$);
+            expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
+            expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledTimes(1);
+            expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledWith(uuid, daten);
 
-      expect(emitted).toEqual(
-        gefaesstypenActions.gefaesstypenServerError({ error: gefaesstypError })
-      );
+            expect(emitted).toEqual(gefaesstypenActions.gefaesstypChanged({ gefaesstyp: changed }));
+        });
 
-      expect(httpServiceMock.insertGefaesstyp).toHaveBeenCalledWith(daten);
-      expect(httpServiceMock.insertGefaesstyp).toBeCalledTimes(1);
+        it('should map concurrent update to loadGefaesstypForConflict', async () => {
+            const uuid = '1234';
 
-      expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, daten);
-      expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledTimes(1);
-    });
-  });
+            const serverMessage = 'Der Gefäßtyp wurde in der Zwischenzeit geändert.';
 
-  describe('Test changeGefaesstyp$', () => {
-    it('should call httpService and map to gefaesstypChanged', async () => {
-      const uuid = '1234';
-      const daten: GefaesstypDaten = {
-        name: 'temp-12345',
-        volumen: 2,
-        anzahl: 1,
-        backgroundColor: '#000000',
-        version: 3,
-      };
+            const daten: GefaesstypDaten = {
+                name: 'temp-12345',
+                volumen: 2,
+                anzahl: 1,
+                backgroundColor: '#000000',
+                version: 3,
+            };
 
-      const changed: Gefaesstyp = { uuid: uuid, daten };
-      httpServiceMock.updateGefaesstyp.mockReturnValue(of(changed));
+            const errorType: ErrorType = 'CONCURRENT_UPDATE';
 
-      actions$.next(gefaesstypenActions.changeGefaesstyp({ uuid, daten }));
+            const error = {
+                status: 409,
+                error: { level: 'ERROR', message: serverMessage },
+            };
 
-      const emitted = await firstValueFrom(effects.changeGefaesstyp$);
+            const gefaesstypError: GefaesstypError = {
+                message: serverMessage,
+                serverVersion: null,
+                type: errorType,
+                userInput: daten,
+                uuid: null,
+            };
 
-      expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
-      expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledTimes(1);
-      expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledWith(uuid, daten);
+            httpServiceMock.updateGefaesstyp.mockReturnValue(throwError(() => error));
+            errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
 
-      expect(emitted).toEqual(gefaesstypenActions.gefaesstypChanged({ gefaesstyp: changed }));
-    });
+            actions$.next(gefaesstypenActions.changeGefaesstyp({ uuid, daten }));
 
-    it('should map concurrent update to loadGefaesstypForConflict', async () => {
-      const uuid = '1234';
+            const emitted = await firstValueFrom(effects.changeGefaesstyp$);
+            expect(emitted).toEqual(
+                gefaesstypenActions.loadGefaesstypForConflictDialog({ uuid: uuid, userInput: daten })
+            );
+            expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
+            expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledTimes(1);
+            expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledWith(uuid, daten);
 
-      const serverMessage = 'Der Gefäßtyp wurde in der Zwischenzeit geändert.';
+            expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, daten);
+            expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledTimes(1);
+        });
 
-      const daten: GefaesstypDaten = {
-        name: 'temp-12345',
-        volumen: 2,
-        anzahl: 1,
-        backgroundColor: '#000000',
-        version: 3,
-      };
+        it('should map duplicate to saveError', async () => {
+            const uuid = '1234';
 
-      const errorType: ErrorType = 'CONCURRENT_UPDATE';
+            const daten: GefaesstypDaten = {
+                name: 'temp-12345',
+                volumen: 2,
+                anzahl: 1,
+                backgroundColor: '#000000',
+                version: 3,
+            };
 
-      const error = {
-        status: 409,
-        error: { level: 'ERROR', message: serverMessage },
-      };
+            const serverMessage = 'Einen Gefäßtyp mit diesem Volumen/Namen gibt es schon.';
 
-      const gefaesstypError: GefaesstypError = {
-        message: serverMessage,
-        serverVersion: null,
-        type: errorType,
-        userInput: daten,
-        uuid: null,
-      };
+            const errorType: ErrorType = 'DUPLICATE';
 
-      httpServiceMock.updateGefaesstyp.mockReturnValue(throwError(() => error));
-      errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
+            const error = {
+                status: 412,
+                error: { level: 'ERROR', message: serverMessage },
+            };
 
-      actions$.next(gefaesstypenActions.changeGefaesstyp({ uuid, daten }));
+            const gefaesstypError: GefaesstypError = {
+                message: serverMessage,
+                serverVersion: null,
+                type: errorType,
+                userInput: daten,
+                uuid: null,
+            };
 
-      const emitted = await firstValueFrom(effects.changeGefaesstyp$);
-      expect(emitted).toEqual(
-        gefaesstypenActions.loadGefaesstypForConflictDialog({ uuid: uuid, userInput: daten })
-      );
-      expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
-      expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledTimes(1);
-      expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledWith(uuid, daten);
+            httpServiceMock.updateGefaesstyp.mockReturnValue(throwError(() => error));
+            errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
 
-      expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, daten);
-      expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledTimes(1);
-    });
+            actions$.next(gefaesstypenActions.changeGefaesstyp({ uuid, daten }));
 
-    it('should map duplicate to saveError', async () => {
-      const uuid = '1234';
+            const emitted = await firstValueFrom(effects.changeGefaesstyp$);
 
-      const daten: GefaesstypDaten = {
-        name: 'temp-12345',
-        volumen: 2,
-        anzahl: 1,
-        backgroundColor: '#000000',
-        version: 3,
-      };
+            expect(emitted).toEqual(gefaesstypenActions.gefaesstypenServerError({ error: gefaesstypError }));
 
-      const serverMessage = 'Einen Gefäßtyp mit diesem Volumen/Namen gibt es schon.';
+            expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
+            expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledTimes(1);
+            expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledWith(uuid, daten);
 
-      const errorType: ErrorType = 'DUPLICATE';
-
-      const error = {
-        status: 412,
-        error: { level: 'ERROR', message: serverMessage },
-      };
-
-      const gefaesstypError: GefaesstypError = {
-        message: serverMessage,
-        serverVersion: null,
-        type: errorType,
-        userInput: daten,
-        uuid: null,
-      };
-
-      httpServiceMock.updateGefaesstyp.mockReturnValue(throwError(() => error));
-      errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
-
-      actions$.next(gefaesstypenActions.changeGefaesstyp({ uuid, daten }));
-
-      const emitted = await firstValueFrom(effects.changeGefaesstyp$);
-
-      expect(emitted).toEqual(
-        gefaesstypenActions.gefaesstypenServerError({ error: gefaesstypError })
-      );
-
-      expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
-      expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledTimes(1);
-      expect(httpServiceMock.updateGefaesstyp).toHaveBeenCalledWith(uuid, daten);
-
-      expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, daten);
-      expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('Test loadGefaesstypForConflictDialog$', () => {
-    it('should map loadGefaesstypForConflictDialog to gefaesstypForConflictDialogLoaded', async () => {
-      const uuid = '1234';
-
-      const userInput: GefaesstypDaten = {
-        name: 'Testgefäß',
-        volumen: 2,
-        anzahl: 1,
-        backgroundColor: '#000000',
-        version: 3,
-      };
-
-      const serverDaten: GefaesstypDaten = {
-        name: 'Miniglas',
-        volumen: 2,
-        anzahl: 1,
-        backgroundColor: '#f30c0cff',
-        version: 4,
-      };
-
-      const gefaesstypFromServer: Gefaesstyp = {
-        uuid: uuid,
-        daten: serverDaten,
-      };
-
-      httpServiceMock.loadGefaesstypWithId.mockReturnValue(of(gefaesstypFromServer));
-
-      actions$.next(gefaesstypenActions.loadGefaesstypForConflictDialog({ uuid, userInput }));
-
-      const emitted = await firstValueFrom(effects.loadGefaesstypForConflictDialog$);
-
-      expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
-      expect(httpServiceMock.updateGefaesstyp).not.toHaveBeenCalled();
-      expect(httpServiceMock.loadGefaesstypWithId).toHaveBeenCalledTimes(1);
-      expect(httpServiceMock.loadGefaesstypWithId).toHaveBeenCalledWith(uuid);
-
-      expect(emitted).toEqual(
-        gefaesstypenActions.gefaesstypForConflictDialogLoaded({ gefaesstypFromServer, userInput })
-      );
+            expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, daten);
+            expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledTimes(1);
+        });
     });
 
-    it('should map loadGefaesstypForConflictDialog to gefaesstypServerError on error', async () => {
-      const uuid = '1234';
+    describe('Test loadGefaesstypForConflictDialog$', () => {
+        it('should map loadGefaesstypForConflictDialog to gefaesstypForConflictDialogLoaded', async () => {
+            const uuid = '1234';
 
-      const userInput: GefaesstypDaten = {
-        name: 'Testgefäß',
-        volumen: 2,
-        anzahl: 1,
-        backgroundColor: '#000000',
-        version: 3,
-      };
+            const userInput: GefaesstypDaten = {
+                name: 'Testgefäß',
+                volumen: 2,
+                anzahl: 1,
+                backgroundColor: '#000000',
+                version: 3,
+            };
 
-      const serverMessage = 'Konnte nicht mehr finden';
+            const serverDaten: GefaesstypDaten = {
+                name: 'Miniglas',
+                volumen: 2,
+                anzahl: 1,
+                backgroundColor: '#f30c0cff',
+                version: 4,
+            };
 
-      const errorType: ErrorType = 'NOT_FOUND';
+            const gefaesstypFromServer: Gefaesstyp = {
+                uuid: uuid,
+                daten: serverDaten,
+            };
 
-      const error = {
-        status: 412,
-        error: { level: 'ERROR', message: serverMessage },
-      };
+            httpServiceMock.loadGefaesstypWithId.mockReturnValue(of(gefaesstypFromServer));
 
-      const gefaesstypError: GefaesstypError = {
-        message: serverMessage,
-        serverVersion: null,
-        type: errorType,
-        userInput: userInput,
-        uuid: null,
-      };
+            actions$.next(gefaesstypenActions.loadGefaesstypForConflictDialog({ uuid, userInput }));
 
-      httpServiceMock.loadGefaesstypWithId.mockReturnValue(throwError(() => error));
-      errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
+            const emitted = await firstValueFrom(effects.loadGefaesstypForConflictDialog$);
 
-      actions$.next(gefaesstypenActions.loadGefaesstypForConflictDialog({ uuid, userInput }));
+            expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
+            expect(httpServiceMock.updateGefaesstyp).not.toHaveBeenCalled();
+            expect(httpServiceMock.loadGefaesstypWithId).toHaveBeenCalledTimes(1);
+            expect(httpServiceMock.loadGefaesstypWithId).toHaveBeenCalledWith(uuid);
 
-      const emitted = await firstValueFrom(effects.loadGefaesstypForConflictDialog$);
+            expect(emitted).toEqual(
+                gefaesstypenActions.gefaesstypForConflictDialogLoaded({ gefaesstypFromServer, userInput })
+            );
+        });
 
-      expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
-      expect(httpServiceMock.updateGefaesstyp).not.toHaveBeenCalled();
-      expect(httpServiceMock.loadGefaesstypWithId).toHaveBeenCalledTimes(1);
-      expect(httpServiceMock.loadGefaesstypWithId).toHaveBeenCalledWith(uuid);
+        it('should map loadGefaesstypForConflictDialog to gefaesstypServerError on error', async () => {
+            const uuid = '1234';
 
-      expect(emitted).toEqual(
-        gefaesstypenActions.gefaesstypenServerError({ error: gefaesstypError })
-      );
+            const userInput: GefaesstypDaten = {
+                name: 'Testgefäß',
+                volumen: 2,
+                anzahl: 1,
+                backgroundColor: '#000000',
+                version: 3,
+            };
 
-      expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, userInput);
-      expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledTimes(1);
-    });
-  });
+            const serverMessage = 'Konnte nicht mehr finden';
 
-  describe('Test gefaesstypSelected$', () => {
-    it('should stop dispatch and navigate on gefaesstypSelected', async () => {
-      const navigateTo = '/gefaesstypen/1234';
+            const errorType: ErrorType = 'NOT_FOUND';
 
-      const sub = effects.gefaesstypSeleced$.subscribe(); // dispatch:false → manuell subscriben
+            const error = {
+                status: 412,
+                error: { level: 'ERROR', message: serverMessage },
+            };
 
-      actions$.next(
-        gefaesstypenActions.gefaesstypSelected({
-          gefaesstyp: firstGefaesstyp,
-          navigateTo: navigateTo,
-        })
-      );
+            const gefaesstypError: GefaesstypError = {
+                message: serverMessage,
+                serverVersion: null,
+                type: errorType,
+                userInput: userInput,
+                uuid: null,
+            };
 
-      await Promise.resolve(); // Microtask-Tick
+            httpServiceMock.loadGefaesstypWithId.mockReturnValue(throwError(() => error));
+            errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
 
-      expect(routerMock.navigateByUrl).toHaveBeenCalledWith(navigateTo);
-      expect(routerMock.navigateByUrl).toHaveBeenCalledTimes(1);
+            actions$.next(gefaesstypenActions.loadGefaesstypForConflictDialog({ uuid, userInput }));
 
-      sub.unsubscribe();
-    });
-  });
+            const emitted = await firstValueFrom(effects.loadGefaesstypForConflictDialog$);
 
-  describe('Test removeGefaesstyp$', () => {
-    it('maps removeGefaesstyp to gefaesstypRemoved when ok', async () => {
-      const uuid = '1234';
-      const navigateTo = '/gefaesstypen';
+            expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
+            expect(httpServiceMock.updateGefaesstyp).not.toHaveBeenCalled();
+            expect(httpServiceMock.loadGefaesstypWithId).toHaveBeenCalledTimes(1);
+            expect(httpServiceMock.loadGefaesstypWithId).toHaveBeenCalledWith(uuid);
 
-      // hier muss man das void aus dem backend so simulieren, sonst completed der mock nicht!
-      httpServiceMock.removeGefaesstyp.mockReturnValue(of(void 0));
+            expect(emitted).toEqual(gefaesstypenActions.gefaesstypenServerError({ error: gefaesstypError }));
 
-      actions$.next(gefaesstypenActions.removeGefaesstyp({ uuid, navigateTo }));
-      const emitted = await firstValueFrom(effects.removeGefaesstyp$);
-
-      expect(emitted).toEqual(gefaesstypenActions.gefaesstypRemoved({ uuid, navigateTo }));
-
-      expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
-      expect(httpServiceMock.updateGefaesstyp).not.toHaveBeenCalled();
-      expect(httpServiceMock.loadGefaesstypWithId).not.toHaveBeenCalled();
-      expect(httpServiceMock.removeGefaesstyp).toHaveBeenCalledTimes(1);
-      expect(httpServiceMock.removeGefaesstyp).toHaveBeenCalledWith(uuid);
+            expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, userInput);
+            expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledTimes(1);
+        });
     });
 
-    it('maps removeGefaesstyp to gefaesstypServerError on error', async () => {
-      const uuid = '1234';
-      const navigateTo = '/gefaesstypen';
-      const serverMessage = 'etwas wing schief';
+    describe('Test gefaesstypSelected$', () => {
+        it('should stop dispatch and navigate on gefaesstypSelected', async () => {
+            const navigateTo = '/gefaesstypen/1234';
 
-      const errorType: ErrorType = 'SERVER';
+            const sub = effects.gefaesstypSeleced$.subscribe(); // dispatch:false → manuell subscriben
 
-      const error = {
-        status: 409,
-        error: { level: 'ERROR', message: serverMessage },
-      };
+            actions$.next(
+                gefaesstypenActions.gefaesstypSelected({
+                    gefaesstyp: firstGefaesstyp,
+                    navigateTo: navigateTo,
+                })
+            );
 
-      const gefaesstypError: GefaesstypError = {
-        message: serverMessage,
-        serverVersion: null,
-        type: errorType,
-        userInput: null,
-        uuid: null,
-      };
+            await Promise.resolve(); // Microtask-Tick
 
-      httpServiceMock.removeGefaesstyp.mockReturnValue(throwError(() => error));
-      errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
+            expect(routerMock.navigateByUrl).toHaveBeenCalledWith(navigateTo);
+            expect(routerMock.navigateByUrl).toHaveBeenCalledTimes(1);
 
-      actions$.next(gefaesstypenActions.removeGefaesstyp({ uuid, navigateTo }));
-      const emitted = await firstValueFrom(effects.removeGefaesstyp$);
-
-      expect(emitted).toEqual(
-        gefaesstypenActions.gefaesstypenServerError({ error: gefaesstypError })
-      );
-
-      expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
-      expect(httpServiceMock.updateGefaesstyp).not.toHaveBeenCalled();
-      expect(httpServiceMock.loadGefaesstypWithId).not.toHaveBeenCalled();
-      expect(httpServiceMock.removeGefaesstyp).toHaveBeenCalledTimes(1);
-      expect(httpServiceMock.removeGefaesstyp).toHaveBeenCalledWith(uuid);
-
-      expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, null);
-      expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledTimes(1);
+            sub.unsubscribe();
+        });
     });
-  });
+
+    describe('Test removeGefaesstyp$', () => {
+        it('maps removeGefaesstyp to gefaesstypRemoved when ok', async () => {
+            const uuid = '1234';
+            const navigateTo = '/gefaesstypen';
+
+            // hier muss man das void aus dem backend so simulieren, sonst completed der mock nicht!
+            httpServiceMock.removeGefaesstyp.mockReturnValue(of(void 0));
+
+            actions$.next(gefaesstypenActions.removeGefaesstyp({ uuid, navigateTo }));
+            const emitted = await firstValueFrom(effects.removeGefaesstyp$);
+
+            expect(emitted).toEqual(gefaesstypenActions.gefaesstypRemoved({ uuid, navigateTo }));
+
+            expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
+            expect(httpServiceMock.updateGefaesstyp).not.toHaveBeenCalled();
+            expect(httpServiceMock.loadGefaesstypWithId).not.toHaveBeenCalled();
+            expect(httpServiceMock.removeGefaesstyp).toHaveBeenCalledTimes(1);
+            expect(httpServiceMock.removeGefaesstyp).toHaveBeenCalledWith(uuid);
+        });
+
+        it('maps removeGefaesstyp to gefaesstypServerError on error', async () => {
+            const uuid = '1234';
+            const navigateTo = '/gefaesstypen';
+            const serverMessage = 'etwas wing schief';
+
+            const errorType: ErrorType = 'SERVER';
+
+            const error = {
+                status: 409,
+                error: { level: 'ERROR', message: serverMessage },
+            };
+
+            const gefaesstypError: GefaesstypError = {
+                message: serverMessage,
+                serverVersion: null,
+                type: errorType,
+                userInput: null,
+                uuid: null,
+            };
+
+            httpServiceMock.removeGefaesstyp.mockReturnValue(throwError(() => error));
+            errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
+
+            actions$.next(gefaesstypenActions.removeGefaesstyp({ uuid, navigateTo }));
+            const emitted = await firstValueFrom(effects.removeGefaesstyp$);
+
+            expect(emitted).toEqual(gefaesstypenActions.gefaesstypenServerError({ error: gefaesstypError }));
+
+            expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
+            expect(httpServiceMock.updateGefaesstyp).not.toHaveBeenCalled();
+            expect(httpServiceMock.loadGefaesstypWithId).not.toHaveBeenCalled();
+            expect(httpServiceMock.removeGefaesstyp).toHaveBeenCalledTimes(1);
+            expect(httpServiceMock.removeGefaesstyp).toHaveBeenCalledWith(uuid);
+
+            expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, null);
+            expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledTimes(1);
+        });
+    });
 });

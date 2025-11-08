@@ -1,24 +1,23 @@
 <mat-card
-  class="gefaesstyp-card"
-  [style.background-color]="backgroundColor"
-  [class.dark-background]="isDarkBackground"
-  [attr.aria-label]="ariaLabel"
->
-  <mat-card-header>
-    <mat-card-title class="title">
-      {{ gefaesstyp?.daten.name }}
-    </mat-card-title>
-  </mat-card-header>
+    class="gefaesstyp-card"
+    [style.background-color]="backgroundColor"
+    [class.dark-background]="isDarkBackground"
+    [attr.aria-label]="ariaLabel">
+    <mat-card-header>
+        <mat-card-title class="title">
+            {{ gefaesstyp?.daten.name }}
+        </mat-card-title>
+    </mat-card-header>
 
-  <mat-card-content class="content-grid">
-    <div class="grid-row">
-      <span class="label">Volumen:</span>
-      <span class="value">{{ gefaesstyp?.daten.volumen }} ml</span>
-    </div>
+    <mat-card-content class="content-grid">
+        <div class="grid-row">
+            <span class="label">Volumen:</span>
+            <span class="value">{{ gefaesstyp?.daten.volumen }} ml</span>
+        </div>
 
-    <div class="grid-row">
-      <span class="label">Anzahl:</span>
-      <span class="value">{{ gefaesstyp?.daten.anzahl }}</span>
-    </div>
-  </mat-card-content>
+        <div class="grid-row">
+            <span class="label">Anzahl:</span>
+            <span class="value">{{ gefaesstyp?.daten.anzahl }}</span>
+        </div>
+    </mat-card-content>
 </mat-card>

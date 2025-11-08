@@ -4,77 +4,73 @@ import { ErrorService } from './error.service';
 import { ErrorType } from '@core/model';
 
 describe('GefaesstypenHttpErrorService', () => {
-  let errorService: ErrorService;
+    let errorService: ErrorService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [ErrorService],
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [ErrorService],
+        });
+
+        errorService = TestBed.inject(ErrorService);
+        vi.resetAllMocks();
     });
 
-    errorService = TestBed.inject(ErrorService);
-    vi.resetAllMocks();
-  });
+    it('handles JSON', () => {
+        const expectedErrorType: ErrorType = 'CONCURRENT_UPDATE';
 
-  it('handles JSON', () => {
-    const expectedErrorType: ErrorType = 'CONCURRENT_UPDATE';
+        const httpError = new HttpErrorResponse({
+            status: 409,
+            error: {
+                errorLevel: 'ERROR',
+                message: 'Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.',
+            },
+        });
 
-    const httpError = new HttpErrorResponse({
-      status: 409,
-      error: {
-        errorLevel: 'ERROR',
-        message: 'Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.',
-      },
+        const result = errorService.toKaeuzchenError(httpError);
+
+        expect(result).toBeDefined();
+        expect(result.message).toBe('Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.');
+        expect(result.type).toBe(expectedErrorType);
     });
 
-    const result = errorService.toKaeuzchenError(httpError);
+    it('handles text', () => {
+        const expectedErrorType: ErrorType = 'CONCURRENT_UPDATE';
 
-    expect(result).toBeDefined();
-    expect(result.message).toBe(
-      'Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.'
-    );
-    expect(result.type).toBe(expectedErrorType);
-  });
+        const httpError = new HttpErrorResponse({
+            status: 409,
+            error: 'Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.',
+        });
 
-  it('handles text', () => {
-    const expectedErrorType: ErrorType = 'CONCURRENT_UPDATE';
+        const result = errorService.toKaeuzchenError(httpError);
 
-    const httpError = new HttpErrorResponse({
-      status: 409,
-      error: 'Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.',
+        expect(result).toBeDefined();
+        expect(result.message).toBe('Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.');
+        expect(result.type).toBe(expectedErrorType);
     });
 
-    const result = errorService.toKaeuzchenError(httpError);
+    it('handles ohne error', () => {
+        const expectedErrorType: ErrorType = 'SERVER';
 
-    expect(result).toBeDefined();
-    expect(result.message).toBe(
-      'Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.'
-    );
-    expect(result.type).toBe(expectedErrorType);
-  });
+        const httpError = new HttpErrorResponse({
+            status: 0,
+        });
 
-  it('handles ohne error', () => {
-    const expectedErrorType: ErrorType = 'SERVER';
+        const result = errorService.toKaeuzchenError(httpError);
 
-    const httpError = new HttpErrorResponse({
-      status: 0,
+        expect(result).toBeDefined();
+        expect(result.message).toBe('Unerwarteter Fehler');
+        expect(result.type).toBe(expectedErrorType);
     });
 
-    const result = errorService.toKaeuzchenError(httpError);
+    it('allgemeiner error', () => {
+        const expectedErrorType: ErrorType = 'SERVER';
 
-    expect(result).toBeDefined();
-    expect(result.message).toBe('Unerwarteter Fehler');
-    expect(result.type).toBe(expectedErrorType);
-  });
+        const error = new Error('boom!');
 
-  it('allgemeiner error', () => {
-    const expectedErrorType: ErrorType = 'SERVER';
+        const result = errorService.toKaeuzchenError(error);
 
-    const error = new Error('boom!');
-
-    const result = errorService.toKaeuzchenError(error);
-
-    expect(result).toBeDefined();
-    expect(result.message).toBe('boom!');
-    expect(result.type).toBe(expectedErrorType);
-  });
+        expect(result).toBeDefined();
+        expect(result.message).toBe('boom!');
+        expect(result.type).toBe(expectedErrorType);
+    });
 });
