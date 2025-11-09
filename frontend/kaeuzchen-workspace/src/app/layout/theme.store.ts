@@ -8,17 +8,23 @@ export const PREFERRED_THEME_KEY = 'preferred-theme';
 
 interface ThemeState {
     theme: Theme;
+    tooltip: string;
 }
 
 export const ThemeStore = signalStore(
     { providedIn: 'root' },
 
-    withState<ThemeState>({ theme: 'light' }),
+    withState<ThemeState>({ theme: 'light', tooltip: 'Design umschalten' }),
     withProps(() => ({
         _doc: inject(DOCUMENT),
     })),
     withComputed(store => ({
         isDark: computed(() => store.theme() === 'dark'),
+        icon: computed(() => (store.theme() === 'dark' ? 'light_mode' : 'dark_mode')),
+        caption: computed(() => (store.theme() === 'dark' ? 'helles Design' : 'dunkles Design')),
+        ariaLabel: computed(() =>
+            store.theme() === 'dark' ? 'auf helles Design umschalten' : 'auf dunkles Design umschalten'
+        ),
     })),
     withMethods(store => ({
         applyToDom() {

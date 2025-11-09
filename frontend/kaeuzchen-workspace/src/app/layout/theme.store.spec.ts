@@ -38,6 +38,9 @@ describe('ThemeStore', () => {
             expect(themeStore).toBeTruthy();
             expect(themeStore.theme()).toBe('dark');
             expect(themeStore.isDark()).toBe(true);
+            expect(themeStore.ariaLabel()).toBe('auf helles Design umschalten');
+            expect(themeStore.caption()).toBe('helles Design');
+            expect(themeStore.icon()).toBe('light_mode');
         });
 
         it('should ignore invalid key', async () => {
@@ -100,6 +103,9 @@ describe('ThemeStore', () => {
             expect(themeStore).toBeTruthy();
             expect(themeStore.theme()).toBe('light');
             expect(themeStore.isDark()).toBe(false);
+            expect(themeStore.ariaLabel()).toBe('auf dunkles Design umschalten');
+            expect(themeStore.caption()).toBe('dunkles Design');
+            expect(themeStore.icon()).toBe('dark_mode');
             expect(localStorage.getItem(PREFERRED_THEME_KEY)).toBe('light');
         });
 

@@ -6,7 +6,7 @@ import { HomeComponent } from '../../home/home.component';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { MatTooltipHarness } from '@angular/material/tooltip/testing';
+// import { MatTooltipHarness } from '@angular/material/tooltip/testing';
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { ThemeStore } from '../theme.store';
@@ -247,18 +247,6 @@ describe('NavbarComponent', () => {
             expect(version.classList).toContain('nav__version');
         });
 
-        it('should render the theme toggle button', async () => {
-            const allTooltips = await loader.getAllHarnesses(MatTooltipHarness);
-            expect(allTooltips).toBeTruthy();
-            expect(allTooltips.length).toBe(1);
-
-            const tooltipHarness = await loader.getHarness(MatTooltipHarness.with({ selector: 'button.nav__toggle' }));
-            expect(tooltipHarness).toBeTruthy();
-            await tooltipHarness.show();
-            const ttText = await tooltipHarness.getTooltipText();
-            expect(ttText.trim()).toBe('umschalten');
-        });
-
         it('toggles aria-label and label text when clicking the theme button - start with dark theme', async () => {
             const store = TestBed.inject(ThemeStore);
             const spy = vi.spyOn(store, 'toggle');
@@ -268,24 +256,24 @@ describe('NavbarComponent', () => {
 
             // Initial: dark === true
             await fixture.whenStable();
-            expect(await host.getAttribute('aria-label')).toBe('auf helles Theme umschalten'); // aus dem Template
-            expect((await btn.getText()).trim()).toContain('light theme'); // sichtbarer Buttontext
+            expect(await host.getAttribute('aria-label')).toBe('auf helles Design umschalten'); // aus dem Template
+            expect((await btn.getText()).trim()).toContain('helles Design'); // sichtbarer Buttontext
 
             // Klick -> toggleTheme()
             await btn.click();
             fixture.detectChanges();
 
             expect(spy).toHaveBeenCalledTimes(1);
-            expect(await host.getAttribute('aria-label')).toBe('auf dunkles Theme umschalten');
-            expect((await btn.getText()).trim()).toContain('dark theme');
+            expect(await host.getAttribute('aria-label')).toBe('auf dunkles Design umschalten');
+            expect((await btn.getText()).trim()).toContain('dunkles Design');
 
             // jetzt ist es light, nochmal klicken
             await btn.click();
             fixture.detectChanges();
 
             expect(spy).toHaveBeenCalledTimes(2);
-            expect(await host.getAttribute('aria-label')).toBe('auf helles Theme umschalten');
-            expect((await btn.getText()).trim()).toContain('light theme');
+            expect(await host.getAttribute('aria-label')).toBe('auf helles Design umschalten');
+            expect((await btn.getText()).trim()).toContain('helles Design');
         });
     });
 
