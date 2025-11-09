@@ -1,0 +1,15 @@
+.sidenav {
+    &__footer {
+        margin-block-start: 1.5rem;
+        margin-left: 0.5rem;
+    }
+
+    &__icon {
+        margin-inline-end: 0.5rem;
+    }
+}
+
+/* Rahmen und Abstand nur für den Toggle-Eintrag */
+.sidenav__toggle.mat-mdc-list-item {
+    margin-block-start: 1.5rem; /* Abstand zu den Links */
+}

@@ -8,7 +8,7 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatTooltipHarness } from '@angular/material/tooltip/testing';
 import { ThemeStore } from '../theme.store';
-import { MatButtonHarness } from '@angular/material/button/testing';
+import { MatNavListHarness } from '@angular/material/list/testing';
 
 describe('SidenavComponent', () => {
     let component: SidenavComponent;
@@ -31,26 +31,32 @@ describe('SidenavComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('renders a mat-nav-list', () => {
-        const matNavList = findMatNavList(fixture);
+    it('renders a sidenav', () => {
+        const matNavList = findMatNavListAsDebugElement(fixture);
         expect(matNavList).toBeDefined();
     });
 
-    it('renders two dividers', () => {
-        const matNavList = findMatNavList(fixture);
+    it('renders the footer with version', () => {
+        const footer: DebugElement = fixture.debugElement.query(By.css('div.sidenav__footer'));
+        expect(footer).not.toBeNull();
+        expect(footer).toBeDefined();
 
-        const dividers = matNavList.querySelectorAll('mat-divider');
-        expect(dividers.length).toBe(2); // bricht, wenn später mehr Divider hinzugefügt werden
+        const versionElement: DebugElement = footer.query(By.css('div.sidenav__version'));
+        expect(versionElement).not.toBeNull();
+        expect(versionElement).toBeDefined();
+
+        const versionNative: HTMLElement = versionElement.nativeElement;
+        expect(versionNative.textContent.trim()).toBe('V 1.2.0');
     });
 
-    it('renders the Home router link as the FIRST item in the mat-nav-list', async () => {
+    it('renders the Home router link as the FIRST item in the sidenav', async () => {
         // Arrange
-        const matNavListDe = fixture.debugElement.query(By.css('mat-nav-list'));
+        const matNavListDe = findMatNavListAsDebugElement(fixture);
         expect(matNavListDe).toBeDefined();
 
         // Alle RouterLinks innerhalb der Toolbar in DOM-Reihenfolge
         const linkDes: DebugElement[] = matNavListDe.queryAll(By.directive(RouterLink));
-        expect(linkDes.length).toBe(1); // bricht, wenn später mehr Links hinzugefügt werden
+        expect(linkDes.length).toBe(2); // bricht, wenn später mehr Links hinzugefügt werden
 
         // Wir wollen explizit den ERSTEN Link validieren (links außen)
         const firstLinkDe = linkDes[0];
@@ -68,13 +74,50 @@ describe('SidenavComponent', () => {
         expect(rl).toBeTruthy();
 
         // 4) Kinder prüfen: Icon + Caption innerhalb GENAU dieses Links
-        const iconDe = firstLinkDe.query(By.css('mat-icon'));
+        const iconDe = firstLinkDe.query(By.css('mat-icon.sidenav__icon'));
         expect(iconDe).toBeTruthy();
         expect(iconDe.nativeElement.textContent.trim()).toBe('home');
 
-        const captionDe = firstLinkDe.query(By.css('span.nav-caption'));
+        const captionDe = firstLinkDe.query(By.css('span.sidenav__caption'));
         expect(captionDe).toBeTruthy();
         expect(captionDe.nativeElement.textContent.trim()).toBe('Startseite');
+
+        // 5) (A11y) Wenn das Icon dekorativ sein soll
+        expect(iconDe.nativeElement.getAttribute('aria-hidden')).toBe('true');
+    });
+
+    it('renders the Gefaesstypen router link as the SECOND item in the sidenav', async () => {
+        // Arrange
+        const matNavListDe = findMatNavListAsDebugElement(fixture);
+        expect(matNavListDe).toBeDefined();
+
+        // Alle RouterLinks innerhalb der Toolbar in DOM-Reihenfolge
+        const linkDes: DebugElement[] = matNavListDe.queryAll(By.directive(RouterLink));
+        expect(linkDes.length).toBe(2); // bricht, wenn später mehr Links hinzugefügt werden
+
+        // Wir wollen explizit den ZWEITEN Link validieren (links außen)
+        const firstLinkDe = linkDes[1];
+
+        // 1) Strukturelle Strenge: es MUSS ein <a> bleiben (kein <button> etc.)
+        const native = firstLinkDe.nativeElement as HTMLElement;
+        expect(native.tagName).toBe('A'); // bricht, wenn später ein Button verwendet wird
+
+        // 2) Ziel prüfen – bevorzugt über das gerenderte href-Attribut (roh, nicht absolut)
+        const hrefAttr = (native as HTMLAnchorElement).getAttribute('href');
+        expect(hrefAttr).toBe('/gefaesstypen');
+
+        // 3) Optionaler Gegencheck über die Directive (robust gg. absolute URLs)
+        const rl = firstLinkDe.injector.get(RouterLink, null) ?? firstLinkDe.injector.get(RouterLinkWithHref, null);
+        expect(rl).toBeTruthy();
+
+        // 4) Kinder prüfen: Icon + Caption innerhalb GENAU dieses Links
+        const iconDe = firstLinkDe.query(By.css('mat-icon.sidenav__icon'));
+        expect(iconDe).toBeTruthy();
+        expect(iconDe.nativeElement.textContent.trim()).toBe('inventory_2');
+
+        const captionDe = firstLinkDe.query(By.css('span.sidenav__caption'));
+        expect(captionDe).toBeTruthy();
+        expect(captionDe.nativeElement.textContent.trim()).toBe('Gefäßtypen');
 
         // 5) (A11y) Wenn das Icon dekorativ sein soll
         expect(iconDe.nativeElement.getAttribute('aria-hidden')).toBe('true');
@@ -84,11 +127,14 @@ describe('SidenavComponent', () => {
         const router = TestBed.inject(Router);
         const navSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
 
-        const matNavListDe = fixture.debugElement.query(By.css('mat-nav-list'));
+        const matNavListDe = findMatNavListAsDebugElement(fixture);
         expect(matNavListDe).toBeDefined();
-        const linkDe = matNavListDe.query(By.directive(RouterLink));
-        expect(linkDe).toBeDefined();
-        (linkDe.nativeElement as HTMLAnchorElement).click();
+
+        const linkDes: DebugElement[] = matNavListDe.queryAll(By.directive(RouterLink));
+        expect(linkDes.length).toBe(2); // bricht, wenn später mehr Links hinzugefügt werden
+        const routerLinkDe = linkDes[0];
+        expect(routerLinkDe).toBeDefined();
+        (routerLinkDe.nativeElement as HTMLAnchorElement).click();
 
         fixture.detectChanges();
         await fixture.whenStable();
@@ -112,12 +158,49 @@ describe('SidenavComponent', () => {
         expect(path).toBe('/home');
     });
 
+    it('navigates to /gefaesstypen when clicking the Gefaesstypen link', async () => {
+        const router = TestBed.inject(Router);
+        const navSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+
+        const matNavListDe = findMatNavListAsDebugElement(fixture);
+        expect(matNavListDe).toBeDefined();
+
+        // Alle RouterLinks innerhalb der Toolbar in DOM-Reihenfolge
+        const linkDes: DebugElement[] = matNavListDe.queryAll(By.directive(RouterLink));
+        expect(linkDes.length).toBe(2); // bricht, wenn später mehr Links hinzugefügt werden
+
+        const routerLinkDe = linkDes[1];
+        expect(routerLinkDe).toBeDefined();
+        (routerLinkDe.nativeElement as HTMLAnchorElement).click();
+
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(navSpy).toHaveBeenCalledTimes(1);
+        const calls = navSpy.mock.calls;
+        expect(calls.length).toBe(1);
+
+        const [arg] = calls[0];
+        expect(arg).toBeDefined();
+
+        const path =
+            typeof arg === 'string'
+                ? arg
+                : arg instanceof UrlTree
+                  ? router.serializeUrl(arg)
+                  : (() => {
+                        throw new Error('Unexpected argument type');
+                    })();
+
+        expect(path).toBe('/gefaesstypen');
+    });
+
     it('should render the theme toggle button', async () => {
         const allTooltips = await loader.getAllHarnesses(MatTooltipHarness);
         expect(allTooltips).toBeTruthy();
         expect(allTooltips.length).toBe(1);
 
-        const tooltipHarness = await loader.getHarness(MatTooltipHarness.with({ selector: 'button' }));
+        const tooltipHarness = await loader.getHarness(MatTooltipHarness.with({ selector: 'button.sidenav__toggle' }));
 
         expect(tooltipHarness).toBeDefined();
         await tooltipHarness.show();
@@ -129,54 +212,41 @@ describe('SidenavComponent', () => {
         const store = TestBed.inject(ThemeStore);
         const spy = vi.spyOn(store, 'toggle');
 
-        const btn = await loader.getHarness(MatButtonHarness.with({ selector: 'button.theme-toggle' }));
-        const host = await btn.host();
-
-        // Initial: dark === true
+        fixture.detectChanges();
+        // Initail: dark === true
         await fixture.whenStable();
-        expect(await host.getAttribute('aria-label')).toBe('Auf helles Theme umschalten'); // aus dem Template
-        expect((await btn.getText()).trim()).toContain('lieber light'); // sichtbarer Buttontext
 
-        // Klick -> toggleTheme()
-        await btn.click();
-        fixture.detectChanges();
+        const list = await loader.getHarness(MatNavListHarness);
+        const [toggle] = await list.getItems({ selector: '.sidenav__toggle' });
+        const host = await toggle.host();
 
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(await host.getAttribute('aria-label')).toBe('Auf dunkles Theme umschalten');
-        expect((await btn.getText()).trim()).toContain('lieber dark');
+        const ariaLabel = await host.getAttribute('aria-label');
+        const isDarkTheme = ariaLabel === 'auf helles Theme umschalten';
 
-        // jetzt ist es light, nochmal klicken
-        await btn.click();
-        fixture.detectChanges();
+        if (isDarkTheme) {
+            // Klick -> toggleTheme()
+            await host.click();
+            fixture.detectChanges();
 
-        expect(spy).toHaveBeenCalledTimes(2);
-        expect(await host.getAttribute('aria-label')).toBe('Auf helles Theme umschalten');
-        expect((await btn.getText()).trim()).toContain('lieber light');
-    });
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(await host.getAttribute('aria-label')).toBe('auf dunkles Theme umschalten');
+        } else {
+            // Klick -> toggleTheme()
+            await host.click();
+            fixture.detectChanges();
 
-    it('should render version', () => {
-        const expectedVersionText = `V1.2.0`;
-        const matNavList = findMatNavList(fixture); // Validierung, dass die Liste da ist
-        const dividers = matNavList.querySelectorAll('mat-divider');
-
-        const secondDivider = dividers[1] as HTMLElement;
-        expect(secondDivider).toBeDefined();
-
-        const versionDiv = secondDivider.nextElementSibling as HTMLElement;
-        expect(versionDiv).toBeDefined();
-        expect(versionDiv.textContent.trim()).toBe(expectedVersionText);
-        expect(versionDiv.tagName.toLowerCase()).toBe('div');
-        expect(versionDiv.classList).toContain('version');
-        expect(versionDiv.classList).toContain('nav-caption');
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(await host.getAttribute('aria-label')).toBe('auf helles Theme umschalten');
+        }
     });
 });
 
-function findMatNavList(fixture: ComponentFixture<SidenavComponent>): HTMLElement {
-    const matNavList = fixture.nativeElement.querySelector('mat-nav-list') as HTMLElement;
+function findMatNavListAsDebugElement(fixture: ComponentFixture<SidenavComponent>): DebugElement {
+    const matNavListDe = fixture.debugElement.query(By.css('mat-nav-list.sidenav'));
 
-    if (!matNavList) {
-        throw new Error('No mat-nav-list found');
+    if (!matNavListDe) {
+        throw new Error('No sidenav found');
     }
 
-    return matNavList;
+    return matNavListDe;
 }

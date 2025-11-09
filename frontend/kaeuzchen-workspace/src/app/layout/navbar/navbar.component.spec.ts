@@ -62,8 +62,6 @@ describe('NavbarComponent', () => {
             // const classListOfIcon = icon.classList;
             expect(icon.classList.contains('mat-icon')).toBe(true);
             expect(icon.classList.contains('nav__icon')).toBe(true);
-            // expect(classListOfIcon).toContain('mat-icon');
-            // expect(classListOfIcon).toContain('nav__item');
             expect(icon.getAttribute('role')).toBe('img');
             expect(icon.getAttribute('aria-hidden')).toBe('true');
 
@@ -270,24 +268,24 @@ describe('NavbarComponent', () => {
 
             // Initial: dark === true
             await fixture.whenStable();
-            expect(await host.getAttribute('aria-label')).toBe('Auf helles Theme umschalten'); // aus dem Template
-            expect((await btn.getText()).trim()).toContain('lieber light'); // sichtbarer Buttontext
+            expect(await host.getAttribute('aria-label')).toBe('auf helles Theme umschalten'); // aus dem Template
+            expect((await btn.getText()).trim()).toContain('light theme'); // sichtbarer Buttontext
 
             // Klick -> toggleTheme()
             await btn.click();
             fixture.detectChanges();
 
             expect(spy).toHaveBeenCalledTimes(1);
-            expect(await host.getAttribute('aria-label')).toBe('Auf dunkles Theme umschalten');
-            expect((await btn.getText()).trim()).toContain('lieber dark');
+            expect(await host.getAttribute('aria-label')).toBe('auf dunkles Theme umschalten');
+            expect((await btn.getText()).trim()).toContain('dark theme');
 
             // jetzt ist es light, nochmal klicken
             await btn.click();
             fixture.detectChanges();
 
             expect(spy).toHaveBeenCalledTimes(2);
-            expect(await host.getAttribute('aria-label')).toBe('Auf helles Theme umschalten');
-            expect((await btn.getText()).trim()).toContain('lieber light');
+            expect(await host.getAttribute('aria-label')).toBe('auf helles Theme umschalten');
+            expect((await btn.getText()).trim()).toContain('light theme');
         });
     });
 

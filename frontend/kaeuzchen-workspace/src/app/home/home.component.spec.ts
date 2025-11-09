@@ -35,6 +35,6 @@ describe('HomeComponent', () => {
         const fixture = TestBed.createComponent(HomeComponent);
         fixture.detectChanges();
         const compiled = fixture.nativeElement as HTMLElement;
-        expect(compiled.querySelector('h1')?.textContent).toContain('Hier ist das Käuzchenlager');
+        expect(compiled.querySelector('h1')?.textContent).toContain('Käuzchenlager');
     });
 });

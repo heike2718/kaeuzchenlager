@@ -23,7 +23,7 @@ import { ThemeStore } from '../theme.store';
     styleUrl: './sidenav.component.scss',
 })
 export class SidenavComponent {
-    version = '1.0.0-SNAPSHOT';
+    version = '1.0.0';
     readonly theme = inject(ThemeStore);
 
     @Output()

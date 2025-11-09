@@ -1,28 +1,25 @@
-<mat-nav-list (click)="onSidenavClose()">
-    <a mat-list-item routerLink="/home">
-        <mat-icon>home</mat-icon>
-        <span class="nav-caption">Startseite</span>
+<mat-nav-list class="sidenav" (click)="onSidenavClose()">
+    <!-- menü-->
+    <a mat-list-item class="sidenav__link" routerLink="/home">
+        <mat-icon class="sidenav__icon">home</mat-icon>
+        <span class="sidenav__caption">Startseite</span>
     </a>
-    <!--
-  <a mat-list-item routerLink="/gefaesse">
-    <mat-icon>library_books</mat-icon>
-    <span class="nav-caption">Gefäße</span>
-  </a>
-  -->
-
-    <mat-divider inset></mat-divider>
+    <a mat-list-item class="sidenav__link" routerLink="/gefaesstypen">
+        <mat-icon class="sidenav__icon">inventory_2</mat-icon>
+        <span class="sidenav__caption">Gefäßtypen</span>
+    </a>
 
     <button
-        mat-button
-        class="theme-toggle"
+        mat-list-item
+        class="sidenav__toggle"
         (click)="theme.toggle()"
-        [attr.aria-label]="theme.isDark() ? 'Auf helles Theme umschalten' : 'Auf dunkles Theme umschalten'"
+        [attr.aria-label]="theme.isDark() ? 'auf helles Theme umschalten' : 'auf dunkles Theme umschalten'"
         matTooltip="umschalten">
-        <mat-icon fontSet="material-icons-outlined">{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-        <span class="nav-caption">{{ theme.isDark() ? 'lieber light' : 'lieber dark' }}</span>
+        <mat-icon class="sidenav__icon">{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        <span class="sidenav__caption">{{ theme.isDark() ? 'light theme' : 'dark theme' }}</span>
     </button>
 
-    <mat-divider inset></mat-divider>
-
-    <div class="version nav-caption">V{{ version }}</div>
+    <div class="sidenav__footer">
+        <div class="sidenav__version">V {{ version }}</div>
+    </div>
 </mat-nav-list>
