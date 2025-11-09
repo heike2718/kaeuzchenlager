@@ -10,6 +10,7 @@
 }
 
 /* Rahmen und Abstand nur für den Toggle-Eintrag */
-.sidenav__toggle.mat-mdc-list-item {
+.sidenav__toggle.mat-mdc-button {
     margin-block-start: 1.5rem; /* Abstand zu den Links */
+    margin-left: 0.5rem;
 }

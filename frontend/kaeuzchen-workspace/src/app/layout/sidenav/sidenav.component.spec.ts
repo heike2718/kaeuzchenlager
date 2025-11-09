@@ -8,7 +8,7 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatTooltipHarness } from '@angular/material/tooltip/testing';
 import { ThemeStore } from '../theme.store';
-import { MatNavListHarness } from '@angular/material/list/testing';
+import { MatButtonHarness } from '@angular/material/button/testing';
 
 describe('SidenavComponent', () => {
     let component: SidenavComponent;
@@ -212,32 +212,29 @@ describe('SidenavComponent', () => {
         const store = TestBed.inject(ThemeStore);
         const spy = vi.spyOn(store, 'toggle');
 
-        fixture.detectChanges();
-        // Initail: dark === true
+        const btn = await loader.getHarness(MatButtonHarness.with({ selector: 'button.sidenav__toggle' }));
+        const host = await btn.host();
+
+        // Initial: dark === true
         await fixture.whenStable();
+        expect(await host.getAttribute('aria-label')).toBe('auf helles Theme umschalten'); // aus dem Template
+        expect((await btn.getText()).trim()).toContain('light theme'); // sichtbarer Buttontext
 
-        const list = await loader.getHarness(MatNavListHarness);
-        const [toggle] = await list.getItems({ selector: '.sidenav__toggle' });
-        const host = await toggle.host();
+        // Klick -> toggleTheme()
+        await btn.click();
+        fixture.detectChanges();
 
-        const ariaLabel = await host.getAttribute('aria-label');
-        const isDarkTheme = ariaLabel === 'auf helles Theme umschalten';
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(await host.getAttribute('aria-label')).toBe('auf dunkles Theme umschalten');
+        expect((await btn.getText()).trim()).toContain('dark theme');
 
-        if (isDarkTheme) {
-            // Klick -> toggleTheme()
-            await host.click();
-            fixture.detectChanges();
+        // jetzt ist es light, nochmal klicken
+        await btn.click();
+        fixture.detectChanges();
 
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(await host.getAttribute('aria-label')).toBe('auf dunkles Theme umschalten');
-        } else {
-            // Klick -> toggleTheme()
-            await host.click();
-            fixture.detectChanges();
-
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(await host.getAttribute('aria-label')).toBe('auf helles Theme umschalten');
-        }
+        expect(spy).toHaveBeenCalledTimes(2);
+        expect(await host.getAttribute('aria-label')).toBe('auf helles Theme umschalten');
+        expect((await btn.getText()).trim()).toContain('light theme');
     });
 });
 
