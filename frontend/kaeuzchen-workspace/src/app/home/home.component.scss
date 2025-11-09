@@ -1,0 +1,10 @@
+.home {
+    box-sizing: border-box;
+    padding: clamp(0.75rem, 2vw, 1.25rem);
+    inline-size: 100%;
+    text-align: center;
+
+    &__button {
+        margin-block-start: 1.5rem;
+    }
+}

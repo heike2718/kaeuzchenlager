@@ -3,4 +3,7 @@
     <header class="home__header">
         <h1 class="home__title">Käuzchenlager</h1>
     </header>
+    @if (isHandset$ | async) {
+        <button mat-raised-button color="primary" class="home__button" (click)="goToGefaesstypen()">Gefäßtypen</button>
+    }
 </section>
