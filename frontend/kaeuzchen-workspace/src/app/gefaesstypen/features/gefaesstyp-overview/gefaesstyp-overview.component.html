@@ -20,4 +20,25 @@
             <span class="gt-card__value">{{ gefaesstyp?.daten.anzahl }}</span>
         </div>
     </mat-card-content>
+    <mat-card-actions class="gt-card__actions">
+        <button
+            mat-fab
+            color="primary"
+            class="gt-card__action-button"
+            type="button"
+            (click)="onEdit()"
+            aria-label="Gefäßtyp bearbeiten">
+            <mat-icon>edit</mat-icon>
+        </button>
+
+        <button
+            mat-fab
+            color="warn"
+            class="gt-card__action-button"
+            type="button"
+            (click)="onDelete()"
+            aria-label="Gefäßtyp löschen">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </mat-card-actions>
 </mat-card>

@@ -54,6 +54,20 @@
     &--dark {
         color: #fff;
     }
+
+    &__actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        padding: 0.75rem 0 1rem;
+    }
+
+    &__action-button {
+        width: 3.5rem;
+        height: 3.5rem;
+        // Icon größer
+        font-size: 1.75rem;
+    }
 }
 
 /* Responsive Feinschliff */

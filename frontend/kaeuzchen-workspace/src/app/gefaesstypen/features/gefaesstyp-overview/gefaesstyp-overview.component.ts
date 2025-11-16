@@ -1,12 +1,14 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, EventEmitter, Output } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { DEFAULT_GEFAESSTYP_BG_COLOR, Gefaesstyp } from '@gefaesstypen/model';
 import { ColorFormatError, normalizeHex, isColorDark } from '@shared/utils';
 
 @Component({
     selector: 'kl-gefaesstyp-overview',
     standalone: true,
-    imports: [MatCardModule],
+    imports: [MatCardModule, MatIconModule, MatButtonModule],
     templateUrl: './gefaesstyp-overview.component.html',
     styleUrl: './gefaesstyp-overview.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,6 +24,12 @@ export class GefaesstypOverviewComponent {
     get gefaesstyp(): Gefaesstyp {
         return this.#gefaesstyp;
     }
+
+    @Output()
+    edit = new EventEmitter<Gefaesstyp>();
+
+    @Output()
+    delete = new EventEmitter<Gefaesstyp>();
 
     backgroundColor = '#ffffff';
     isDarkBackground = false;
@@ -44,5 +52,13 @@ export class GefaesstypOverviewComponent {
 
         // Einheit konsistent halten: hier Liter (Länge passt zur Anzeige)
         this.ariaLabel = `${g.daten.name}, Volumen: ${g.daten.volumen} Milliliter, Anzahl: ${g.daten.anzahl}`;
+    }
+
+    onEdit(): void {
+        this.edit.emit(this.#gefaesstyp);
+    }
+
+    onDelete(): void {
+        this.delete.emit(this.gefaesstyp);
     }
 }

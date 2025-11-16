@@ -33,6 +33,15 @@ export class GefaesstypenEffects {
         )
     );
 
+    openEditor$ = createEffect(
+        () =>
+            this.#actions$.pipe(
+                ofType(gefaesstypenActions.openGefaesstypEditor),
+                tap(({ uuid }) => this.#router.navigate(['/gefaesstypen', uuid]))
+            ),
+        { dispatch: false }
+    );
+
     addGefaesstyp$ = createEffect(() =>
         this.#actions$.pipe(
             ofType(gefaesstypenActions.addGefaesstyp),
@@ -102,17 +111,6 @@ export class GefaesstypenEffects {
                 )
             )
         )
-    );
-
-    gefaesstypSeleced$ = createEffect(
-        () =>
-            this.#actions$.pipe(
-                ofType(gefaesstypenActions.gefaesstypSelected),
-                tap(action => {
-                    this.#router.navigateByUrl(action.navigateTo);
-                })
-            ),
-        { dispatch: false }
     );
 
     removeGefaesstyp$ = createEffect(() =>

@@ -17,7 +17,7 @@
         <span class="nav__spacer"></span>
 
         <div class="nav__greeting">Moin, Gast!</div>
-        <div class="nav__version">Version: {{ version }}</div>
+        <div class="nav__version">Version: {{ config.version }}</div>
 
         <button mat-button class="nav__toggle" (click)="theme.toggle()" [attr.aria-label]="theme.ariaLabel()">
             <mat-icon fontSet="material-icons-outlined" class="nav__icon">

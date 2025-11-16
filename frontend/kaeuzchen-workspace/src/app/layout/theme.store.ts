@@ -4,7 +4,7 @@ import { signalStore, withState, withComputed, withMethods, patchState, withProp
 import { withDevtools } from '@angular-architects/ngrx-toolkit';
 
 type Theme = 'light' | 'dark';
-export const PREFERRED_THEME_KEY = 'preferred-theme';
+export const PREFERRED_THEME_KEY = 'kl-preferred-theme';
 
 interface ThemeState {
     theme: Theme;
@@ -21,9 +21,9 @@ export const ThemeStore = signalStore(
     withComputed(store => ({
         isDark: computed(() => store.theme() === 'dark'),
         icon: computed(() => (store.theme() === 'dark' ? 'light_mode' : 'dark_mode')),
-        caption: computed(() => (store.theme() === 'dark' ? 'helles Design' : 'dunkles Design')),
+        caption: computed(() => (store.theme() === 'dark' ? 'heller Stil' : 'dunkler Stil')),
         ariaLabel: computed(() =>
-            store.theme() === 'dark' ? 'auf helles Design umschalten' : 'auf dunkles Design umschalten'
+            store.theme() === 'dark' ? 'auf hellen Stil umschalten' : 'auf dunklen Stil umschalten'
         ),
     })),
     withMethods(store => ({

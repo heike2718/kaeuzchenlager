@@ -8,6 +8,8 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { ThemeStore } from '../theme.store';
 import { MatButtonHarness } from '@angular/material/button/testing';
+import { KL_CONFIGURATION } from '@config';
+import { mockConfig } from '@testing';
 
 describe('SidenavComponent', () => {
     let component: SidenavComponent;
@@ -17,12 +19,17 @@ describe('SidenavComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [SidenavComponent, HomeComponent, RouterModule.forRoot([{ path: '', component: HomeComponent }])],
+            providers: [
+                {
+                    provide: KL_CONFIGURATION,
+                    useValue: mockConfig,
+                },
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(SidenavComponent);
         loader = TestbedHarnessEnvironment.loader(fixture);
         component = fixture.componentInstance;
-        component.version = '1.2.0'; // Setze die Version für den Test
         fixture.detectChanges();
     });
 
@@ -203,24 +210,24 @@ describe('SidenavComponent', () => {
 
         // Initial: dark === true
         await fixture.whenStable();
-        expect(await host.getAttribute('aria-label')).toBe('auf helles Design umschalten'); // aus dem Template
-        expect((await btn.getText()).trim()).toContain('helles Design'); // sichtbarer Buttontext
+        expect(await host.getAttribute('aria-label')).toBe('auf hellen Stil umschalten'); // aus dem Template
+        expect((await btn.getText()).trim()).toContain('heller Stil'); // sichtbarer Buttontext
 
         // Klick -> toggleTheme()
         await btn.click();
         fixture.detectChanges();
 
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(await host.getAttribute('aria-label')).toBe('auf dunkles Design umschalten');
-        expect((await btn.getText()).trim()).toContain('dunkles Design');
+        expect(await host.getAttribute('aria-label')).toBe('auf dunklen Stil umschalten');
+        expect((await btn.getText()).trim()).toContain('dunkler Stil');
 
         // jetzt ist es light, nochmal klicken
         await btn.click();
         fixture.detectChanges();
 
         expect(spy).toHaveBeenCalledTimes(2);
-        expect(await host.getAttribute('aria-label')).toBe('auf helles Design umschalten');
-        expect((await btn.getText()).trim()).toContain('helles Design');
+        expect(await host.getAttribute('aria-label')).toBe('auf hellen Stil umschalten');
+        expect((await btn.getText()).trim()).toContain('heller Stil');
     });
 });
 

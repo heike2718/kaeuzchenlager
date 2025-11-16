@@ -10,6 +10,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncPipe } from '@angular/common';
+import { KL_CONFIGURATION, KLConfiguration } from '@config';
 
 @Component({
     selector: 'kl-navbar',
@@ -26,7 +27,7 @@ import { AsyncPipe } from '@angular/common';
     styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent {
-    version = '1.0.0-SNAPSHOT';
+    readonly config: KLConfiguration = inject(KL_CONFIGURATION);
     readonly theme = inject(ThemeStore);
 
     @Output()

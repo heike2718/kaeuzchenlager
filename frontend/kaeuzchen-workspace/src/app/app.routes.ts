@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { GefaesstypenListComponent } from '@gefaesstypen/features/gefaesstypen-list';
+import { EditGefaesstypComponent } from '@gefaesstypen/features/edit-gefaesstyp';
 
 export const appRoutes: Route[] = [
     {
@@ -9,14 +10,24 @@ export const appRoutes: Route[] = [
     },
     {
         path: 'gefaesstypen',
-        component: GefaesstypenListComponent,
+        children: [
+            {
+                path: '',
+                component: GefaesstypenListComponent, // /gefaesstypen
+            },
+            {
+                path: ':uuid',
+                component: EditGefaesstypComponent, // /gefaesstypen/:uuid
+            },
+        ],
     },
     {
         path: '',
-        component: HomeComponent,
+        redirectTo: 'home',
+        pathMatch: 'full',
     },
     {
         path: '**',
-        component: HomeComponent,
+        redirectTo: 'home',
     },
 ];

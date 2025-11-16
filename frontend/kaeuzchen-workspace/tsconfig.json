@@ -1,41 +1,41 @@
 {
-  "compilerOptions": {
-    "moduleResolution": "bundler",
-    "emitDecoratorMetadata": false,
-    "target": "es2022",
-    "module": "preserve",
-    "lib": ["es2020", "dom"],
-    "paths": {
-      "@core/model": ["./src/app/core/model/index.ts"],
-      "@core/services": ["./src/app/core/services/index.ts"],
-      "@gefaesstypen/api": ["./src/app/gefaesstypen/api/index.ts"],
-      "@gefaesstypen/data": ["./src/app/gefaesstypen/data/index.ts"],
-      "@gefaesstypen/features/gefaesstypen-list": [
-        "./src/app/gefaesstypen/features/gefaesstypen-list/index.ts"
-      ],
-      "@gefaesstypen/model": ["./src/app/gefaesstypen/model/index.ts"],
-      "@shared/utils": ["./src/app/shared/utils/index.ts"],
-      "@testing": ["./testing/index.ts"]
+    "compilerOptions": {
+        "moduleResolution": "bundler",
+        "emitDecoratorMetadata": false,
+        "target": "es2022",
+        "module": "preserve",
+        "lib": ["es2020", "dom"],
+        "paths": {
+            "@config": ["./src/app/config/index.ts"],
+            "@core/model": ["./src/app/core/model/index.ts"],
+            "@core/services": ["./src/app/core/services/index.ts"],
+            "@gefaesstypen/api": ["./src/app/gefaesstypen/api/index.ts"],
+            "@gefaesstypen/data": ["./src/app/gefaesstypen/data/index.ts"],
+            "@gefaesstypen/features/gefaesstypen-list": ["./src/app/gefaesstypen/features/gefaesstypen-list/index.ts"],
+            "@gefaesstypen/features/edit-gefaesstyp": ["./src/app/gefaesstypen/features/edit-gefaesstyp/index.ts"],
+            "@gefaesstypen/model": ["./src/app/gefaesstypen/model/index.ts"],
+            "@shared/utils": ["./src/app/shared/utils/index.ts"],
+            "@testing": ["./testing/index.ts"]
+        },
+        "isolatedModules": true
     },
-    "isolatedModules": true
-  },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "typeCheckHostBindings": true,
-    "strictTemplates": true
-  },
-  "files": [],
-  "include": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
+    "angularCompilerOptions": {
+        "enableI18nLegacyMessageIdFormat": false,
+        "strictInjectionParameters": true,
+        "strictInputAccessModifiers": true,
+        "typeCheckHostBindings": true,
+        "strictTemplates": true
     },
-    {
-      "path": "./tsconfig.spec.json"
-    }
-  ],
-  "compileOnSave": false,
-  "exclude": ["node_modules", "tmp"]
+    "files": [],
+    "include": [],
+    "references": [
+        {
+            "path": "./tsconfig.app.json"
+        },
+        {
+            "path": "./tsconfig.spec.json"
+        }
+    ],
+    "compileOnSave": false,
+    "exclude": ["node_modules", "tmp"]
 }

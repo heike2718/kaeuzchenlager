@@ -1,13 +1,17 @@
 # Wo geht es weiter?
 
+## nach dem 16.11.2025
+
+- gefaesstypenFacade: tests fehlen und Implementierung ist unvollständig. [chat](https://chatgpt.com/g/g-p-67cc1db6eb9481919aad0344d8070af4-angular/c/691978b0-47f0-832c-9165-3606f809ac00)
+
 ## nach dem 09.11.2025
 
-- theme-button in eigene Komponente auslagern (tooltip = aria-label)
 - neuen Gefäßtyp anlegen
 - vorhandenen Gefäßtyp editieren
 - Gefäßtyp löschen
 - Anbindung backen noch ohne auth
 - auth einbauen
+- theme-button in eigene Komponente auslagern (tooltip = aria-label)
 
 ## nach dem 05.10.2025
 

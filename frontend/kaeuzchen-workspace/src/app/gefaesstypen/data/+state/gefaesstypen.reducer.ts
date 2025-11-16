@@ -11,6 +11,7 @@ import { gefaesstypenActions } from './gefaesstypen.actions';
 export interface GefaesstypenState {
     readonly gefaesstypen: Gefaesstyp[];
     readonly selectedUuid: string | null;
+    readonly gefaesstypenLoading: boolean;
     readonly gefaesstypenLoaded: boolean;
     readonly error: GefaesstypError | null;
     readonly conflict: GefaesstypConflict | null;
@@ -20,6 +21,7 @@ export interface GefaesstypenState {
 export const initialState: GefaesstypenState = {
     gefaesstypen: [],
     selectedUuid: null,
+    gefaesstypenLoading: false,
     gefaesstypenLoaded: false,
     error: null,
     conflict: null,
@@ -29,33 +31,27 @@ export const gefaesstypenFeature = createFeature({
     name: 'gefaesstypen',
     reducer: createReducer(
         initialState,
+        on(gefaesstypenActions.loadGefaesstypen, state => {
+            return { ...state, gefaesstypenLoading: true };
+        }),
         on(gefaesstypenActions.gefaesstypenLoaded, (state, action) => {
             return {
                 ...state,
                 gefaesstypen: action.gefaesstypen,
+                gefaesstypenLoading: false,
                 gefaesstypenLoaded: true,
                 selectedUuid: null,
                 error: null,
             };
         }),
-        on(gefaesstypenActions.gefaesstypSelected, (state, action) => {
-            // diese wird nur getriggert, wenn es die uuid auch im backend gibt
-            const newGefaesstypen = state.gefaesstypen.map((gt: Gefaesstyp) =>
-                gt.uuid !== action.gefaesstyp.uuid ? gt : action.gefaesstyp
-            );
-
-            return {
-                ...state,
-                gefaesstypen: newGefaesstypen,
-                selectedUuid: action.gefaesstyp.uuid,
-                error: null,
-            };
+        on(gefaesstypenActions.selectGefaesstypByUuid, (state, action) => {
+            return { ...state, selectedUuid: action.uuid, error: null, conflict: null };
         }),
         on(gefaesstypenActions.neuerGefaesstypInitialized, (state, action) => {
             return {
                 ...state,
                 gefaesstypen: sortGefaesstypenByName([...state.gefaesstypen, action.neuerGefaesstyp]),
-                selectedUuid: action.neuerGefaesstyp.uuid,
+                selectedUuid: null,
                 error: null,
             };
         }),

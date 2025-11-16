@@ -28,6 +28,7 @@ describe('GefaesstypenEffects', () => {
 
     const routerMock = {
         navigateByUrl: vi.fn(),
+        navigate: vi.fn().mockResolvedValue(true),
     };
 
     beforeEach(() => {
@@ -313,23 +314,20 @@ describe('GefaesstypenEffects', () => {
         });
     });
 
-    describe('Test gefaesstypSelected$', () => {
+    describe('Test openEditor$', () => {
         it('should stop dispatch and navigate on gefaesstypSelected', async () => {
-            const navigateTo = '/gefaesstypen/1234';
-
-            const sub = effects.gefaesstypSeleced$.subscribe(); // dispatch:false → manuell subscriben
+            const sub = effects.openEditor$.subscribe(); // dispatch:false → manuell subscriben
 
             actions$.next(
-                gefaesstypenActions.gefaesstypSelected({
-                    gefaesstyp: firstGefaesstyp,
-                    navigateTo: navigateTo,
+                gefaesstypenActions.openGefaesstypEditor({
+                    uuid: firstGefaesstyp.uuid,
                 })
             );
 
             await Promise.resolve(); // Microtask-Tick
 
-            expect(routerMock.navigateByUrl).toHaveBeenCalledWith(navigateTo);
-            expect(routerMock.navigateByUrl).toHaveBeenCalledTimes(1);
+            expect(routerMock.navigate).toHaveBeenCalledWith(['/gefaesstypen', '1234']);
+            expect(routerMock.navigate).toHaveBeenCalledTimes(1);
 
             sub.unsubscribe();
         });

@@ -7,6 +7,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLinkWithHref } from '@angular/router';
 import { ThemeStore } from '../theme.store';
+import { KL_CONFIGURATION, KLConfiguration } from '@config';
 
 @Component({
     selector: 'kl-sidenav',
@@ -23,7 +24,7 @@ import { ThemeStore } from '../theme.store';
     styleUrl: './sidenav.component.scss',
 })
 export class SidenavComponent {
-    version = '1.0.0';
+    readonly config: KLConfiguration = inject(KL_CONFIGURATION);
     readonly theme = inject(ThemeStore);
 
     @Output()

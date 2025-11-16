@@ -9,6 +9,8 @@ import { SidenavComponent } from './layout/sidenav/sidenav.component';
 import { By } from '@angular/platform-browser';
 import { NavbarComponent } from './layout/navbar/navbar.component';
 import { of } from 'rxjs';
+import { KL_CONFIGURATION } from '@config';
+import { mockConfig } from '@testing';
 
 describe('App', () => {
     let fixture: ComponentFixture<App>;
@@ -17,6 +19,12 @@ describe('App', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [App, HomeComponent, RouterModule.forRoot([{ path: '', component: HomeComponent }])],
+            providers: [
+                {
+                    provide: KL_CONFIGURATION,
+                    useValue: mockConfig,
+                },
+            ],
         }).compileComponents();
         fixture = TestBed.createComponent(App);
         loader = TestbedHarnessEnvironment.loader(fixture);

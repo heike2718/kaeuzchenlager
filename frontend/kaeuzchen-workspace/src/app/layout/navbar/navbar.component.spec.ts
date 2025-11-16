@@ -11,6 +11,8 @@ import { MatButtonHarness } from '@angular/material/button/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { ThemeStore } from '../theme.store';
 import { MatIcon } from '@angular/material/icon';
+import { KL_CONFIGURATION } from '@config';
+import { mockConfig } from '@testing';
 
 describe('NavbarComponent', () => {
     let component: NavbarComponent;
@@ -20,12 +22,17 @@ describe('NavbarComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [NavbarComponent, HomeComponent, RouterModule.forRoot([{ path: '', component: HomeComponent }])],
+            providers: [
+                {
+                    provide: KL_CONFIGURATION,
+                    useValue: mockConfig,
+                },
+            ],
         }).compileComponents();
 
         fixture = TestBed.createComponent(NavbarComponent);
         loader = TestbedHarnessEnvironment.loader(fixture);
         component = fixture.componentInstance;
-        component.version = '1.2.0'; // Setze die Version für den Test
     });
 
     it('should create', () => {
@@ -256,24 +263,24 @@ describe('NavbarComponent', () => {
 
             // Initial: dark === true
             await fixture.whenStable();
-            expect(await host.getAttribute('aria-label')).toBe('auf helles Design umschalten'); // aus dem Template
-            expect((await btn.getText()).trim()).toContain('helles Design'); // sichtbarer Buttontext
+            expect(await host.getAttribute('aria-label')).toBe('auf hellen Stil umschalten'); // aus dem Template
+            expect((await btn.getText()).trim()).toContain('heller Stil'); // sichtbarer Buttontext
 
             // Klick -> toggleTheme()
             await btn.click();
             fixture.detectChanges();
 
             expect(spy).toHaveBeenCalledTimes(1);
-            expect(await host.getAttribute('aria-label')).toBe('auf dunkles Design umschalten');
-            expect((await btn.getText()).trim()).toContain('dunkles Design');
+            expect(await host.getAttribute('aria-label')).toBe('auf dunklen Stil umschalten');
+            expect((await btn.getText()).trim()).toContain('dunkler Stil');
 
             // jetzt ist es light, nochmal klicken
             await btn.click();
             fixture.detectChanges();
 
             expect(spy).toHaveBeenCalledTimes(2);
-            expect(await host.getAttribute('aria-label')).toBe('auf helles Design umschalten');
-            expect((await btn.getText()).trim()).toContain('helles Design');
+            expect(await host.getAttribute('aria-label')).toBe('auf hellen Stil umschalten');
+            expect((await btn.getText()).trim()).toContain('heller Stil');
         });
     });
 

@@ -1,3 +1,5 @@
+import { KLConfiguration } from '@config';
+
 export const firstGefaesstyp = {
     uuid: '1234',
     daten: {
@@ -29,4 +31,11 @@ export const thirdGefaesstyp = {
         volumen: 50,
         version: 0,
     },
+};
+
+export const mockConfig: KLConfiguration = {
+    production: false,
+    version: '1.2.0',
+    environment: 'test',
+    apiUrl: 'http://test-api.example.com',
 };

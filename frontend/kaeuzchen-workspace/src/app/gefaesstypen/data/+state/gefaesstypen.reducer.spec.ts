@@ -34,6 +34,7 @@ describe('gefaesstypenFeature', () => {
     const previousState: GefaesstypenState = {
         gefaesstypen: mockedGefaesstypen,
         selectedUuid: '7564',
+        gefaesstypenLoading: false,
         gefaesstypenLoaded: true,
         error: someError,
         conflict: null,
@@ -72,6 +73,7 @@ describe('gefaesstypenFeature', () => {
             const previousState: GefaesstypenState = {
                 gefaesstypen: mockedGefaesstypen,
                 selectedUuid: '7564',
+                gefaesstypenLoading: false,
                 gefaesstypenLoaded: true,
                 error: null,
                 conflict: conflict,
@@ -118,11 +120,11 @@ describe('gefaesstypenFeature', () => {
         });
     });
 
-    describe('gefaesstypSelected', () => {
+    describe('selectGefaesstypByUuid', () => {
         it('sets the selectedUuid and resets error when not initialState and uuid known', () => {
             const state = gefaesstypenFeature.reducer(
                 previousState,
-                gefaesstypenActions.gefaesstypSelected({ gefaesstyp: secondGefaesstyp, navigateTo })
+                gefaesstypenActions.selectGefaesstypByUuid({ uuid: '9876' })
             );
             expect(state.gefaesstypen).toEqual(mockedGefaesstypen);
             expect(state.gefaesstypenLoaded).toBe(true);
@@ -132,17 +134,17 @@ describe('gefaesstypenFeature', () => {
     });
 
     describe('neuerGefaesstypInitialized', () => {
-        it('should add to gefaesstypen, sort and setSelectedUuid', () => {
+        it('should add to gefaesstypen, sort but not setSelectedUuid', () => {
             const uuid = 'temp-23425';
             const neuerGefaesstyp: Gefaesstyp = { ...createInitialGefaesstyp(), uuid: uuid };
 
             // gefaesstypenLoaded ist zwar unsinnig, aber es soll sichergestellt sein, dass gefaesstypenLoaded nicht geändert wird
             const state = gefaesstypenFeature.reducer(
                 { ...previousState, gefaesstypenLoaded: false },
-                gefaesstypenActions.neuerGefaesstypInitialized({ neuerGefaesstyp, navigateTo })
+                gefaesstypenActions.neuerGefaesstypInitialized({ neuerGefaesstyp })
             );
 
-            expect(state.selectedUuid).toBe('temp-23425');
+            expect(state.selectedUuid).toBeNull();
             expect(state.error).toBeNull();
             expect(state.gefaesstypenLoaded).toBe(false);
             expect(state.gefaesstypen.length).toBe(3);

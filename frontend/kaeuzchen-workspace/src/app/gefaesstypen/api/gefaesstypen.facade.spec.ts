@@ -5,25 +5,15 @@ import { take } from 'rxjs/operators';
 import { GefaesstypenFacade } from './gefaesstypen.facade';
 import { fromGefaesstypen, gefaesstypenActions } from '@gefaesstypen/data';
 import { GefaesstypConflict } from '@gefaesstypen/model';
-import { NavigationService } from '@core/services';
 import { firstGefaesstyp, secondGefaesstyp, thirdGefaesstyp } from '@testing';
 
 describe('GefaesstypenFacade', () => {
     let facade: GefaesstypenFacade;
     let store: MockStore;
 
-    const navigationServiceMock = {
-        getRouteGefaesstypenList: vi.fn(),
-        getRouteGefaesstypEditor: vi.fn(),
-    };
-
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                GefaesstypenFacade,
-                provideMockStore(),
-                { provide: NavigationService, useValue: navigationServiceMock },
-            ],
+            providers: [GefaesstypenFacade, provideMockStore()],
         });
         facade = TestBed.inject(GefaesstypenFacade);
         store = TestBed.inject(MockStore);
@@ -33,7 +23,17 @@ describe('GefaesstypenFacade', () => {
         vi.restoreAllMocks();
     });
 
-    describe('Observables', () => {
+    describe('test Observables', () => {
+        it('gefaesstypenLoading$ passt zum state', async () => {
+            const loading = store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoading, false);
+
+            expect(await firstValueFrom(facade.gefaesstypenLoading$.pipe(take(1)))).toBe(false);
+
+            loading.setResult(true);
+            store.refreshState();
+
+            expect(await firstValueFrom(facade.gefaesstypenLoading$.pipe(take(1)))).toBe(true);
+        });
         it('gefaesstypenLoaded$ passt zum state', async () => {
             const loaded = store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoaded, false);
 
@@ -90,7 +90,7 @@ describe('GefaesstypenFacade', () => {
         });
     });
 
-    describe('test the methods', () => {
+    describe('test loading', () => {
         it('triggers loading the gefaesstypen', () => {
             // arrange
             const actionDispatchSpy = vi.spyOn(store, 'dispatch');
@@ -103,28 +103,60 @@ describe('GefaesstypenFacade', () => {
             expect(actionDispatchSpy).toBeCalledTimes(1);
             expect(actionDispatchSpy).toHaveBeenCalledWith(expectedAction);
         });
+    });
 
-        it('triggers selecting the gefaesstyp with correct navigateTo', () => {
+    describe('test ensureGefaesstypenLoadedAndSelect', () => {
+        it('dispatches only selectGefaesstypByUuid when gefaesstypen already loaded', () => {
             // arrange
-            const navigateTo = 'bla';
-            const actionDispatchSpy = vi.spyOn(store, 'dispatch');
-            const navigationServiceSpy = vi.spyOn(navigationServiceMock, 'getRouteGefaesstypEditor');
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoaded, true);
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoading, false);
+            store.refreshState(); // selectors feuern sofort
 
-            navigationServiceMock.getRouteGefaesstypEditor.mockReturnValue(navigateTo);
+            const dispatchSpy = vi.spyOn(store, 'dispatch');
 
-            const expectedAction = gefaesstypenActions.selectGefaesstyp({
+            const expectedSelectAction = gefaesstypenActions.selectGefaesstypByUuid({
                 uuid: secondGefaesstyp.uuid,
-                navigateTo: navigateTo,
             });
 
             // act
-            facade.selectGefaesstyp(secondGefaesstyp);
+            facade.ensureGefaesstypenLoadedAndSelect(secondGefaesstyp.uuid);
 
             // assert
-            expect(navigationServiceSpy).toBeCalledTimes(1);
-            expect(actionDispatchSpy).toBeCalledTimes(1);
-            expect(actionDispatchSpy).toHaveBeenCalledAfter(navigationServiceSpy);
-            expect(actionDispatchSpy).toBeCalledWith(expectedAction);
+            expect(dispatchSpy).toHaveBeenCalledWith(expectedSelectAction);
+            expect(dispatchSpy).not.toHaveBeenCalledWith(gefaesstypenActions.loadGefaesstypen());
+            expect(dispatchSpy).not.toHaveBeenCalledWith(
+                expect.objectContaining({
+                    type: gefaesstypenActions.openGefaesstypEditor.type,
+                })
+            );
+
+            expect(dispatchSpy).toHaveBeenCalledTimes(1);
+        });
+        it('dispatches loadGefaesstypen and selectGefaesstypByUuid when gefaesstypen not loaded and not loading', () => {
+            // arrange
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoaded, false);
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoading, false);
+            store.refreshState(); // selectors feuern sofort
+
+            const dispatchSpy = vi.spyOn(store, 'dispatch');
+
+            const expectedSelectAction = gefaesstypenActions.selectGefaesstypByUuid({
+                uuid: secondGefaesstyp.uuid,
+            });
+
+            // act
+            facade.ensureGefaesstypenLoadedAndSelect(secondGefaesstyp.uuid);
+
+            // assert
+            expect(dispatchSpy).toHaveBeenCalledWith(expectedSelectAction);
+            expect(dispatchSpy).toHaveBeenCalledWith(gefaesstypenActions.loadGefaesstypen());
+            expect(dispatchSpy).not.toHaveBeenCalledWith(
+                expect.objectContaining({
+                    type: gefaesstypenActions.openGefaesstypEditor.type,
+                })
+            );
+
+            expect(dispatchSpy).toHaveBeenCalledTimes(2);
         });
     });
 });

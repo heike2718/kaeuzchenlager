@@ -41,6 +41,22 @@
         margin-inline: auto; /* mittig, wenn Spalte breiter als Card */
     }
 
+    &__add-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    &__add-button {
+        // FAB ist rund; hier etwas größer machen
+        width: 4rem;
+        height: 4rem;
+
+        // Icon größer
+        font-size: 2rem;
+    }
+
     &__loading {
         margin: 0;
         opacity: 0.8;

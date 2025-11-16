@@ -13,6 +13,8 @@ export const selectAnzahlGefaesstypen = createSelector(
 
 export const selectGefaesstypenLoaded = createSelector(gefaesstypenState, state => state.gefaesstypenLoaded);
 
+export const selectGefaesstypenLoading = createSelector(gefaesstypenState, state => state.gefaesstypenLoading);
+
 const selectSelectedUuid = createSelector(gefaesstypenState, state => state.selectedUuid);
 
 export const selectGefaesstypConflict = createSelector(gefaesstypenState, state => state.conflict);
@@ -24,6 +26,7 @@ export const selectSelectedGefasesstyp = createSelector(selectGefaesstypen, sele
 export const fromGefaesstypen = {
     selectGefaesstypen,
     selectAnzahlGefaesstypen,
+    selectGefaesstypenLoading,
     selectGefaesstypenLoaded,
     selectSelectedGefasesstyp,
     selectGefaesstypConflict,
