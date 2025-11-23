@@ -333,6 +333,21 @@ describe('GefaesstypenEffects', () => {
         });
     });
 
+    describe('Test gefaesstypEditorNavigationFailed$', () => {
+        it('should stop dispatch and navigate on gefaesstypEditorNavigationFailed', async () => {
+            const sub = effects.gefaesstypEditorNavigationFailed$.subscribe(); // dispatch:false → manuell subscriben
+
+            actions$.next(gefaesstypenActions.gefaesstypEditorNavigationFailed());
+
+            await Promise.resolve(); // Microtask-Tick
+
+            expect(routerMock.navigateByUrl).toHaveBeenCalledWith('/gefaesstypen');
+            expect(routerMock.navigateByUrl).toHaveBeenCalledTimes(1);
+
+            sub.unsubscribe();
+        });
+    });
+
     describe('Test removeGefaesstyp$', () => {
         it('maps removeGefaesstyp to gefaesstypRemoved when ok', async () => {
             const uuid = '1234';

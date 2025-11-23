@@ -42,6 +42,15 @@ export class GefaesstypenEffects {
         { dispatch: false }
     );
 
+    gefaesstypEditorNavigationFailed$ = createEffect(
+        () =>
+            this.#actions$.pipe(
+                ofType(gefaesstypenActions.gefaesstypEditorNavigationFailed),
+                tap(() => this.#router.navigateByUrl('/gefaesstypen'))
+            ),
+        { dispatch: false }
+    );
+
     addGefaesstyp$ = createEffect(() =>
         this.#actions$.pipe(
             ofType(gefaesstypenActions.addGefaesstyp),
