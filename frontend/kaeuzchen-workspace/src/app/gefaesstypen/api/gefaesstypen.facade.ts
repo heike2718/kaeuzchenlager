@@ -2,13 +2,15 @@ import { inject, Injectable } from '@angular/core';
 import { fromGefaesstypen, gefaesstypenActions } from '@gefaesstypen/data';
 import { createInitialGefaesstyp, Gefaesstyp, GefaesstypConflict } from '@gefaesstypen/model';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable, take } from 'rxjs';
+import { combineLatest, filter, Observable, switchMap, take } from 'rxjs';
+import { GefaesstypSelectionService } from './gefaesstyp-selection.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class GefaesstypenFacade {
     #store = inject(Store);
+    #gefaesstypSelectionService = inject(GefaesstypSelectionService);
 
     readonly gefaesstypenLoading$: Observable<boolean> = this.#store.select(fromGefaesstypen.selectGefaesstypenLoading);
     readonly gefaesstypenLoaded$: Observable<boolean> = this.#store.select(fromGefaesstypen.selectGefaesstypenLoaded);
@@ -26,16 +28,15 @@ export class GefaesstypenFacade {
         this.#store.dispatch(gefaesstypenActions.loadGefaesstypen());
     }
 
-    public selectExistingGefaesstyp(uuid: string): void {
-        this.#store.dispatch(gefaesstypenActions.openGefaesstypEditor({ uuid }));
-    }
-
     public initNewGefaesstyp(): void {
         const neuerGefaesstyp: Gefaesstyp = createInitialGefaesstyp();
         this.#store.dispatch(gefaesstypenActions.neuerGefaesstypInitialized({ neuerGefaesstyp }));
         this.#store.dispatch(gefaesstypenActions.openGefaesstypEditor({ uuid: neuerGefaesstyp.uuid }));
     }
 
+    /**
+     * stellt sicher, dass die Gefaesstypen geladen sind und selektiert dann den mit der uuid, falls vorhanden.
+     */
     public ensureGefaesstypenLoadedAndSelect(uuid: string) {
         combineLatest([this.gefaesstypenLoaded$, this.gefaesstypenLoading$])
             .pipe(take(1))
@@ -43,7 +44,16 @@ export class GefaesstypenFacade {
                 if (!gefaesstypenLoaded && !gefaesstypenLoading) {
                     this.#store.dispatch(gefaesstypenActions.loadGefaesstypen());
                 }
-                this.#store.dispatch(gefaesstypenActions.selectGefaesstypByUuid({ uuid }));
+
+                this.gefaesstypenLoaded$
+                    .pipe(
+                        filter(v => v),
+                        take(1),
+                        switchMap(() => this.gefaesstypen$.pipe(take(1)))
+                    )
+                    .subscribe(gefaesstypen =>
+                        this.#gefaesstypSelectionService.checkAndSelectOrRedirect(uuid, gefaesstypen)
+                    );
             });
     }
 }

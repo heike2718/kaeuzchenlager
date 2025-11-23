@@ -4,19 +4,35 @@ import { firstValueFrom } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { GefaesstypenFacade } from './gefaesstypen.facade';
 import { fromGefaesstypen, gefaesstypenActions } from '@gefaesstypen/data';
-import { GefaesstypConflict } from '@gefaesstypen/model';
+import { Gefaesstyp, GefaesstypConflict } from '@gefaesstypen/model';
 import { firstGefaesstyp, secondGefaesstyp, thirdGefaesstyp } from '@testing';
+import { GefaesstypSelectionService } from './gefaesstyp-selection.service';
 
 describe('GefaesstypenFacade', () => {
     let facade: GefaesstypenFacade;
     let store: MockStore;
+    let selectionServiceMock: { checkAndSelectOrRedirect: (uuid: string, list: Gefaesstyp[]) => void };
+
+    let dispatchSpy: ReturnType<typeof vi.spyOn>;
+    let selectionSpy: ReturnType<typeof vi.spyOn>;
 
     beforeEach(() => {
+        selectionServiceMock = {
+            checkAndSelectOrRedirect: vi.fn(),
+        };
+
         TestBed.configureTestingModule({
-            providers: [GefaesstypenFacade, provideMockStore()],
+            providers: [
+                GefaesstypenFacade,
+                provideMockStore(),
+                { provide: GefaesstypSelectionService, useValue: selectionServiceMock },
+            ],
         });
         facade = TestBed.inject(GefaesstypenFacade);
         store = TestBed.inject(MockStore);
+
+        dispatchSpy = vi.spyOn(store, 'dispatch');
+        selectionSpy = vi.spyOn(selectionServiceMock, 'checkAndSelectOrRedirect');
     });
 
     afterEach(() => {
@@ -106,57 +122,74 @@ describe('GefaesstypenFacade', () => {
     });
 
     describe('test ensureGefaesstypenLoadedAndSelect', () => {
-        it('dispatches only selectGefaesstypByUuid when gefaesstypen already loaded', () => {
-            // arrange
-            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoaded, true);
-            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoading, false);
-            store.refreshState(); // selectors feuern sofort
-
-            const dispatchSpy = vi.spyOn(store, 'dispatch');
-
-            const expectedSelectAction = gefaesstypenActions.selectGefaesstypByUuid({
-                uuid: secondGefaesstyp.uuid,
-            });
-
-            // act
-            facade.ensureGefaesstypenLoadedAndSelect(secondGefaesstyp.uuid);
-
-            // assert
-            expect(dispatchSpy).toHaveBeenCalledWith(expectedSelectAction);
-            expect(dispatchSpy).not.toHaveBeenCalledWith(gefaesstypenActions.loadGefaesstypen());
-            expect(dispatchSpy).not.toHaveBeenCalledWith(
-                expect.objectContaining({
-                    type: gefaesstypenActions.openGefaesstypEditor.type,
-                })
-            );
-
-            expect(dispatchSpy).toHaveBeenCalledTimes(1);
-        });
-        it('dispatches loadGefaesstypen and selectGefaesstypByUuid when gefaesstypen not loaded and not loading', () => {
+        it('dispatches loadGefaesstypen when not loaded and not loading', () => {
             // arrange
             store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoaded, false);
             store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoading, false);
             store.refreshState(); // selectors feuern sofort
 
-            const dispatchSpy = vi.spyOn(store, 'dispatch');
+            // act
+            facade.ensureGefaesstypenLoadedAndSelect(secondGefaesstyp.uuid);
 
-            const expectedSelectAction = gefaesstypenActions.selectGefaesstypByUuid({
-                uuid: secondGefaesstyp.uuid,
-            });
+            expect(dispatchSpy).toHaveBeenCalledWith(gefaesstypenActions.loadGefaesstypen());
+            expect(dispatchSpy).toHaveBeenCalledTimes(1);
+            expect(selectionSpy).not.toHaveBeenCalled();
+        });
+        it('delegates directly to selectionService when loaded and not loading', () => {
+            // arrange
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoaded, true);
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoading, false);
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypen, [secondGefaesstyp]);
+            store.refreshState(); // selectors feuern sofort
+
+            // act
+            facade.ensureGefaesstypenLoadedAndSelect(secondGefaesstyp.uuid);
+
+            // wird sofort aufgerufen
+            expect(dispatchSpy).not.toHaveBeenCalled();
+            expect(selectionSpy).toHaveBeenCalledTimes(1);
+            expect(selectionSpy).toHaveBeenCalledWith(secondGefaesstyp.uuid, [secondGefaesstyp]);
+        });
+        it('delegates directly to selectionService when loaded and loading', () => {
+            // arrange
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoaded, true);
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoading, true);
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypen, [secondGefaesstyp]);
+            store.refreshState(); // selectors feuern sofort
+            // act
+            facade.ensureGefaesstypenLoadedAndSelect(secondGefaesstyp.uuid);
+
+            // wird sofort aufgerufen
+            expect(dispatchSpy).not.toHaveBeenCalled();
+            expect(selectionSpy).toHaveBeenCalledTimes(1);
+            expect(selectionSpy).toHaveBeenCalledWith(secondGefaesstyp.uuid, [secondGefaesstyp]);
+        });
+        it('does not dispatch loadGefaesstypen but waits for loaded and then delegates when not loaded and loading is already true', () => {
+            // arrange
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoaded, false);
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoading, true);
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypen, [secondGefaesstyp]);
+            store.refreshState(); // selectors feuern sofort
 
             // act
             facade.ensureGefaesstypenLoadedAndSelect(secondGefaesstyp.uuid);
 
             // assert
-            expect(dispatchSpy).toHaveBeenCalledWith(expectedSelectAction);
-            expect(dispatchSpy).toHaveBeenCalledWith(gefaesstypenActions.loadGefaesstypen());
-            expect(dispatchSpy).not.toHaveBeenCalledWith(
-                expect.objectContaining({
-                    type: gefaesstypenActions.openGefaesstypEditor.type,
-                })
-            );
+            // kein load, weil already loading
+            expect(dispatchSpy).not.toHaveBeenCalledWith(gefaesstypenActions.loadGefaesstypen());
 
-            expect(dispatchSpy).toHaveBeenCalledTimes(2);
+            // noch nicht delegiert, weil loaded noch false
+            expect(selectionSpy).not.toHaveBeenCalled();
+
+            // Abschluss des Ladens simulieren
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoaded, true);
+            store.overrideSelector(fromGefaesstypen.selectGefaesstypenLoading, false);
+            store.refreshState();
+
+            expect(selectionSpy).toHaveBeenCalledWith(secondGefaesstyp.uuid, [secondGefaesstyp]);
+
+            // kein erneutes laden
+            expect(dispatchSpy).not.toHaveBeenCalledWith(gefaesstypenActions.loadGefaesstypen());
         });
     });
 });
