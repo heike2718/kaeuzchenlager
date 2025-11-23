@@ -11,6 +11,7 @@ export const gefaesstypenActions = createActionGroup({
             gefaesstypFromServer: Gefaesstyp;
             userInput: GefaesstypDaten;
         }>(),
+        // TODO: wird noch nirgends verwendet. muss im effect die action loadGefaesstypForConflictDialog triggern
         conflictDetected: props<{ gefaesstypFromServer: Gefaesstyp; userInput: GefaesstypDaten }>(),
         // resolveConflictUseServer: emptyProps(),
         // resolveConflictOverrideServer: emptyProps(),

@@ -42,6 +42,7 @@ export const gefaesstypenFeature = createFeature({
                 gefaesstypenLoaded: true,
                 selectedUuid: null,
                 error: null,
+                conflict: null,
             };
         }),
         on(gefaesstypenActions.selectGefaesstypByUuid, (state, action) => {

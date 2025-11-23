@@ -33,7 +33,7 @@ export class GefaesstypenEffects {
         )
     );
 
-    openEditor$ = createEffect(
+    openGefaesstypEditor$ = createEffect(
         () =>
             this.#actions$.pipe(
                 ofType(gefaesstypenActions.openGefaesstypEditor),

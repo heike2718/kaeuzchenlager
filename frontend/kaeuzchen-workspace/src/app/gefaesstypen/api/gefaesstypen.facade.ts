@@ -34,6 +34,8 @@ export class GefaesstypenFacade {
         this.#store.dispatch(gefaesstypenActions.openGefaesstypEditor({ uuid: neuerGefaesstyp.uuid }));
     }
 
+    // TODO startEditGefaesstyp(uuid: string) (oder gefaesstyp: Gefaesstyp)
+
     /**
      * stellt sicher, dass die Gefaesstypen geladen sind und selektiert dann den mit der uuid, falls vorhanden.
      */

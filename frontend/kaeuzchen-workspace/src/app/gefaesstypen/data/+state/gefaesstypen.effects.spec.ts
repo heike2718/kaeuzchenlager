@@ -314,9 +314,9 @@ describe('GefaesstypenEffects', () => {
         });
     });
 
-    describe('Test openEditor$', () => {
-        it('should stop dispatch and navigate on gefaesstypSelected', async () => {
-            const sub = effects.openEditor$.subscribe(); // dispatch:false → manuell subscriben
+    describe('Test openGefaesstypEditor$', () => {
+        it('should navigate on openGefaesstypEditor and stop dispatch', async () => {
+            const sub = effects.openGefaesstypEditor$.subscribe(); // dispatch:false → manuell subscriben
 
             actions$.next(
                 gefaesstypenActions.openGefaesstypEditor({
@@ -334,7 +334,7 @@ describe('GefaesstypenEffects', () => {
     });
 
     describe('Test gefaesstypEditorNavigationFailed$', () => {
-        it('should stop dispatch and navigate on gefaesstypEditorNavigationFailed', async () => {
+        it('should navigate to gefaesstypen on gefaesstypEditorNavigationFailed and stop dispatch', async () => {
             const sub = effects.gefaesstypEditorNavigationFailed$.subscribe(); // dispatch:false → manuell subscriben
 
             actions$.next(gefaesstypenActions.gefaesstypEditorNavigationFailed());

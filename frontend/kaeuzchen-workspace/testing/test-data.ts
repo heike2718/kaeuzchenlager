@@ -33,6 +33,17 @@ export const thirdGefaesstyp = {
     },
 };
 
+export const neuerGefaesstyp = {
+    uuid: 'temp-69641021',
+    daten: {
+        anzahl: 0,
+        backgroundColor: '#ffffff',
+        name: '',
+        volumen: 0,
+        version: 0,
+    },
+};
+
 export const mockConfig: KLConfiguration = {
     production: false,
     version: '1.2.0',

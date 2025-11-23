@@ -13,7 +13,7 @@ describe('gefaesstypenFeature', () => {
 
     const someError: GefaesstypError = {
         message: 'konnte nicht speichern',
-        type: 'CONCURRENT_UPDATE',
+        type: 'DUPLICATE',
         userInput: {
             anzahl: 3,
             backgroundColor: '#ccffcc',
@@ -22,12 +22,26 @@ describe('gefaesstypenFeature', () => {
             version: 0,
         },
         uuid: '9876',
-        serverVersion: {
+        serverVersion: null,
+    };
+
+    const someConflict: GefaesstypConflict = {
+        userInput: {
             anzahl: 3,
-            backgroundColor: '#fcffccff',
-            name: 'kleine Schraubgläser',
+            backgroundColor: '#ccffcc',
+            name: 'Gefäßtyp 2',
             volumen: 20,
-            version: 1,
+            version: 0,
+        },
+        serverVersion: {
+            uuid: '9876',
+            daten: {
+                anzahl: 3,
+                backgroundColor: '#fcffccff',
+                name: 'kleine Schraubgläser',
+                volumen: 20,
+                version: 1,
+            },
         },
     };
 
@@ -37,7 +51,7 @@ describe('gefaesstypenFeature', () => {
         gefaesstypenLoading: false,
         gefaesstypenLoaded: true,
         error: someError,
-        conflict: null,
+        conflict: someConflict,
     };
 
     describe('ngrx sanity checks', () => {
@@ -95,8 +109,9 @@ describe('gefaesstypenFeature', () => {
             expect(state.gefaesstypenLoaded).toBe(true);
             expect(state.selectedUuid).toBeNull();
             expect(state.error).toBeNull();
+            expect(state.conflict).toBeNull();
         });
-        it('resets selectedUuid and error when not initialState', () => {
+        it('resets selectedUuid, error and conflict when not initialState', () => {
             const state = gefaesstypenFeature.reducer(
                 previousState,
                 gefaesstypenActions.gefaesstypenLoaded({ gefaesstypen: mockedGefaesstypen })
@@ -106,6 +121,7 @@ describe('gefaesstypenFeature', () => {
             expect(state.gefaesstypenLoaded).toBe(true);
             expect(state.selectedUuid).toBeNull();
             expect(state.error).toBeNull();
+            expect(state.conflict).toBeNull();
         });
         it('sets loaded when not initialState and response empty', () => {
             const state = gefaesstypenFeature.reducer(
@@ -117,11 +133,12 @@ describe('gefaesstypenFeature', () => {
             expect(state.gefaesstypenLoaded).toBe(true);
             expect(state.selectedUuid).toBeNull();
             expect(state.error).toBeNull();
+            expect(state.conflict).toBeNull();
         });
     });
 
     describe('selectGefaesstypByUuid', () => {
-        it('sets the selectedUuid and resets error when not initialState and uuid known', () => {
+        it('sets the selectedUuid and resets error and conflict when not initialState and uuid known', () => {
             const state = gefaesstypenFeature.reducer(
                 previousState,
                 gefaesstypenActions.selectGefaesstypByUuid({ uuid: '9876' })
