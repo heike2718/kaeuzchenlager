@@ -1,14 +1,17 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { GefaesstypenFacade } from '@gefaesstypen/api';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { MatInputModule } from '@angular/material/input';
+import { MatInput, MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map, Subject, takeUntil, tap } from 'rxjs';
-import { Gefaesstyp, TEMP_UUID_PREFIX } from '@gefaesstypen/model';
+import { Gefaesstyp, GefaesstypDaten, NAME_PATTERN, TEMP_UUID_PREFIX } from '@gefaesstypen/model';
+import { MatIconModule } from '@angular/material/icon';
+import { AsyncPipe } from '@angular/common';
+import { TrimOnBlurDirective } from '@shared/directives';
 
 @Component({
     selector: 'kl-edit-gefaesstyp.component',
@@ -18,23 +21,35 @@ import { Gefaesstyp, TEMP_UUID_PREFIX } from '@gefaesstypen/model';
         TextFieldModule,
         MatButtonModule,
         MatGridListModule,
+        MatIconModule,
         MatInputModule,
         MatFormFieldModule,
+        AsyncPipe,
+        TrimOnBlurDirective,
     ],
     templateUrl: './edit-gefaesstyp.component.html',
     styleUrl: './edit-gefaesstyp.component.scss',
 })
-export class EditGefaesstypComponent implements OnInit, OnDestroy {
+export class EditGefaesstypComponent implements OnInit, OnDestroy, AfterViewInit {
     facade = inject(GefaesstypenFacade);
     title = '';
     form!: FormGroup;
+
     #route = inject(ActivatedRoute);
     #fb: FormBuilder = inject(FormBuilder);
+    #currentUuid = '';
+
+    @ViewChild('nameInput', { read: MatInput }) nameInput!: MatInput;
+    @ViewChild('volumenInput', { read: MatInput }) volumenInput!: MatInput;
+
     readonly #destroy$ = new Subject<void>();
 
     constructor() {
         this.form = this.#fb.nonNullable.group({
-            name: this.#fb.control<string>('', { nonNullable: true }),
+            name: this.#fb.control<string>('', {
+                nonNullable: true,
+                validators: [Validators.required, Validators.pattern(NAME_PATTERN)],
+            }),
             backgroundColor: this.#fb.control<string>('#ffffff', { nonNullable: true }),
             volumen: this.#fb.control<number>(0),
             anzahl: this.#fb.control<number>(0),
@@ -59,6 +74,7 @@ export class EditGefaesstypComponent implements OnInit, OnDestroy {
             .subscribe(gefaesstyp => {
                 // Titel setzen
                 this.title = gefaesstyp.uuid.startsWith(TEMP_UUID_PREFIX) ? 'neuer Gefäßtyp' : 'Gefäßtyp ändern';
+                this.#currentUuid = gefaesstyp.uuid;
 
                 // Formular befüllen
                 this.form.reset({
@@ -68,10 +84,104 @@ export class EditGefaesstypComponent implements OnInit, OnDestroy {
                     anzahl: gefaesstyp.daten.anzahl,
                 });
             });
+
+        this.facade.nameNichtEindeutig$.pipe(takeUntil(this.#destroy$)).subscribe(flag => {
+            const ctrl = this.form.controls.name;
+            if (!ctrl) return;
+
+            if (flag) {
+                ctrl.setErrors({ ...(ctrl.errors ?? {}), notUnique: true });
+                ctrl.markAsTouched();
+                queueMicrotask(() => this.nameInput?.focus());
+            } else {
+                const errors = { ...(ctrl.errors ?? {}) };
+                delete (errors as Record<string, unknown>).notUnique;
+                ctrl.setErrors(Object.keys(errors).length ? errors : null);
+            }
+        });
+
+        this.facade.volumenNichtEindeutig$.pipe(takeUntil(this.#destroy$)).subscribe(flag => {
+            const ctrl = this.form.controls.volumen;
+            if (!ctrl) return;
+
+            if (flag) {
+                ctrl.setErrors({ ...(ctrl.errors ?? {}), notUnique: true });
+                ctrl.markAsTouched();
+                queueMicrotask(() => this.volumenInput?.focus());
+            } else {
+                const errors = { ...(ctrl.errors ?? {}) };
+                delete (errors as Record<string, unknown>).notUnique;
+                ctrl.setErrors(Object.keys(errors).length ? errors : null);
+            }
+        });
+    }
+
+    ngAfterViewInit(): void {
+        queueMicrotask(() => this.nameInput.focus());
     }
 
     ngOnDestroy(): void {
         this.#destroy$.next();
         this.#destroy$.complete();
+    }
+
+    get anzahlIsMin(): boolean {
+        const value = this.form.controls['anzahl'].value ?? 0;
+        return value <= 0;
+    }
+
+    incrementAnzahl(): void {
+        const current = this.form.controls['anzahl'].value ?? 0;
+        this.form.controls['anzahl'].setValue(current + 1);
+    }
+
+    decrementAnzahl(): void {
+        const current = this.form.controls['anzahl'].value ?? 0;
+        if (current > 0) {
+            this.form.controls['anzahl'].setValue(current - 1);
+        }
+    }
+
+    onSubmit(): void {
+        console.log('jetzt submitten');
+    }
+
+    onCancel(): void {
+        console.log('jetzt zurücksetzen');
+    }
+
+    onNameOrVolumenBlur(): void {
+        const daten = this.#createGefaesstypDaten();
+        if (!daten) {
+            return;
+        }
+
+        const uuid = this.#currentUuid;
+        this.facade.pruefGefaesstypEindeutigkeit(daten, uuid);
+    }
+
+    #createGefaesstypDaten(): GefaesstypDaten | null {
+        if (!this.form) {
+            return null;
+        }
+
+        const raw = this.form.getRawValue(); // liest alle Controls
+
+        const name = (raw.name ?? '').trim();
+        const volumen = raw.volumen ?? 0;
+        const anzahl = raw.anzahl ?? 0;
+        const backgroundColor = (raw.backgroundColor ?? '#ffffff').trim();
+
+        if (!name) {
+            return null; // oder du gibst es trotzdem weiter, je nach Strategie
+        }
+
+        return {
+            name,
+            volumen,
+            anzahl,
+            backgroundColor,
+            version: null,
+        };
     }
 }

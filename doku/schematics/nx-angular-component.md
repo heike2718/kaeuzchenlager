@@ -12,6 +12,8 @@ npx nx g @nx/angular:component --name=gaefaesstypen-list.component --path=src/ap
 npx nx g @nx/angular:component --name=gefaesstyp-overview.component --path=src/app/gefaesstypen/features/gaefaesstyp-overview/gefaesstyp-overview.component --style=scss --dry-run
 
 npx nx g @nx/angular:component --name=edit-gefaesstyp.component --path=src/app/gefaesstypen/features/edit-gefaesstyp/edit-gefaesstyp.component --style=scss --dry-run
+
+npx nx g @nx/angular:directive trim-on-blur --path=src/app/shared/directives/trim-on-blur --standalone --export --dry-run
 ```
 
 ```

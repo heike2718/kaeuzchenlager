@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { fromGefaesstypen, gefaesstypenActions } from '@gefaesstypen/data';
-import { createInitialGefaesstyp, Gefaesstyp, GefaesstypConflict } from '@gefaesstypen/model';
+import { createInitialGefaesstyp, Gefaesstyp, GefaesstypConflict, GefaesstypDaten } from '@gefaesstypen/model';
 import { Store } from '@ngrx/store';
 import { combineLatest, filter, Observable, switchMap, take } from 'rxjs';
 import { GefaesstypSelectionService } from './gefaesstyp-selection.service';
@@ -15,6 +15,10 @@ export class GefaesstypenFacade {
     readonly gefaesstypenLoading$: Observable<boolean> = this.#store.select(fromGefaesstypen.selectGefaesstypenLoading);
     readonly gefaesstypenLoaded$: Observable<boolean> = this.#store.select(fromGefaesstypen.selectGefaesstypenLoaded);
     readonly gefaesstypen$: Observable<Gefaesstyp[]> = this.#store.select(fromGefaesstypen.selectGefaesstypen);
+    readonly nameNichtEindeutig$: Observable<boolean> = this.#store.select(fromGefaesstypen.selectNameNichtEindeutig);
+    readonly volumenNichtEindeutig$: Observable<boolean> = this.#store.select(
+        fromGefaesstypen.selectVolumenNichtEindeutig
+    );
 
     readonly selectedGefaesstyp$: Observable<Gefaesstyp | null> = this.#store.select(
         fromGefaesstypen.selectSelectedGefasesstyp
@@ -57,5 +61,9 @@ export class GefaesstypenFacade {
                         this.#gefaesstypSelectionService.checkAndSelectOrRedirect(uuid, gefaesstypen)
                     );
             });
+    }
+
+    public pruefGefaesstypEindeutigkeit(gefaesstypDaten: GefaesstypDaten, uuid: string): void {
+        this.#store.dispatch(gefaesstypenActions.pruefGefaesstypEindeutigkeit({ gefaesstypDaten, uuid }));
     }
 }

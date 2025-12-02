@@ -20,6 +20,7 @@ export const gefaesstypenActions = createActionGroup({
         selectGefaesstypByUuid: props<{ uuid: string }>(),
         neuerGefaesstypInitialized: props<{ neuerGefaesstyp: Gefaesstyp }>(),
         gefaesstypEditorNavigationFailed: emptyProps(),
+        pruefGefaesstypEindeutigkeit: props<{ gefaesstypDaten: GefaesstypDaten; uuid: string }>(),
         editGefaesstypCanceled: props<{ uuid: string; navigateTo: string }>(),
         addGefaesstyp: props<{ daten: GefaesstypDaten }>(),
         gefaesstypAdded: props<{ gefaesstyp: Gefaesstyp }>(),

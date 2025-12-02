@@ -4,6 +4,10 @@ export const DEFAULT_GEFAESSTYP_BG_COLOR = '#ffffff';
 
 export const TEMP_UUID_PREFIX = 'temp-';
 
+// erlaubte Zeichen wie im Backend:
+// Buchstaben (A–Z, a–z), Umlaute, ß, Ziffern, Whitespace, Anführungszeichen, _, -, . , : ; ( )
+export const NAME_PATTERN = /^[a-zA-ZäöüÄÖÜß0-9\s"'_\-.,:;()]*$/;
+
 export interface GefaesstypDaten {
     readonly name: string;
     readonly volumen: number;

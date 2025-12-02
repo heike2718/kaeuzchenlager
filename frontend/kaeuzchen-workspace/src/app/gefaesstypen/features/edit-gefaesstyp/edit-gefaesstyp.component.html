@@ -2,4 +2,93 @@
     <header class="gt-editor__header">
         <h1 class="gt-editor__title">{{ title }}</h1>
     </header>
+
+    <form class="gt-editor__form" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="gt-editor__grid">
+            <!-- Name -->
+            <mat-form-field appearance="outline" class="gt-editor__field">
+                <mat-label>Name</mat-label>
+                <input
+                    matInput
+                    formControlName="name"
+                    (blur)="onNameOrVolumenBlur()"
+                    klTrimOnBlur
+                    autocomplete="off"
+                    #nameInput />
+                @if (form.controls['name'].hasError('pattern')) {
+                    <mat-error> Erlaubt sind nur Buchstaben, Ziffern, Leerzeichen und einfache Satzzeichen. </mat-error>
+                }
+                @if (form.controls['name'].hasError('required')) {
+                    <mat-error> Name ist Pflicht </mat-error>
+                }
+                @if (facade.nameNichtEindeutig$ | async) {
+                    <mat-error>Diesen Namen gibt es bereits.</mat-error>
+                }
+            </mat-form-field>
+
+            <!-- Volumen -->
+            <mat-form-field appearance="outline" class="gt-editor__field">
+                <mat-label>Volumen (ml)</mat-label>
+                <input
+                    matInput
+                    type="number"
+                    formControlName="volumen"
+                    (blur)="onNameOrVolumenBlur()"
+                    min="0"
+                    step="1"
+                    #volumenInput />
+                @if (facade.volumenNichtEindeutig$ | async) {
+                    <mat-error>Dieses Volumen gibt es bereits.</mat-error>
+                }
+            </mat-form-field>
+
+            <!-- Hintergrundfarbe -->
+            <mat-form-field appearance="outline" class="gt-editor__field">
+                <mat-label>Hintergrundfarbe</mat-label>
+                <input matInput type="color" formControlName="backgroundColor" />
+            </mat-form-field>
+
+            <!-- Anzahl mit + / - -->
+            <mat-form-field appearance="outline" class="gt-editor__field gt-editor__field--anzahl">
+                <mat-label>Anzahl</mat-label>
+                <input matInput type="number" formControlName="anzahl" min="0" step="1" />
+
+                <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    class="gt-editor__anzahl-button"
+                    [disabled]="anzahlIsMin"
+                    (click)="decrementAnzahl()"
+                    aria-label="Anzahl verringern">
+                    <mat-icon>remove</mat-icon>
+                </button>
+
+                <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    class="gt-editor__anzahl-button"
+                    (click)="incrementAnzahl()"
+                    aria-label="Anzahl erhöhen">
+                    <mat-icon>add</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+
+        <!-- Aktionen -->
+        <div class="gt-editor__actions">
+            <button mat-stroked-button type="button" (click)="onCancel()">Abbrechen</button>
+
+            <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="
+                    form.invalid || (facade.nameNichtEindeutig$ | async) || (facade.volumenNichtEindeutig$ | async)
+                ">
+                Speichern
+            </button>
+        </div>
+    </form>
 </section>

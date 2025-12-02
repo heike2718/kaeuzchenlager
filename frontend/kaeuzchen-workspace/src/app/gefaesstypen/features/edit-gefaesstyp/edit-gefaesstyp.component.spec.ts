@@ -13,6 +13,8 @@ describe('EditGefaesstypComponent', () => {
 
     let gefaesstypenFacadeMock: {
         selectedGefaesstyp$: Observable<Gefaesstyp>;
+        nameNichtEindeutig$: Observable<boolean>;
+        volumenNichtEindeutig$: Observable<boolean>;
         ensureGefaesstypenLoadedAndSelect: (uuid: string) => void;
     };
 
@@ -25,6 +27,8 @@ describe('EditGefaesstypComponent', () => {
     beforeEach(async () => {
         gefaesstypenFacadeMock = {
             selectedGefaesstyp$: of(), // wird im Test überschrieben
+            nameNichtEindeutig$: of(false),
+            volumenNichtEindeutig$: of(false),
             ensureGefaesstypenLoadedAndSelect: vi.fn(),
         };
 

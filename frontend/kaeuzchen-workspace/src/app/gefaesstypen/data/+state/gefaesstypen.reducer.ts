@@ -11,6 +11,8 @@ import { gefaesstypenActions } from './gefaesstypen.actions';
 export interface GefaesstypenState {
     readonly gefaesstypen: Gefaesstyp[];
     readonly selectedUuid: string | null;
+    readonly nameNichtEindeutig: boolean;
+    readonly volumenNichtEindeutig: boolean;
     readonly gefaesstypenLoading: boolean;
     readonly gefaesstypenLoaded: boolean;
     readonly error: GefaesstypError | null;
@@ -21,6 +23,8 @@ export interface GefaesstypenState {
 export const initialState: GefaesstypenState = {
     gefaesstypen: [],
     selectedUuid: null,
+    nameNichtEindeutig: false,
+    volumenNichtEindeutig: false,
     gefaesstypenLoading: false,
     gefaesstypenLoaded: false,
     error: null,
@@ -54,6 +58,20 @@ export const gefaesstypenFeature = createFeature({
                 gefaesstypen: sortGefaesstypenByName([...state.gefaesstypen, action.neuerGefaesstyp]),
                 selectedUuid: null,
                 error: null,
+            };
+        }),
+        on(gefaesstypenActions.pruefGefaesstypEindeutigkeit, (state, action) => {
+            const gleicherName = state.gefaesstypen.filter(
+                gt => gt.uuid !== action.uuid && gt.daten.name === action.gefaesstypDaten.name
+            );
+            const gleichesVolumen = state.gefaesstypen.filter(
+                gt => gt.uuid !== action.uuid && gt.daten.volumen === action.gefaesstypDaten.volumen
+            );
+
+            return {
+                ...state,
+                nameNichtEindeutig: gleicherName.length > 0,
+                volumenNichtEindeutig: gleichesVolumen.length > 0,
             };
         }),
         on(gefaesstypenActions.editGefaesstypCanceled, (state, action) => {
