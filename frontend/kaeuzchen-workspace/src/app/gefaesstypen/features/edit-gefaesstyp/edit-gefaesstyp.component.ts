@@ -10,7 +10,6 @@ import { ActivatedRoute } from '@angular/router';
 import { filter, map, Subject, takeUntil, tap } from 'rxjs';
 import { Gefaesstyp, GefaesstypDaten, NAME_PATTERN, TEMP_UUID_PREFIX } from '@gefaesstypen/model';
 import { MatIconModule } from '@angular/material/icon';
-import { AsyncPipe } from '@angular/common';
 import { TrimOnBlurDirective } from '@shared/directives';
 
 @Component({
@@ -24,7 +23,6 @@ import { TrimOnBlurDirective } from '@shared/directives';
         MatIconModule,
         MatInputModule,
         MatFormFieldModule,
-        AsyncPipe,
         TrimOnBlurDirective,
     ],
     templateUrl: './edit-gefaesstyp.component.html',
@@ -41,6 +39,9 @@ export class EditGefaesstypComponent implements OnInit, OnDestroy, AfterViewInit
 
     @ViewChild('nameInput', { read: MatInput }) nameInput!: MatInput;
     @ViewChild('volumenInput', { read: MatInput }) volumenInput!: MatInput;
+
+    nameNichtEindeutig = false;
+    volumenNichtEindeutig = false;
 
     readonly #destroy$ = new Subject<void>();
 
@@ -84,36 +85,6 @@ export class EditGefaesstypComponent implements OnInit, OnDestroy, AfterViewInit
                     anzahl: gefaesstyp.daten.anzahl,
                 });
             });
-
-        this.facade.nameNichtEindeutig$.pipe(takeUntil(this.#destroy$)).subscribe(flag => {
-            const ctrl = this.form.controls.name;
-            if (!ctrl) return;
-
-            if (flag) {
-                ctrl.setErrors({ ...(ctrl.errors ?? {}), notUnique: true });
-                ctrl.markAsTouched();
-                queueMicrotask(() => this.nameInput?.focus());
-            } else {
-                const errors = { ...(ctrl.errors ?? {}) };
-                delete (errors as Record<string, unknown>).notUnique;
-                ctrl.setErrors(Object.keys(errors).length ? errors : null);
-            }
-        });
-
-        this.facade.volumenNichtEindeutig$.pipe(takeUntil(this.#destroy$)).subscribe(flag => {
-            const ctrl = this.form.controls.volumen;
-            if (!ctrl) return;
-
-            if (flag) {
-                ctrl.setErrors({ ...(ctrl.errors ?? {}), notUnique: true });
-                ctrl.markAsTouched();
-                queueMicrotask(() => this.volumenInput?.focus());
-            } else {
-                const errors = { ...(ctrl.errors ?? {}) };
-                delete (errors as Record<string, unknown>).notUnique;
-                ctrl.setErrors(Object.keys(errors).length ? errors : null);
-            }
-        });
     }
 
     ngAfterViewInit(): void {
@@ -143,21 +114,64 @@ export class EditGefaesstypComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     onSubmit(): void {
-        console.log('jetzt submitten');
+        const daten: GefaesstypDaten = this.#createGefaesstypDaten();
+        const gefaesstyp: Gefaesstyp = {
+            uuid: this.#currentUuid,
+            daten: daten,
+        };
+        this.facade.saveGefaesstyp(gefaesstyp);
     }
 
     onCancel(): void {
         console.log('jetzt zurücksetzen');
     }
 
-    onNameOrVolumenBlur(): void {
+    onNameBlur(): void {
         const daten = this.#createGefaesstypDaten();
         if (!daten) {
             return;
         }
 
-        const uuid = this.#currentUuid;
-        this.facade.pruefGefaesstypEindeutigkeit(daten, uuid);
+        const ctrl = this.form.controls.name;
+        if (!ctrl) {
+            return;
+        }
+
+        this.nameNichtEindeutig = this.facade.isNameNichtEindeutig(daten, this.#currentUuid);
+
+        if (this.nameNichtEindeutig) {
+            ctrl.setErrors({ ...(ctrl.errors ?? {}), notUnique: true });
+            ctrl.markAsTouched();
+            queueMicrotask(() => this.nameInput?.focus());
+        } else {
+            const errors = { ...(ctrl.errors ?? {}) };
+            delete (errors as Record<string, unknown>).notUnique;
+            ctrl.setErrors(Object.keys(errors).length ? errors : null);
+        }
+    }
+
+    onVolumenBlur(): void {
+        const daten = this.#createGefaesstypDaten();
+        if (!daten) {
+            return;
+        }
+
+        const ctrl = this.form.controls.volumen;
+        if (!ctrl) {
+            return;
+        }
+
+        this.volumenNichtEindeutig = this.facade.isVolumenNichtEindeutig(daten, this.#currentUuid);
+
+        if (this.volumenNichtEindeutig) {
+            ctrl.setErrors({ ...(ctrl.errors ?? {}), notUnique: true });
+            ctrl.markAsTouched();
+            queueMicrotask(() => this.volumenInput?.focus());
+        } else {
+            const errors = { ...(ctrl.errors ?? {}) };
+            delete (errors as Record<string, unknown>).notUnique;
+            ctrl.setErrors(Object.keys(errors).length ? errors : null);
+        }
     }
 
     #createGefaesstypDaten(): GefaesstypDaten | null {

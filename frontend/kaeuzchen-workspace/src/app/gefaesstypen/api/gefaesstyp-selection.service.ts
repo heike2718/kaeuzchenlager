@@ -16,6 +16,7 @@ export class GefaesstypSelectionService {
             this.#store.dispatch(gefaesstypenActions.gefaesstypEditorNavigationFailed());
         } else {
             this.#store.dispatch(gefaesstypenActions.selectGefaesstypByUuid({ uuid }));
+            this.#store.dispatch(gefaesstypenActions.openGefaesstypEditor({ uuid }));
         }
     }
 }

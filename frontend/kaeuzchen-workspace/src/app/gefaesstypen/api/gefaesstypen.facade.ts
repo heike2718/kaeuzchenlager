@@ -1,6 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { fromGefaesstypen, gefaesstypenActions } from '@gefaesstypen/data';
-import { createInitialGefaesstyp, Gefaesstyp, GefaesstypConflict, GefaesstypDaten } from '@gefaesstypen/model';
+import {
+    createInitialGefaesstyp,
+    Gefaesstyp,
+    GefaesstypConflict,
+    GefaesstypDaten,
+    TEMP_UUID_PREFIX,
+} from '@gefaesstypen/model';
 import { Store } from '@ngrx/store';
 import { combineLatest, filter, Observable, switchMap, take } from 'rxjs';
 import { GefaesstypSelectionService } from './gefaesstyp-selection.service';
@@ -12,13 +18,11 @@ export class GefaesstypenFacade {
     #store = inject(Store);
     #gefaesstypSelectionService = inject(GefaesstypSelectionService);
 
+    readonly #gefaesstypenSignal = this.#store.selectSignal(fromGefaesstypen.selectGefaesstypen);
+
     readonly gefaesstypenLoading$: Observable<boolean> = this.#store.select(fromGefaesstypen.selectGefaesstypenLoading);
     readonly gefaesstypenLoaded$: Observable<boolean> = this.#store.select(fromGefaesstypen.selectGefaesstypenLoaded);
     readonly gefaesstypen$: Observable<Gefaesstyp[]> = this.#store.select(fromGefaesstypen.selectGefaesstypen);
-    readonly nameNichtEindeutig$: Observable<boolean> = this.#store.select(fromGefaesstypen.selectNameNichtEindeutig);
-    readonly volumenNichtEindeutig$: Observable<boolean> = this.#store.select(
-        fromGefaesstypen.selectVolumenNichtEindeutig
-    );
 
     readonly selectedGefaesstyp$: Observable<Gefaesstyp | null> = this.#store.select(
         fromGefaesstypen.selectSelectedGefasesstyp
@@ -38,7 +42,20 @@ export class GefaesstypenFacade {
         this.#store.dispatch(gefaesstypenActions.openGefaesstypEditor({ uuid: neuerGefaesstyp.uuid }));
     }
 
-    // TODO startEditGefaesstyp(uuid: string) (oder gefaesstyp: Gefaesstyp)
+    public saveGefaesstyp(gefaesstyp: Gefaesstyp): void {
+        if (gefaesstyp.uuid.startsWith(TEMP_UUID_PREFIX)) {
+            const theUuid = gefaesstyp.uuid.substring(5, gefaesstyp.uuid.length - 1);
+            const theGefaesstyp: Gefaesstyp = {
+                ...gefaesstyp,
+                uuid: theUuid,
+            };
+            this.#store.dispatch(gefaesstypenActions.addGefaesstyp({ gefaesstyp: theGefaesstyp }));
+        } else {
+            this.#store.dispatch(
+                gefaesstypenActions.changeGefaesstyp({ uuid: gefaesstyp.uuid, daten: gefaesstyp.daten })
+            );
+        }
+    }
 
     /**
      * stellt sicher, dass die Gefaesstypen geladen sind und selektiert dann den mit der uuid, falls vorhanden.
@@ -63,7 +80,17 @@ export class GefaesstypenFacade {
             });
     }
 
-    public pruefGefaesstypEindeutigkeit(gefaesstypDaten: GefaesstypDaten, uuid: string): void {
-        this.#store.dispatch(gefaesstypenActions.pruefGefaesstypEindeutigkeit({ gefaesstypDaten, uuid }));
+    public isNameNichtEindeutig(gefaesstypDaten: GefaesstypDaten, uuid: string): boolean {
+        const alle = this.#gefaesstypenSignal();
+        const andere = alle.filter(g => g.uuid !== uuid);
+
+        return andere.some(g => g.daten.name === gefaesstypDaten.name);
+    }
+
+    public isVolumenNichtEindeutig(gefaesstypDaten: GefaesstypDaten, uuid: string): boolean {
+        const alle = this.#gefaesstypenSignal();
+        const andere = alle.filter(g => g.uuid !== uuid);
+
+        return andere.some(g => g.daten.volumen === gefaesstypDaten.volumen);
     }
 }

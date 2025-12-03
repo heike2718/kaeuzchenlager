@@ -54,8 +54,8 @@ export class GefaesstypenEffects {
     addGefaesstyp$ = createEffect(() =>
         this.#actions$.pipe(
             ofType(gefaesstypenActions.addGefaesstyp),
-            switchMap(({ daten }) =>
-                this.#httpService.insertGefaesstyp(daten).pipe(
+            switchMap(({ gefaesstyp }) =>
+                this.#httpService.insertGefaesstyp(gefaesstyp).pipe(
                     map(gefaesstyp =>
                         gefaesstypenActions.gefaesstypAdded({
                             gefaesstyp: gefaesstyp,
@@ -64,7 +64,7 @@ export class GefaesstypenEffects {
                     catchError(error =>
                         of(
                             gefaesstypenActions.gefaesstypenServerError({
-                                error: this.#errorService.toGefaesstypError(error, daten),
+                                error: this.#errorService.toGefaesstypError(error, gefaesstyp.daten),
                             })
                         )
                     )

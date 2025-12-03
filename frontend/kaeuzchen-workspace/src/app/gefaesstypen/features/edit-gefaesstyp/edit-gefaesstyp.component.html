@@ -11,7 +11,7 @@
                 <input
                     matInput
                     formControlName="name"
-                    (blur)="onNameOrVolumenBlur()"
+                    (blur)="onNameBlur()"
                     klTrimOnBlur
                     autocomplete="off"
                     #nameInput />
@@ -21,7 +21,7 @@
                 @if (form.controls['name'].hasError('required')) {
                     <mat-error> Name ist Pflicht </mat-error>
                 }
-                @if (facade.nameNichtEindeutig$ | async) {
+                @if (nameNichtEindeutig) {
                     <mat-error>Diesen Namen gibt es bereits.</mat-error>
                 }
             </mat-form-field>
@@ -33,11 +33,11 @@
                     matInput
                     type="number"
                     formControlName="volumen"
-                    (blur)="onNameOrVolumenBlur()"
+                    (blur)="onVolumenBlur()"
                     min="0"
                     step="1"
                     #volumenInput />
-                @if (facade.volumenNichtEindeutig$ | async) {
+                @if (volumenNichtEindeutig) {
                     <mat-error>Dieses Volumen gibt es bereits.</mat-error>
                 }
             </mat-form-field>
@@ -84,9 +84,7 @@
                 mat-flat-button
                 color="primary"
                 type="submit"
-                [disabled]="
-                    form.invalid || (facade.nameNichtEindeutig$ | async) || (facade.volumenNichtEindeutig$ | async)
-                ">
+                [disabled]="form.invalid || nameNichtEindeutig || volumenNichtEindeutig">
                 Speichern
             </button>
         </div>

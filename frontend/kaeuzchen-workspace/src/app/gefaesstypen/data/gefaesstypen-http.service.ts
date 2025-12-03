@@ -6,9 +6,11 @@ import { Observable, of } from 'rxjs';
     providedIn: 'root',
 })
 export class GefaesstypenHttpService {
+    #mockedGefaesstypen: Gefaesstyp[] = [];
+
     /** läd die Gefäßtypen aus dem backend */
     public loadGefaesstypen(): Observable<Gefaesstyp[]> {
-        const firstGefaesstyp: Gefaesstyp = {
+        this.#mockedGefaesstypen.push({
             uuid: '1234',
             daten: {
                 anzahl: 4,
@@ -17,9 +19,9 @@ export class GefaesstypenHttpService {
                 volumen: 5,
                 version: 2,
             },
-        };
+        } as Gefaesstyp);
 
-        const secondGefaesstyp: Gefaesstyp = {
+        this.#mockedGefaesstypen.push({
             uuid: '9876',
             daten: {
                 anzahl: 3,
@@ -28,17 +30,19 @@ export class GefaesstypenHttpService {
                 volumen: 20,
                 version: 0,
             },
-        };
+        } as Gefaesstyp);
 
-        const mockedGefaesstypen: Gefaesstyp[] = [firstGefaesstyp, secondGefaesstyp];
-
-        return of(mockedGefaesstypen);
+        return of(this.#mockedGefaesstypen);
     }
 
-    public insertGefaesstyp(daten: GefaesstypDaten): Observable<Gefaesstyp> {
+    public insertGefaesstyp(gefaessytp: Gefaesstyp): Observable<Gefaesstyp> {
+        // Mock-Implementierung!!!
         const result: Gefaesstyp = {
-            uuid: 'de5d09e4-a8f1-4ca3-a2ef-fddd558ded42',
-            daten: { ...daten, version: 0 },
+            ...gefaessytp,
+            daten: {
+                ...gefaessytp.daten,
+                version: 0,
+            },
         };
 
         return of(result);
@@ -49,6 +53,8 @@ export class GefaesstypenHttpService {
             uuid: uuid,
             daten: { ...daten, version: daten.version + 1 },
         };
+
+        this.#mockedGefaesstypen.push(result);
 
         return of(result);
     }

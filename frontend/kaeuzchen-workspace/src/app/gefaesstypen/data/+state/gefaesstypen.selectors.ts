@@ -23,10 +23,6 @@ export const selectSelectedGefasesstyp = createSelector(selectGefaesstypen, sele
     uuid ? gefaesstypen.find(x => x.uuid === uuid) ?? null : null
 );
 
-export const selectNameNichtEindeutig = createSelector(gefaesstypenState, state => state.nameNichtEindeutig);
-
-export const selectVolumenNichtEindeutig = createSelector(gefaesstypenState, state => state.volumenNichtEindeutig);
-
 export const fromGefaesstypen = {
     selectGefaesstypen,
     selectAnzahlGefaesstypen,
@@ -34,6 +30,4 @@ export const fromGefaesstypen = {
     selectGefaesstypenLoaded,
     selectSelectedGefasesstyp,
     selectGefaesstypConflict,
-    selectNameNichtEindeutig,
-    selectVolumenNichtEindeutig,
 };
