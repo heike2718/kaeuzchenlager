@@ -5,6 +5,7 @@ import { gefaesstypenActions } from './gefaesstypen.actions';
 import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { GefaesstypenHttpErrorService } from '../gefaesstypen-http-error.service';
 import { Router } from '@angular/router';
+import { MessageService } from '@shared/components';
 
 @Injectable({
     providedIn: 'root',
@@ -14,6 +15,7 @@ export class GefaesstypenEffects {
     #httpService = inject(GefaesstypenHttpService);
     #errorService = inject(GefaesstypenHttpErrorService);
     #router = inject(Router);
+    #messageService = inject(MessageService);
 
     loadGefaesstypen$ = createEffect(() =>
         this.#actions$.pipe(
@@ -73,6 +75,29 @@ export class GefaesstypenEffects {
         )
     );
 
+    gefaesstypAdded$ = createEffect(
+        () =>
+            this.#actions$.pipe(
+                ofType(gefaesstypenActions.gefaesstypAdded),
+                tap(() => {
+                    this.#router.navigateByUrl('/gefaesstypen');
+                    this.#messageService.info('Gefäßtyp erfolgreich gespeichert');
+                })
+            ),
+        { dispatch: false }
+    );
+
+    gefaesstypenServerError$ = createEffect(
+        () =>
+            this.#actions$.pipe(
+                ofType(gefaesstypenActions.gefaesstypenServerError),
+                tap(() => {
+                    console.log('jetzt Fehler- oder Warnmeldung an noch nicht vorhandenen MessageService');
+                })
+            ),
+        { dispatch: false }
+    );
+
     changeGefaesstyp$ = createEffect(() =>
         this.#actions$.pipe(
             ofType(gefaesstypenActions.changeGefaesstyp),
@@ -97,6 +122,18 @@ export class GefaesstypenEffects {
                 )
             )
         )
+    );
+
+    gefaesstypChanged$ = createEffect(
+        () =>
+            this.#actions$.pipe(
+                ofType(gefaesstypenActions.gefaesstypChanged),
+                tap(() => {
+                    this.#router.navigateByUrl('/gefaesstypen');
+                    this.#messageService.info('Gefäßtyp erfolgreich gespeichert');
+                })
+            ),
+        { dispatch: false }
     );
 
     loadGefaesstypForConflictDialog$ = createEffect(() =>
@@ -125,12 +162,11 @@ export class GefaesstypenEffects {
     removeGefaesstyp$ = createEffect(() =>
         this.#actions$.pipe(
             ofType(gefaesstypenActions.removeGefaesstyp),
-            switchMap(({ uuid, navigateTo }) =>
+            switchMap(({ uuid }) =>
                 this.#httpService.removeGefaesstyp(uuid).pipe(
                     map(() =>
                         gefaesstypenActions.gefaesstypRemoved({
                             uuid,
-                            navigateTo,
                         })
                     ),
                     catchError(error =>
@@ -143,5 +179,17 @@ export class GefaesstypenEffects {
                 )
             )
         )
+    );
+
+    gefaesstypRemoved$ = createEffect(
+        () =>
+            this.#actions$.pipe(
+                ofType(gefaesstypenActions.gefaesstypChanged),
+                tap(() => {
+                    this.#router.navigateByUrl('/gefaesstypen');
+                    this.#messageService.info('Gefäßtyp erfolgreich gelöscht');
+                })
+            ),
+        { dispatch: false }
     );
 }

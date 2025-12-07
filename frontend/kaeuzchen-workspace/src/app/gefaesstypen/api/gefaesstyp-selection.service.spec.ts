@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { GefaesstypSelectionService } from './gefaesstyp-selection.service';
 import { Gefaesstyp } from '@gefaesstypen/model';
-import { firstGefaesstyp, secondGefaesstyp } from '@testing';
+import { firstGefaesstyp, secondGefaesstyp, thirdGefaesstyp } from '@testing';
 import { gefaesstypenActions } from '@gefaesstypen/data';
 
 describe('GefaesstypSelectionService', () => {
@@ -21,6 +21,10 @@ describe('GefaesstypSelectionService', () => {
         dispatchSpy = vi.spyOn(store, 'dispatch');
     });
 
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
+
     it('dispatches gefaesstypEditorNavigationFailed when gefaesstyp not found', () => {
         // arrange
         const gefaesstypen: Gefaesstyp[] = [firstGefaesstyp];
@@ -36,7 +40,7 @@ describe('GefaesstypSelectionService', () => {
 
     it('dispatches selectGefaesstypByUuid when gefaesstyp found', () => {
         // arrange
-        const gefaesstypen: Gefaesstyp[] = [firstGefaesstyp, secondGefaesstyp];
+        const gefaesstypen: Gefaesstyp[] = [firstGefaesstyp, secondGefaesstyp, thirdGefaesstyp];
         const uuid = secondGefaesstyp.uuid;
 
         // act
@@ -44,6 +48,6 @@ describe('GefaesstypSelectionService', () => {
 
         // assert
         expect(dispatchSpy).toHaveBeenCalledWith(gefaesstypenActions.selectGefaesstypByUuid({ uuid }));
-        expect(dispatchSpy).toHaveBeenCalledTimes(1);
+        expect(dispatchSpy).toHaveBeenCalledTimes(2);
     });
 });

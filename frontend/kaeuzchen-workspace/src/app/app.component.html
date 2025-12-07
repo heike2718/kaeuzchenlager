@@ -5,6 +5,7 @@
         </mat-sidenav>
         <mat-sidenav-content>
             <kl-navbar #navbar (sidenavToggle)="sidenav.toggle()"></kl-navbar>
+            <kl-message-component></kl-message-component>
             <main>
                 <router-outlet></router-outlet>
             </main>

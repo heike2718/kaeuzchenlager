@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { App } from './app';
+import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { RouterModule } from '@angular/router';
 import { HarnessLoader } from '@angular/cdk/testing';
@@ -12,13 +12,13 @@ import { of } from 'rxjs';
 import { KL_CONFIGURATION } from '@config';
 import { mockConfig } from '@testing';
 
-describe('App', () => {
-    let fixture: ComponentFixture<App>;
+describe('AppComponent', () => {
+    let fixture: ComponentFixture<AppComponent>;
     let loader: HarnessLoader;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [App, HomeComponent, RouterModule.forRoot([{ path: '', component: HomeComponent }])],
+            imports: [AppComponent, HomeComponent, RouterModule.forRoot([{ path: '', component: HomeComponent }])],
             providers: [
                 {
                     provide: KL_CONFIGURATION,
@@ -26,13 +26,13 @@ describe('App', () => {
                 },
             ],
         }).compileComponents();
-        fixture = TestBed.createComponent(App);
+        fixture = TestBed.createComponent(AppComponent);
         loader = TestbedHarnessEnvironment.loader(fixture);
         fixture.detectChanges();
     });
 
     it('should create the app', () => {
-        const fixture = TestBed.createComponent(App);
+        const fixture = TestBed.createComponent(AppComponent);
         const app = fixture.componentInstance;
         expect(app).toBeDefined();
     });

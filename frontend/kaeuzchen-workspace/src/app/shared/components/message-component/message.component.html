@@ -1,0 +1,39 @@
+@if (messageService.message(); as msg) {
+    <div
+        class="message message--toast"
+        [class.message--info]="msg.type === 'info'"
+        [class.message--warn]="msg.type === 'warn'"
+        [class.message--error]="msg.type === 'error'"
+        role="status"
+        aria-live="polite">
+        <div class="message__icon" aria-hidden="true">
+            @switch (msg.type) {
+                @case ('info') {
+                    ℹ️
+                }
+                @case ('warn') {
+                    ⚠️
+                }
+                @case ('error') {
+                    ⛔
+                }
+            }
+        </div>
+
+        <div class="message__content">
+            <p class="message__text">
+                {{ msg.text }}
+            </p>
+        </div>
+
+        @if (msg.type !== 'info') {
+            <button
+                type="button"
+                class="message__close"
+                (click)="messageService.clear()"
+                aria-label="Meldung schließen">
+                ✕
+            </button>
+        }
+    </div>
+}

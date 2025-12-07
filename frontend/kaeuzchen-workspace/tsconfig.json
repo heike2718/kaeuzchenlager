@@ -14,6 +14,7 @@
             "@gefaesstypen/features/edit-gefaesstyp": ["./src/app/gefaesstypen/features/edit-gefaesstyp/index.ts"],
             "@gefaesstypen/features/gefaesstypen-list": ["./src/app/gefaesstypen/features/gefaesstypen-list/index.ts"],
             "@gefaesstypen/model": ["./src/app/gefaesstypen/model/index.ts"],
+            "@shared/components": ["./src/app/shared/components/index.ts"],
             "@shared/directives": ["./src/app/shared/directives/index.ts"],
             "@shared/utils": ["./src/app/shared/utils/index.ts"],
             "@testing": ["./testing/index.ts"]

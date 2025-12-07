@@ -4,3 +4,12 @@ export interface KaeuzchenError {
     readonly message: string;
     readonly type: ErrorType;
 }
+
+export type MessageType = 'info' | 'warn' | 'error';
+
+export interface AppMessage {
+    type: MessageType;
+    text: string;
+    // optional:
+    dismissAfterMs?: number; // nur für info
+}

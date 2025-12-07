@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideMockActions } from '@ngrx/effects/testing';
-import { ReplaySubject, of, throwError, firstValueFrom } from 'rxjs';
+import { ReplaySubject, of, throwError, firstValueFrom, take } from 'rxjs';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { GefaesstypenEffects } from './gefaesstypen.effects';
 import { GefaesstypenHttpService } from '../gefaesstypen-http.service';
@@ -11,6 +11,7 @@ import { GefaesstypenHttpErrorService } from '../gefaesstypen-http-error.service
 import { provideStore } from '@ngrx/store';
 import { ErrorType } from '@core/model';
 import { firstGefaesstyp } from '@testing';
+import { MessageService } from '@shared/components';
 
 describe('GefaesstypenEffects', () => {
     let actions$: ReplaySubject<unknown>;
@@ -22,6 +23,13 @@ describe('GefaesstypenEffects', () => {
         updateGefaesstyp: vi.fn(),
         loadGefaesstypWithId: vi.fn(),
         removeGefaesstyp: vi.fn(),
+    };
+
+    const messageServiceMock = {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        clear: vi.fn(),
     };
 
     const errorServiceMock = { toGefaesstypError: vi.fn() };
@@ -42,11 +50,16 @@ describe('GefaesstypenEffects', () => {
                 { provide: GefaesstypenHttpService, useValue: httpServiceMock },
                 { provide: Router, useValue: routerMock },
                 { provide: GefaesstypenHttpErrorService, useValue: errorServiceMock },
+                { provide: MessageService, useValue: messageServiceMock },
             ],
         });
 
         effects = TestBed.inject(GefaesstypenEffects);
         vi.resetAllMocks();
+    });
+
+    afterEach(() => {
+        vi.clearAllMocks();
     });
 
     describe('Test addGefaesstyp$', () => {
@@ -58,16 +71,16 @@ describe('GefaesstypenEffects', () => {
                 backgroundColor: '#000000',
                 version: null,
             };
-            const created: Gefaesstyp = { uuid: 'u-1', daten };
-            httpServiceMock.insertGefaesstyp.mockReturnValue(of(created));
+            const gefaesstyp: Gefaesstyp = { uuid: 'temp-a-1', daten };
+            httpServiceMock.insertGefaesstyp.mockReturnValue(of(gefaesstyp));
 
-            actions$.next(gefaesstypenActions.addGefaesstyp({ daten }));
+            actions$.next(gefaesstypenActions.addGefaesstyp({ gefaesstyp }));
 
             const emitted = await firstValueFrom(effects.addGefaesstyp$);
 
-            expect(emitted).toEqual(gefaesstypenActions.gefaesstypAdded({ gefaesstyp: created }));
+            expect(emitted).toEqual(gefaesstypenActions.gefaesstypAdded({ gefaesstyp }));
 
-            expect(httpServiceMock.insertGefaesstyp).toHaveBeenCalledWith(daten);
+            expect(httpServiceMock.insertGefaesstyp).toHaveBeenCalledWith(gefaesstyp);
             expect(httpServiceMock.insertGefaesstyp).toBeCalledTimes(1);
         });
 
@@ -93,16 +106,20 @@ describe('GefaesstypenEffects', () => {
                 userInput: daten,
                 uuid: null,
             };
+            const gefaesstyp: Gefaesstyp = {
+                uuid: 'temp-a-1',
+                daten: daten,
+            };
 
             httpServiceMock.insertGefaesstyp.mockReturnValue(throwError(() => error));
             errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
 
-            actions$.next(gefaesstypenActions.addGefaesstyp({ daten }));
+            actions$.next(gefaesstypenActions.addGefaesstyp({ gefaesstyp }));
             const emitted = await firstValueFrom(effects.addGefaesstyp$);
 
             expect(emitted).toEqual(gefaesstypenActions.gefaesstypenServerError({ error: gefaesstypError }));
 
-            expect(httpServiceMock.insertGefaesstyp).toHaveBeenCalledWith(daten);
+            expect(httpServiceMock.insertGefaesstyp).toHaveBeenCalledWith(gefaesstyp);
             expect(httpServiceMock.insertGefaesstyp).toBeCalledTimes(1);
 
             expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, daten);
@@ -351,15 +368,14 @@ describe('GefaesstypenEffects', () => {
     describe('Test removeGefaesstyp$', () => {
         it('maps removeGefaesstyp to gefaesstypRemoved when ok', async () => {
             const uuid = '1234';
-            const navigateTo = '/gefaesstypen';
 
             // hier muss man das void aus dem backend so simulieren, sonst completed der mock nicht!
             httpServiceMock.removeGefaesstyp.mockReturnValue(of(void 0));
 
-            actions$.next(gefaesstypenActions.removeGefaesstyp({ uuid, navigateTo }));
+            actions$.next(gefaesstypenActions.removeGefaesstyp({ uuid }));
             const emitted = await firstValueFrom(effects.removeGefaesstyp$);
 
-            expect(emitted).toEqual(gefaesstypenActions.gefaesstypRemoved({ uuid, navigateTo }));
+            expect(emitted).toEqual(gefaesstypenActions.gefaesstypRemoved({ uuid }));
 
             expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
             expect(httpServiceMock.updateGefaesstyp).not.toHaveBeenCalled();
@@ -370,7 +386,6 @@ describe('GefaesstypenEffects', () => {
 
         it('maps removeGefaesstyp to gefaesstypServerError on error', async () => {
             const uuid = '1234';
-            const navigateTo = '/gefaesstypen';
             const serverMessage = 'etwas wing schief';
 
             const errorType: ErrorType = 'SERVER';
@@ -391,9 +406,11 @@ describe('GefaesstypenEffects', () => {
             httpServiceMock.removeGefaesstyp.mockReturnValue(throwError(() => error));
             errorServiceMock.toGefaesstypError.mockReturnValue(gefaesstypError);
 
-            actions$.next(gefaesstypenActions.removeGefaesstyp({ uuid, navigateTo }));
-            const emitted = await firstValueFrom(effects.removeGefaesstyp$);
+            // act
+            actions$.next(gefaesstypenActions.removeGefaesstyp({ uuid }));
 
+            // assert
+            const emitted = await firstValueFrom(effects.removeGefaesstyp$);
             expect(emitted).toEqual(gefaesstypenActions.gefaesstypenServerError({ error: gefaesstypError }));
 
             expect(httpServiceMock.insertGefaesstyp).not.toHaveBeenCalled();
@@ -404,6 +421,99 @@ describe('GefaesstypenEffects', () => {
 
             expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledWith(error, null);
             expect(errorServiceMock.toGefaesstypError).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('gefaesstypAdded$', () => {
+        it('sets an info-message and navigates to gefaesstypen when added successfully', async () => {
+            const navigateTo = '/gefaesstypen';
+            const text = 'Gefäßtyp erfolgreich gespeichert';
+
+            vi.spyOn(messageServiceMock, 'info');
+            vi.spyOn(messageServiceMock, 'warn');
+            vi.spyOn(messageServiceMock, 'error');
+            vi.spyOn(messageServiceMock, 'clear');
+            vi.spyOn(routerMock, 'navigateByUrl');
+
+            const subscription = effects.gefaesstypAdded$.pipe(take(1)).subscribe(() => {
+                // assert
+                expect(messageServiceMock.info).toHaveBeenCalledOnce();
+                expect(messageServiceMock.info).toHaveBeenCalledWith(text);
+
+                expect(messageServiceMock.warn).toHaveBeenCalledTimes(0);
+                expect(messageServiceMock.error).toHaveBeenCalledTimes(0);
+                expect(messageServiceMock.clear).toHaveBeenCalledTimes(0);
+
+                expect(routerMock.navigateByUrl).toHaveBeenCalledOnce();
+                expect(routerMock.navigateByUrl).toHaveBeenCalledWith(navigateTo);
+            });
+
+            // act
+            actions$.next(gefaesstypenActions.gefaesstypAdded({ gefaesstyp: firstGefaesstyp }));
+
+            subscription.unsubscribe();
+        });
+    });
+
+    describe('gefaesstypChanged$', () => {
+        it('sets an info-message and navigates to gefaesstypen when changed successfully', async () => {
+            const navigateTo = '/gefaesstypen';
+            const text = 'Gefäßtyp erfolgreich gespeichert';
+
+            vi.spyOn(messageServiceMock, 'info');
+            vi.spyOn(messageServiceMock, 'warn');
+            vi.spyOn(messageServiceMock, 'error');
+            vi.spyOn(messageServiceMock, 'clear');
+            vi.spyOn(routerMock, 'navigateByUrl');
+
+            const subscription = effects.gefaesstypChanged$.pipe(take(1)).subscribe(() => {
+                // assert
+                expect(messageServiceMock.info).toHaveBeenCalledOnce();
+                expect(messageServiceMock.info).toHaveBeenCalledWith(text);
+
+                expect(messageServiceMock.warn).toHaveBeenCalledTimes(0);
+                expect(messageServiceMock.error).toHaveBeenCalledTimes(0);
+                expect(messageServiceMock.clear).toHaveBeenCalledTimes(0);
+
+                expect(routerMock.navigateByUrl).toHaveBeenCalledOnce();
+                expect(routerMock.navigateByUrl).toHaveBeenCalledWith(navigateTo);
+            });
+
+            // act
+            actions$.next(gefaesstypenActions.gefaesstypChanged({ gefaesstyp: firstGefaesstyp }));
+
+            subscription.unsubscribe();
+        });
+    });
+
+    describe('gefaesstypRemoved$', () => {
+        it('sets an info-message and navigates to gefaesstypen when removed successfully', async () => {
+            const navigateTo = '/gefaesstypen';
+            const text = 'Gefäßtyp erfolgreich gelöscht';
+
+            vi.spyOn(messageServiceMock, 'info');
+            vi.spyOn(messageServiceMock, 'warn');
+            vi.spyOn(messageServiceMock, 'error');
+            vi.spyOn(messageServiceMock, 'clear');
+            vi.spyOn(routerMock, 'navigateByUrl');
+
+            const subscription = effects.gefaesstypRemoved$.pipe(take(1)).subscribe(() => {
+                // assert
+                expect(messageServiceMock.info).toHaveBeenCalledOnce();
+                expect(messageServiceMock.info).toHaveBeenCalledWith(text);
+
+                expect(messageServiceMock.warn).toHaveBeenCalledTimes(0);
+                expect(messageServiceMock.error).toHaveBeenCalledTimes(0);
+                expect(messageServiceMock.clear).toHaveBeenCalledTimes(0);
+
+                expect(routerMock.navigateByUrl).toHaveBeenCalledOnce();
+                expect(routerMock.navigateByUrl).toHaveBeenCalledWith(navigateTo);
+            });
+
+            // act
+            actions$.next(gefaesstypenActions.gefaesstypRemoved({ uuid: firstGefaesstyp.uuid }));
+
+            subscription.unsubscribe();
         });
     });
 });
