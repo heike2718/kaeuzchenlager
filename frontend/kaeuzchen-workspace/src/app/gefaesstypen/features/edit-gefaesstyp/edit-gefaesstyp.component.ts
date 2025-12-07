@@ -123,7 +123,7 @@ export class EditGefaesstypComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     onCancel(): void {
-        console.log('jetzt zurücksetzen');
+        this.facade.cancelEditGefaesstyp(this.#currentUuid);
     }
 
     onNameBlur(): void {

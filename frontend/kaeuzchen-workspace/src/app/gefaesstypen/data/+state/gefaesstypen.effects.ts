@@ -53,6 +53,15 @@ export class GefaesstypenEffects {
         { dispatch: false }
     );
 
+    editGefaesstypCanceled$ = createEffect(
+        () =>
+            this.#actions$.pipe(
+                ofType(gefaesstypenActions.editGefaesstypCanceled),
+                tap(() => this.#router.navigateByUrl('/gefaesstypen'))
+            ),
+        { dispatch: false }
+    );
+
     addGefaesstyp$ = createEffect(() =>
         this.#actions$.pipe(
             ofType(gefaesstypenActions.addGefaesstyp),

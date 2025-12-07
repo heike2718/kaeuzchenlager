@@ -424,6 +424,34 @@ describe('GefaesstypenEffects', () => {
         });
     });
 
+    describe('editGefaesstypCancelled$', () => {
+        it('navigates to gefaesstypen when edit cancelled', async () => {
+            const navigateTo = '/gefaesstypen';
+
+            vi.spyOn(messageServiceMock, 'info');
+            vi.spyOn(messageServiceMock, 'warn');
+            vi.spyOn(messageServiceMock, 'error');
+            vi.spyOn(messageServiceMock, 'clear');
+            vi.spyOn(routerMock, 'navigateByUrl');
+
+            const subscription = effects.editGefaesstypCanceled$.pipe(take(1)).subscribe(() => {
+                // assert
+                expect(messageServiceMock.info).toHaveBeenCalledTimes(0);
+                expect(messageServiceMock.warn).toHaveBeenCalledTimes(0);
+                expect(messageServiceMock.error).toHaveBeenCalledTimes(0);
+                expect(messageServiceMock.clear).toHaveBeenCalledTimes(0);
+
+                expect(routerMock.navigateByUrl).toHaveBeenCalledOnce();
+                expect(routerMock.navigateByUrl).toHaveBeenCalledWith(navigateTo);
+            });
+
+            // act
+            actions$.next(gefaesstypenActions.editGefaesstypCanceled({ uuid: firstGefaesstyp.uuid }));
+
+            subscription.unsubscribe();
+        });
+    });
+
     describe('gefaesstypAdded$', () => {
         it('sets an info-message and navigates to gefaesstypen when added successfully', async () => {
             const navigateTo = '/gefaesstypen';

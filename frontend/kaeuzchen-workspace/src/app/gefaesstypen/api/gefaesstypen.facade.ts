@@ -57,6 +57,10 @@ export class GefaesstypenFacade {
         }
     }
 
+    public cancelEditGefaesstyp(uuid: string): void {
+        this.#store.dispatch(gefaesstypenActions.editGefaesstypCanceled({ uuid }));
+    }
+
     /**
      * stellt sicher, dass die Gefaesstypen geladen sind und selektiert dann den mit der uuid, falls vorhanden.
      */
