@@ -74,6 +74,16 @@ public class GefaesstypDao {
   }
 
   /**
+   * Gibt den Gefäßtyp mit der gegebenen uuid zurück.
+   * @param uuid String technische ID
+   * @return Gefaesstyp oder null
+   */
+  public Gefaesstyp findByUuid(String uuid) {
+
+    return entityManager.find(Gefaesstyp.class, uuid);
+  }
+
+  /**
    * Persistiert einen neuen Gefäßtyp.
    *
    * @param gefaesstyp Gefaesstyp

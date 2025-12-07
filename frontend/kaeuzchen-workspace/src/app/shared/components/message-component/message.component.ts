@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { MessageService } from './message.service';
+import { MessageService } from '@core/services';
 
 @Component({
     selector: 'kl-message-component',

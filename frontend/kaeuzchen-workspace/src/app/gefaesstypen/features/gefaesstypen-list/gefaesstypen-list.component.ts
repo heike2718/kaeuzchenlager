@@ -28,6 +28,6 @@ export class GefaesstypenListComponent implements OnInit {
     }
 
     onDeleteGefaesstyp(gefaesstyp: Gefaesstyp) {
-        console.log('jetzt gefaesstyp mit uuid ' + gefaesstyp.uuid + ' loeschen');
+        this.gefaesstypenFacade.removeGefaesstyp(gefaesstyp.uuid);
     }
 }

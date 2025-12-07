@@ -7,6 +7,14 @@ import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { ThemeStore } from './layout/theme.store';
 import { KL_CONFIGURATION, configuration } from '@config';
+import {
+    HTTP_INTERCEPTORS,
+    provideHttpClient,
+    withInterceptorsFromDi,
+    withXsrfConfiguration,
+} from '@angular/common/http';
+import { KaeuzchenlagerAPIInterceptor } from './core/interceptors/kaeuzchenlager-api.interceptor';
+import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 
 // Environment-spezifische Provider
 function getEnvironmentSpecificProviders() {
@@ -35,6 +43,15 @@ export const appConfig: ApplicationConfig = {
         gefaesstypenDataProvider,
         ...getEnvironmentSpecificProviders(),
         ThemeStore,
+        provideHttpClient(
+            withInterceptorsFromDi(),
+            withXsrfConfiguration({
+                cookieName: 'XSRF-TOKEN',
+                headerName: 'X-XSRF-TOKEN',
+            })
+        ),
         { provide: KL_CONFIGURATION, useValue: configuration },
+        { provide: HTTP_INTERCEPTORS, multi: true, useClass: KaeuzchenlagerAPIInterceptor },
+        { provide: HTTP_INTERCEPTORS, multi: true, useClass: LoadingInterceptor },
     ],
 };

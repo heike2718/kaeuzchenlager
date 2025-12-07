@@ -11,7 +11,7 @@ import { GefaesstypenHttpErrorService } from '../gefaesstypen-http-error.service
 import { provideStore } from '@ngrx/store';
 import { ErrorType } from '@core/model';
 import { firstGefaesstyp } from '@testing';
-import { MessageService } from '@shared/components';
+import { MessageService } from '@core/services';
 
 describe('GefaesstypenEffects', () => {
     let actions$: ReplaySubject<unknown>;

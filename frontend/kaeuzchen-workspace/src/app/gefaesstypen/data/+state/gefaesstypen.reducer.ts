@@ -66,10 +66,6 @@ export const gefaesstypenFeature = createFeature({
             }
         }),
         on(gefaesstypenActions.gefaesstypAdded, (state, action) => {
-            // const tempGefaesstypen = state.gefaesstypen.filter(gt => gt.uuid.startsWith(TEMP_UUID_PREFIX));
-
-            // TODO: muss hier noch geprüft werden, ob die uuid aus der action mit dem suffix aus tempGefaesstypen übereinstimmt?
-
             const neueGefaesstypen = state.gefaesstypen.filter(gt => !gt.uuid.startsWith(TEMP_UUID_PREFIX));
 
             return {
@@ -100,16 +96,13 @@ export const gefaesstypenFeature = createFeature({
             return { ...state, error: null, conflict: conflict };
         }),
         on(gefaesstypenActions.gefaesstypRemoved, (state, action) => {
-            const removedGefaesstypen = state.gefaesstypen.filter(gt => gt.uuid === action.uuid);
-
-            return removedGefaesstypen.length === 0
-                ? { ...state, selectedUuid: null, error: null }
-                : {
-                      ...state,
-                      gefaesstypen: state.gefaesstypen.filter(gt => gt.uuid !== action.uuid),
-                      selectedUuid: null,
-                      error: null,
-                  };
+            const neueGefaesstypen = state.gefaesstypen.filter(gt => gt.uuid !== action.uuid);
+            return {
+                ...state,
+                gefaesstypen: neueGefaesstypen,
+                selectedUuid: null,
+                error: null,
+            };
         }),
         on(gefaesstypenActions.resetGefaesstypenState, () => initialState)
     ),

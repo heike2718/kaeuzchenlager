@@ -54,6 +54,17 @@ public class GefaesstypService {
   }
 
   /**
+   *
+   * @param uuid String
+   * @return Optional
+   */
+  public Optional<GefaesstypDto> findGefaesstyp(String uuid) {
+
+    Gefaesstyp gefaesstyp = this.gefaesstypDao.findByUuid(uuid);
+    return gefaesstyp != null ? Optional.of(this.gefaesstypMapper.toDto(gefaesstyp)) : Optional.empty();
+  }
+
+  /**
    * Legt einen neuen Gefäßtyp an.
    *
    * @param daten GefaesstypDaten

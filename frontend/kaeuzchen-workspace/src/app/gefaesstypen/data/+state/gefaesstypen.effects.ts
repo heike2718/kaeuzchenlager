@@ -5,8 +5,7 @@ import { gefaesstypenActions } from './gefaesstypen.actions';
 import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { GefaesstypenHttpErrorService } from '../gefaesstypen-http-error.service';
 import { Router } from '@angular/router';
-import { MessageService } from '@shared/components';
-
+import { MessageService } from '@core/services';
 @Injectable({
     providedIn: 'root',
 })
@@ -193,7 +192,7 @@ export class GefaesstypenEffects {
     gefaesstypRemoved$ = createEffect(
         () =>
             this.#actions$.pipe(
-                ofType(gefaesstypenActions.gefaesstypChanged),
+                ofType(gefaesstypenActions.gefaesstypRemoved),
                 tap(() => {
                     this.#router.navigateByUrl('/gefaesstypen');
                     this.#messageService.info('Gefäßtyp erfolgreich gelöscht');

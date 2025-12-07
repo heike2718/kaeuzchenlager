@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "license": "MIT",
     "scripts": {
-        "start": "nx serve",
+        "start": "nx serve --proxy-config=proxy.conf.json",
         "build": "nx build",
         "test": "npx nx test",
         "test:coverage": "vitest --coverage",

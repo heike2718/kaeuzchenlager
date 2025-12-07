@@ -1,6 +1,6 @@
 @if (messageService.message(); as msg) {
     <div
-        class="message message--toast"
+        class="message"
         [class.message--info]="msg.type === 'info'"
         [class.message--warn]="msg.type === 'warn'"
         [class.message--error]="msg.type === 'error'"
