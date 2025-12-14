@@ -8,6 +8,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLinkWithHref } from '@angular/router';
 import { ThemeStore } from '../theme.store';
 import { KL_CONFIGURATION, KLConfiguration } from '@config';
+import { AuthFacade } from '@shared/auth/api';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'kl-sidenav',
@@ -19,6 +21,7 @@ import { KL_CONFIGURATION, KLConfiguration } from '@config';
         MatTooltipModule,
         MatSidenavModule,
         RouterLinkWithHref,
+        AsyncPipe,
     ],
     templateUrl: './sidenav.component.html',
     styleUrl: './sidenav.component.scss',
@@ -26,6 +29,7 @@ import { KL_CONFIGURATION, KLConfiguration } from '@config';
 export class SidenavComponent {
     readonly config: KLConfiguration = inject(KL_CONFIGURATION);
     readonly theme = inject(ThemeStore);
+    authFacade = inject(AuthFacade);
 
     @Output()
     sidenavClose = new EventEmitter();
@@ -33,4 +37,12 @@ export class SidenavComponent {
     public onSidenavClose = () => {
         this.sidenavClose.emit();
     };
+
+    public login(): void {
+        this.authFacade.login();
+    }
+
+    public logout(): void {
+        this.authFacade.logout();
+    }
 }

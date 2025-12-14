@@ -23,7 +23,8 @@ mat-toolbar.nav,
     }
 
     &__link,
-    &__toggle {
+    &__toggle,
+    &__login_logout {
         /* entspricht: mat-toolbar a, mat-toolbar mat-button */
         display: inline-flex;
         align-items: center;
@@ -63,14 +64,16 @@ mat-toolbar.nav,
 
 /* Nur leicht abdunkeln */
 mat-toolbar.nav .nav__link:hover,
-mat-toolbar.nav .nav__toggle:hover {
+mat-toolbar.nav .nav__toggle:hover,
+mat-toolbar.nav .nav__login_logout:hover {
     filter: brightness(0.8);
     transition: filter 0.15s;
 }
 
 /* Tastaturfokus konsistent */
 mat-toolbar.nav .nav__link:focus-visible,
-mat-toolbar.nav .nav__toggle:focus-visible {
+mat-toolbar.nav .nav__toggle:focus-visible,
+mat-toolbar.nav .nav__login_logout:focus-visible {
     outline: 2px solid $nav-fg;
     outline-offset: 2px;
 }

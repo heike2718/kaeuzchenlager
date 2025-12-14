@@ -1,0 +1,88 @@
+// =====================================================
+// Project: kaeuzchenlager
+// (c) Heike Winkelvoß
+// =====================================================
+package de.egladil.web.kaeuzchenlager.domain.auth.config;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import jakarta.enterprise.context.ApplicationScoped;
+
+/**
+ * ConfigService
+ */
+@ApplicationScoped
+public class ConfigService {
+
+	public static final String STAGE_DEV = "dev";
+
+	public static final String STAGE_PROD = "prod";
+
+	public static final String DEFAULT_ENCODING = "UTF-8";
+
+	@ConfigProperty(name = "block.on.missing.origin.referer", defaultValue = "false")
+	boolean blockOnMissingOriginReferer;
+
+	@ConfigProperty(name = "target.origin")
+	String targetOrigin;
+
+	@ConfigProperty(name = "quarkus.http.cors.origins")
+	String allowedOrigin;
+
+	@ConfigProperty(name = "quarkus.http.cors.methods")
+	String allowedMethods;
+
+	@ConfigProperty(name = "quarkus.http.cors.headers")
+	String allowedHeaders;
+
+	@ConfigProperty(name = "quarkus.http.cors.exposed-headers")
+	String exposedHeaders;
+
+	/**
+	 * @return the blockOnMissingOriginReferer
+	 */
+	public boolean isBlockOnMissingOriginReferer() {
+
+		return blockOnMissingOriginReferer;
+	}
+
+	/**
+	 * @return the targetOrigin
+	 */
+	public String getTargetOrigin() {
+
+		return targetOrigin;
+	}
+
+	/**
+	 * @return the allowedOrigin
+	 */
+	public String getAllowedOrigin() {
+
+		return allowedOrigin;
+	}
+
+	/**
+	 * @return the allowedMethods
+	 */
+	public String getAllowedMethods() {
+
+		return allowedMethods;
+	}
+
+	/**
+	 * @return the allowedHeaders
+	 */
+	public String getAllowedHeaders() {
+
+		return allowedHeaders;
+	}
+
+	/**
+	 * @return the exposedHeaders
+	 */
+	public String getExposedHeaders() {
+
+		return exposedHeaders;
+	}
+}

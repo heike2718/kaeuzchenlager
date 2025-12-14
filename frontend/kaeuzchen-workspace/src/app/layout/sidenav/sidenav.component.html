@@ -4,12 +4,27 @@
         <mat-icon class="sidenav__icon">home</mat-icon>
         <span class="sidenav__caption">Startseite</span>
     </a>
-    <a mat-list-item class="sidenav__link" routerLink="/gefaesstypen">
-        <mat-icon class="sidenav__icon">inventory_2</mat-icon>
-        <span class="sidenav__caption">Gefäßtypen</span>
-    </a>
 
-    <button mat-button class="sidenav__toggle" (click)="theme.toggle()" [attr.aria-label]="theme.ariaLabel()">
+    @if (authFacade.isUserLoggedIn$ | async) {
+        <a mat-list-item class="sidenav__link" routerLink="/gefaesstypen">
+            <mat-icon class="sidenav__icon">inventory_2</mat-icon>
+            <span class="sidenav__caption">Gefäßtypen</span>
+        </a>
+    }
+
+    @if (authFacade.isUserLoggedOut$ | async) {
+        <button mat-list-item class="sidenav__login_logout" (click)="login()" [attr.aria-label]="theme.ariaLabel()">
+            <mat-icon class="sidenav__icon">login</mat-icon>
+            <span class="sidenav__caption">einloggen</span>
+        </button>
+    } @else {
+        <button mat-list-item class="sidenav__login_logout" (click)="logout()" [attr.aria-label]="theme.ariaLabel()">
+            <mat-icon class="sidenav__icon">logout</mat-icon>
+            <span class="sidenav__caption">ausloggen</span>
+        </button>
+    }
+
+    <button mat-list-item class="sidenav__toggle" (click)="theme.toggle()" [attr.aria-label]="theme.ariaLabel()">
         <mat-icon class="sidenav__icon">{{ theme.icon() }}</mat-icon>
         <span class="sidenav__caption">{{ theme.caption() }}</span>
     </button>

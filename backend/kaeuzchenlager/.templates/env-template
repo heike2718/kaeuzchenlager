@@ -1,7 +1,30 @@
 STAGE=DEV
 
-TARGET_ORIGIN=localhost:4200
-QUARKUS_HTTP_CORS_ORIGINS=http://localhost:9400,https://fonts.googleapis.com
+TARGET_ORIGIN=localhost:4200,localhost:9400
+QUARKUS_HTTP_CORS_ORIGINS=http://localhost:9400,http://localhost:4200,https://fonts.googleapis.com
+
+#=================================================================#
+#    authprovider, Redirect URLs, REST-Client, CORS               #
+#                                                                 #
+# PUBLIC_REDIRECT_URL muss ohne http:// und endenden / in         #
+# CLIENTS.REDIRECT_URLS vorkommen!! Für das korrekte redirect     #
+# sollten sie aber u.U. vorhanden sein.                           #
+#                                                                 #
+#=================================================================#
+PUBLIC-CLIENT-ID=4O2UEGhpdGvhJt0Fk3aHkxS078jBsLlBf6XZ6BgR31cj
+PUBLIC-CLIENT-SECRET=start123
+
+# ---- lokale Entwicklung (authprovider in docker, kaeuzchenlager mit npm gestartet) ----
+AUTH_APP_URL=http://localhost:9000/authprovider/
+PUBLIC_REDIRECT_URL=http://localhost:4200
+QUARKUS_REST_CLIENT_AUTHPROVIDER_URL=http://localhost:9000
+AUTHPROVIDER_URL=http://localhost:9000/authprovider
+
+# ---- lokale Entwicklung (authprovider in docker, kaeuzchenlager von quarkus geserved) ----
+#AUTH_APP_URL=http://localhost:9000/authprovider/
+#PUBLIC_REDIRECT_URL=http://localhost:9400/kaeuzchenlager/
+#QUARKUS_REST_CLIENT_AUTHPROVIDER_URL=http://localhost:9000
+#AUTHPROVIDER_URL=http://localhost:9000/authprovider
 
 #=================================================================#
 #        Database                                                 #

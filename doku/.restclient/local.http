@@ -1,0 +1,2 @@
+### request the login-url
+GET http://localhost:9400/kaeuzchenlager/api/session/authurls/login

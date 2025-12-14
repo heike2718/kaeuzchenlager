@@ -15,6 +15,7 @@ import {
 } from '@angular/common/http';
 import { KaeuzchenlagerAPIInterceptor } from './core/interceptors/kaeuzchenlager-api.interceptor';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
+import { authDataProvider } from '@shared/auth/api';
 
 // Environment-spezifische Provider
 function getEnvironmentSpecificProviders() {
@@ -41,6 +42,7 @@ export const appConfig: ApplicationConfig = {
         provideStore({}),
         provideEffects(),
         gefaesstypenDataProvider,
+        authDataProvider,
         ...getEnvironmentSpecificProviders(),
         ThemeStore,
         provideHttpClient(

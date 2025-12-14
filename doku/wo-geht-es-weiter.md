@@ -1,5 +1,14 @@
 # Wo geht es weiter?
 
+## nach dem 14.12.2025
+
+- login klappt noch nicht vernünftig
+- FE:router guards, die die Rollen ADMIN und KL_ADMIN auswerten
+- BE: RBAC einbauen
+- build scripts lokal, qs, prod
+- ansible scripts für x300 und v1
+- tests irgendwann reparieren. Bis dahin commit hook umgehen.
+
 ## nach dem 23.11.2025
 
 ```

@@ -11,6 +11,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncPipe } from '@angular/common';
 import { KL_CONFIGURATION, KLConfiguration } from '@config';
+import { AuthFacade } from '@shared/auth/api';
 
 @Component({
     selector: 'kl-navbar',
@@ -33,6 +34,8 @@ export class NavbarComponent {
     @Output()
     sidenavToggle = new EventEmitter();
 
+    authFacade = inject(AuthFacade);
+
     #breakpointObserver = inject(BreakpointObserver);
     #router = inject(Router);
 
@@ -47,5 +50,13 @@ export class NavbarComponent {
 
     onMenuItemClick(id: number): void {
         this.#router.navigate(['/home', id]);
+    }
+
+    login(): void {
+        this.authFacade.login();
+    }
+
+    logout(): void {
+        this.authFacade.logout();
     }
 }

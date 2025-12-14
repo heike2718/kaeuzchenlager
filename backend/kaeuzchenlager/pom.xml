@@ -8,6 +8,7 @@
   <version>1.0.0-SNAPSHOT</version>
 
   <properties>
+    <egladil-secure-tokens.version>1.0.0</egladil-secure-tokens.version>
     <!-- Start mixin-properties -->
     <pmd.failOnViolation>true</pmd.failOnViolation>
     <spotbugs.failOnError>true</spotbugs.failOnError>
@@ -22,7 +23,7 @@
     <!-- Ende mixin-propetries -->
 
     <maven.compiler.release>21</maven.compiler.release>
-  	<maven.compiler.parameters>true</maven.compiler.parameters>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
 
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
@@ -44,22 +45,43 @@
   </dependencyManagement>
 
   <dependencies>
+
+    <dependency>
+      <groupId>de.egladil.web</groupId>
+      <artifactId>egladil-secure-tokens</artifactId>
+      <version>${egladil-secure-tokens.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-rest-client-jackson</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-validator</artifactId>
     </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm</artifactId>
     </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-jackson</artifactId>
@@ -70,11 +92,22 @@
       <artifactId>quarkus-reactive-routes</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-jwt</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
+    </dependency>
+
     <!-- Flyway specific dependencies -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-flyway</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-mysql</artifactId>
@@ -84,10 +117,7 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jdbc-mariadb</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-jwt</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc</artifactId>
@@ -122,21 +152,25 @@
       <artifactId>quarkus-junit5</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5-mockito</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-test-security</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jacoco</artifactId>

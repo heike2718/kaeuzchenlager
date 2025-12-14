@@ -3,7 +3,15 @@
     <header class="home__header">
         <h1 class="home__title">Käuzchenlager</h1>
     </header>
+
     @if (isHandset$ | async) {
-        <button mat-raised-button color="primary" class="home__button" (click)="goToGefaesstypen()">Gefäßtypen</button>
+        @if (authFacade.isUserLoggedIn$ | async) {
+            <button mat-raised-button color="primary" class="home__button" (click)="goToGefaesstypen()">
+                Gefäßtypen
+            </button>
+            <button mat-raised-button color="primary" class="home__button" (click)="logout()">ausloggen</button>
+        } @else {
+            <button mat-raised-button color="primary" class="home__button" (click)="login()">einloggen</button>
+        }
     }
 </section>
