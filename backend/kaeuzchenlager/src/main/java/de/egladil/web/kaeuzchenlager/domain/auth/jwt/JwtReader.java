@@ -13,31 +13,28 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Dependent
 public class JwtReader {
 
-  @Inject
-  JsonWebToken jwt;
-
   /**
-   *
+   * @param jwt JsonWebToken
    * @return String
    */
-  public String getFullName() {
+  public String getFullName(JsonWebToken jwt) {
     return jwt.getClaim(Claims.full_name.name());
   }
 
   /**
-   *
+   * @param jwt JsonWebToken
    * @return String[]
    */
-  public String[] getGroups() {
+  public String[] getGroups(JsonWebToken jwt) {
     var groups = jwt.getGroups();
     return groups == null ? new String[0] : groups.toArray(new String[0]);
   }
 
   /**
-   *
+   * @param jwt JsonWebToken
    * @return String
    */
-  public String getSubject() {
+  public String getSubject(JsonWebToken jwt) {
     return jwt.getSubject();
   }
 }

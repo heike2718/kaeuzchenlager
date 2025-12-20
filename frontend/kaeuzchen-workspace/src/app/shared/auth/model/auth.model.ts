@@ -8,7 +8,6 @@ export interface AuthResult {
 }
 
 export interface User {
-    readonly idReference: string;
     readonly fullName: string;
     readonly roles: string[];
     readonly anonym: boolean;
@@ -22,7 +21,6 @@ export interface Session {
 
 const anonymousUser: User = {
     fullName: 'Gast',
-    idReference: 'ANONYM',
     roles: [],
     anonym: true,
 };

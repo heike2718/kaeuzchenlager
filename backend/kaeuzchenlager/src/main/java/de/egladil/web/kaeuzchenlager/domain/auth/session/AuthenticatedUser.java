@@ -4,6 +4,8 @@
 // =====================================================
 package de.egladil.web.kaeuzchenlager.domain.auth.session;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,12 +20,16 @@ import io.quarkus.security.runtime.QuarkusPrincipal;
 public class AuthenticatedUser extends QuarkusPrincipal {
 
   private String uuid;          // subject
+
   private String fullName;      // claim full_name
+
   private String idReference;   // wie bisher generiert
-  private String[] roles;       // groups -> roles
+
+  private String[] roles;
 
   public AuthenticatedUser(String uuid) {
     super(uuid);
+    this.uuid = uuid;
   }
 
   @Override

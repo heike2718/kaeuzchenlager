@@ -6,10 +6,19 @@ package de.egladil.web.kaeuzchenlager.domain.auth.session;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
 /**
  * Session
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Session {
 
 	@JsonIgnore
@@ -25,7 +34,11 @@ public class Session {
 	private String csrfTokenHmac;
 
 	@JsonIgnore
-	private AuthenticatedUser user;
+	private AuthenticatedUser authenticatedUser;
+
+  @JsonProperty
+  private UserDto user;
+
 
 	public static Session createAnonymous(final String sessionId) {
 
@@ -39,29 +52,14 @@ public class Session {
 	@Override
 	public String toString() {
 
-		return "Session [sessionId=" + sessionId + ", expiresAt=" + expiresAt + ", admin=" + user + "]";
+		return "Session [sessionId=" + sessionId + ", expiresAt=" + expiresAt + ", admin=" + authenticatedUser
+        + "]";
 	}
 
 	@JsonIgnore
 	public boolean isAnonym() {
 
-		return user == null;
-	}
-
-	/**
-	 * @return the expiresAt
-	 */
-	public long getExpiresAt() {
-
-		return expiresAt;
-	}
-
-	/**
-	 * @param expiresAt the expiresAt to set
-	 */
-	public void setExpiresAt(final long expiresAt) {
-
-		this.expiresAt = expiresAt;
+		return authenticatedUser == null;
 	}
 
 	@Override
@@ -98,48 +96,5 @@ public class Session {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * @return the sessionId
-	 */
-	public String getSessionId() {
-
-		return sessionId;
-	}
-
-	/**
-	 * @return the admin
-	 */
-	public AuthenticatedUser getUser() {
-
-		return user;
-	}
-
-	public Session withUser(final AuthenticatedUser user) {
-
-		if (user == null) {
-
-			throw new IllegalArgumentException("admin null");
-		}
-
-		this.user = user;
-		return this;
-	}
-
-	public boolean isSessionActive() {
-		return sessionActive;
-	}
-
-	public void setSessionActive(boolean sessionActive) {
-		this.sessionActive = sessionActive;
-	}
-
-	public String getCsrfTokenHmac() {
-		return csrfTokenHmac;
-	}
-
-	public void setCsrfTokenHmac(String csrfTokenHmac) {
-		this.csrfTokenHmac = csrfTokenHmac;
 	}
 }

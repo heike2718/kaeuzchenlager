@@ -89,7 +89,7 @@ public class LoginLogoutService {
     NewCookie sessionCookie = SessionUtils.createSessionCookie(sessionCookieConfig, session.getSessionId());
     NewCookie csrfTokenCookie = csrfCookieService.createCsrfTokenCookie(session.getSessionId());
 
-    LOGGER.debug("session created for user {}", StringUtils.abbreviate(session.getUser().getName(), 11));
+    LOGGER.debug("session created for user {}", StringUtils.abbreviate(session.getAuthenticatedUser().getName(), 11));
 
     return Response.ok(session).cookie(sessionCookie).cookie(csrfTokenCookie).build();
   }

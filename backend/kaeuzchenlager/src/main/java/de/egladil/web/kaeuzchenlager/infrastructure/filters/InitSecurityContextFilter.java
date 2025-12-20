@@ -83,7 +83,7 @@ public class InitSecurityContextFilter implements ContainerRequestFilter {
 
         if (session != null) {
 
-          AuthenticatedUser user = session.getUser();
+          AuthenticatedUser user = session.getAuthenticatedUser();
 
           if (user != null) {
 
