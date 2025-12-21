@@ -1,32 +1,26 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, of, switchMap } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { fromAuth, authActions } from '@shared/auth/data';
-import { anonymousSession, AuthResult, User } from '@shared/auth/model';
-import { filterDefined } from '@shared/utils';
-import { MessageService } from '@core/services';
+import { AuthResult, User } from '@shared/auth/model';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthFacade {
     #store = inject(Store);
-    #messageService = inject(MessageService);
-    #currentSession = anonymousSession;
 
-    readonly user$: Observable<User> = this.#store.select(fromAuth.user).pipe(filterDefined);
+    readonly sessionLoaded$: Observable<boolean> = this.#store.select(fromAuth.sessionLoaded);
 
-    readonly isUserLoggedIn$: Observable<boolean> = this.#store
-        .select(fromAuth.user)
-        .pipe(switchMap(user => of(!user.anonym)));
+    readonly user$: Observable<User> = this.#store.select(fromAuth.user);
 
-    readonly isUserLoggedOut$: Observable<boolean> = this.isUserLoggedIn$.pipe(switchMap(li => of(!li)));
+    readonly isAuthorized$: Observable<boolean> = this.#store.select(fromAuth.isAuthorized);
 
-    constructor() {
-        this.#store.select(fromAuth.session).subscribe(session => {
-            this.#currentSession = { ...session };
-        });
-    }
+    readonly isNotAuthorized$ = this.isAuthorized$.pipe(map(v => !v));
+
+    readonly isUserLoggedIn$ = this.#store.select(fromAuth.user).pipe(map(user => !user.anonym));
+
+    readonly isUserLoggedOut$ = this.isUserLoggedIn$.pipe(map(v => !v));
 
     login(): void {
         // Dies triggert einen SideEffect (siehe auth.effects.ts)
@@ -39,17 +33,16 @@ export class AuthFacade {
         if (hash && hash.indexOf('idToken') > 0) {
             this.#initSession(hash);
         } else {
-            this.#reloadSession();
+            this.reloadSession();
         }
+    }
+
+    reloadSession(): void {
+        this.#store.dispatch(authActions.reloadSession());
     }
 
     logout(): void {
         this.#store.dispatch(authActions.logOut());
-    }
-
-    handleSessionExpired(): void {
-        this.#store.dispatch(authActions.loggedOut());
-        this.#messageService.warn('Die Session ist abgelaufen. Bitte erneut einloggen.');
     }
 
     #parseHash(hash: string): AuthResult {
@@ -95,14 +88,6 @@ export class AuthFacade {
             }
         } else {
             window.location.hash = '';
-        }
-    }
-
-    #reloadSession() {
-        if (this.#currentSession.sessionActive) {
-            if (Date.now() > this.#currentSession.expiresAt) {
-                this.logout();
-            }
         }
     }
 }

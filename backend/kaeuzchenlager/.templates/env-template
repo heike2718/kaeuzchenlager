@@ -1,5 +1,8 @@
 STAGE=DEV
 
+SESSION_IDLE_TIMEOUT=1
+SESSION_LIFETIME_SECONDS=90
+
 TARGET_ORIGIN=localhost:4200,localhost:9400
 QUARKUS_HTTP_CORS_ORIGINS=http://localhost:9400,http://localhost:4200,https://fonts.googleapis.com
 

@@ -19,7 +19,7 @@ export class GefaesstypenHttpService {
     }
 
     public updateGefaesstyp(uuid: string, daten: GefaesstypDaten): Observable<Gefaesstyp> {
-        return this.#httpClient.post<Gefaesstyp>(this.#url + '/' + uuid, daten, { headers: new HttpHeaders() });
+        return this.#httpClient.put<Gefaesstyp>(this.#url + '/' + uuid, daten, { headers: new HttpHeaders() });
     }
 
     public removeGefaesstyp(uuid: string): Observable<void> {

@@ -9,11 +9,14 @@ import de.egladil.web.egladil_secure_tokens.SecureRandomGenerator;
 import de.egladil.web.kaeuzchenlager.domain.auth.jwt.JwtReader;
 import de.egladil.web.kaeuzchenlager.domain.exception.KaeuzchenlagerRuntimeException;
 import de.egladil.web.kaeuzchenlager.domain.exception.SessionExpiredException;
+import io.quarkus.security.identity.SecurityIdentity;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response.Status;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -29,20 +32,20 @@ public class SessionService {
 
   private ConcurrentHashMap<String, Session> sessions = new ConcurrentHashMap<>();
 
-  @ConfigProperty(name = "session.idle.timeout")
+  @ConfigProperty(name = "session.idle.timeout.minutes")
   int sessionIdleTimeoutMinutes;
 
-  @Context
-  ContainerRequestContext requestContext;
-
-  @Inject
-  AuthenticationContext authCtx;
+  @ConfigProperty(name = "session.lifetime.seconds", defaultValue = "86400")
+  int maxSessionLifetimeSeconds;
 
   @Inject
   JWTParser jwtParser;
 
   @Inject
   JwtReader jwtReader;
+
+  @Inject
+  SecurityIdentity securityIdentity;
 
   public Session initSession(final String rawJwt) {
 
@@ -61,15 +64,16 @@ public class SessionService {
             jwtReader.getFullName(token)).withIdReference(userIdReference)
         .withRoles(jwtReader.getGroups(token));
 
-    UserDto userDto = UserDto.builder().anonym(false).roles(authenticatedUser.getRoles())
-        .fullName(authenticatedUser.getFullName()).build();
+    UserDto publicUser = UserDto.builder().fullName(authenticatedUser.getFullName()).roles(authenticatedUser.getRoles()).build();
+
 
     Session session = this.internalCreateAnonymousSession();
     session.setAuthenticatedUser(authenticatedUser);
-    session.setUser(userDto);
+    session.setUser(publicUser);
+    session.setCreatedAt(System.currentTimeMillis());
 
     if (sessionIdleTimeoutMinutes == 0) {
-      LOGGER.warn("session.idle.timeout=0 => verwenden default 120 min");
+      LOGGER.warn("session.idle.timeout.minutes=0 => verwenden default 120 min");
       session.setExpiresAt(SessionUtils.getExpiresAt(120));
     } else {
       session.setExpiresAt(SessionUtils.getExpiresAt(sessionIdleTimeoutMinutes));
@@ -82,6 +86,32 @@ public class SessionService {
 
     return session;
   }
+
+  /**
+   * Läd eine Session neu, sofern sie existiert.
+   * @return Session
+   * @throws WebApplicationException wenn es keine session gibt
+   * @throws SessionExpiredException wenn sie abgelaufen ist oder ihr Lebensende überschritten hat.
+   */
+  public Session reloadSession() throws SessionExpiredException, WebApplicationException {
+
+    String sessionId = this.getCurrentSessionId();
+
+    if (sessionId != null) {
+      Session session = sessions.get(sessionId);
+
+      if (session != null) {
+        checkExpiredOrDead(session);
+        session.setExpiresAt(SessionUtils.getExpiresAt(sessionIdleTimeoutMinutes));
+        return session;
+      }
+    }
+
+    LOGGER.error("possible bot attack? keine session bekannt ");
+    throw new WebApplicationException(Status.UNAUTHORIZED);
+  }
+
+
 
   private Session internalCreateAnonymousSession() {
 
@@ -99,18 +129,11 @@ public class SessionService {
     Session session = sessions.get(sessionId);
 
     if (session == null) {
-
       return null;
     }
 
-    if (SessionUtils.isExpired(session.getExpiresAt())) {
-
-      sessions.remove(sessionId);
-      throw new SessionExpiredException("Die Session ist abgelaufen. Bitte neu einloggen.");
-    }
-
+    checkExpiredOrDead(session);
     session.setExpiresAt(SessionUtils.getExpiresAt(sessionIdleTimeoutMinutes));
-
     return session;
   }
 
@@ -132,6 +155,20 @@ public class SessionService {
     if (session != null && !session.isAnonym()) {
 
       LOGGER.info("BenutzerDto ausgeloggt: {}", session.getAuthenticatedUser().toString());
+    }
+  }
+
+  private String getCurrentSessionId() {
+    return securityIdentity.getAttribute(SessionUtils.SESSION_ID_ATTRIBUTE_NAME);
+  }
+
+  private void checkExpiredOrDead(Session session) {
+    int maxLifetime = this.maxSessionLifetimeSeconds == 0 ? 86400 : this.maxSessionLifetimeSeconds;
+    LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
+    if (SessionUtils.isSessionExpieredOrDead(now, session, maxLifetime)) {
+      LOGGER.info("expired or dead session");
+      sessions.remove(session.getSessionId());
+      throw new SessionExpiredException("Die Session ist abgelaufen. Bitte neu einloggen.");
     }
   }
 }

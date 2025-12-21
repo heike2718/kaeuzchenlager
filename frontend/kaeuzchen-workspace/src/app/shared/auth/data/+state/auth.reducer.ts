@@ -4,28 +4,29 @@ import { authActions } from './auth.actions';
 
 export interface AuthState {
     readonly session: Session;
-    readonly sessionExists: boolean;
+    readonly sessionLoaded: boolean;
 }
 
 export const initialState: AuthState = {
     session: anonymousSession,
-    sessionExists: false,
+    sessionLoaded: false,
 };
 
 export const authFeature = createFeature({
     name: AUTH_FEATURE_KEY,
     reducer: createReducer<AuthState>(
         initialState,
-        on(authActions.sessionCreated, (state, { session: session }): AuthState => {
-            return {
-                ...state,
-                session: session,
-            };
+        on(authActions.sessionLoaded, (state, action) => {
+            return { ...state, session: action.session, sessionLoaded: true };
+        }),
+        on(authActions.reloadSessionFailed, state => {
+            return { ...state, session: { ...state.session, user: anonymousSession.user }, sessionLoaded: true };
         }),
         on(authActions.loggedOut, state => {
             return {
                 ...state,
                 session: anonymousSession,
+                sessionLoaded: false,
             };
         })
     ),

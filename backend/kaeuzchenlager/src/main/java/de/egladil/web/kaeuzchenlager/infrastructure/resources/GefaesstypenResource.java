@@ -11,6 +11,8 @@ import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypDaten;
 import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypDto;
 import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypService;
 import de.egladil.web.kaeuzchenlager.domain.validation.ValidationPatternsAndMessages;
+import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -28,6 +30,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.text.MessageFormat;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -37,12 +40,17 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** The type Gefaesstypen resource. */
 @Path("api/gefaesstypen")
 @Produces(MediaType.APPLICATION_JSON)
+@RolesAllowed({"KL_ADMIN"})
 @Tag(name = "Gefaesstypen")
 public class GefaesstypenResource {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(GefaesstypenResource.class);
 
   public static final String UNUSED = "unused";
   private static final String LOAD_GEFAESSTYPEN = "loadGefaesstypen";
@@ -57,6 +65,8 @@ public class GefaesstypenResource {
 
   /** The Gefaesstyp service. */
   @Inject GefaesstypService gefaesstypService;
+
+  @Inject io.quarkus.security.identity.SecurityIdentity identity;
 
   /**
    * Load gefaesstypen response.
@@ -110,6 +120,9 @@ public class GefaesstypenResource {
       throw new UnsupportedVersionException(
           MessageFormat.format(OpenApiConstants.API_VERSION_MF, STRING_1));
     }
+
+    LOGGER.info("roles={}", StringUtils.join(identity.getRoles()));
+
     return Response.ok(gefaesstypService.loadGefaesstypen()).build();
   }
 

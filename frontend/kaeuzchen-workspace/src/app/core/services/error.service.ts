@@ -8,7 +8,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class ErrorService {
     public toKaeuzchenError(error: NonNullable<unknown>): KaeuzchenError {
         const httpError: HttpErrorResponse | undefined = this.#getHttpErrorResponse(error);
-        let message = 'Unerwarteter Fehler';
+        let message =
+            'Ups, da ist ein unerwarteter Fehler aufgetreten. Bitte wende Dich vertrauensvoll an Deinen technischen Support.';
         let errorType: ErrorType = 'SERVER';
 
         if (httpError) {
@@ -26,6 +27,10 @@ export class ErrorService {
                     break;
                 case 412:
                     errorType = 'DUPLICATE';
+                    break;
+                case 440:
+                    errorType = 'SESSION_EXPIRED';
+                    message = 'Deine Session ist abgelaufen. Bitte logg Dich erneut ein.';
                     break;
             }
 

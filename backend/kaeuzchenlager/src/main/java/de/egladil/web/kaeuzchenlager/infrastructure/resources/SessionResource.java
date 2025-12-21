@@ -10,7 +10,9 @@ import de.egladil.web.kaeuzchenlager.domain.auth.dto.MessagePayload;
 import de.egladil.web.kaeuzchenlager.domain.auth.login.AuthproviderUrlService;
 import de.egladil.web.kaeuzchenlager.domain.auth.login.LoginLogoutService;
 import de.egladil.web.kaeuzchenlager.domain.auth.session.Session;
+import de.egladil.web.kaeuzchenlager.domain.auth.session.SessionService;
 import de.egladil.web.kaeuzchenlager.domain.core.AppMessage;
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -42,6 +44,9 @@ public class SessionResource {
   @Inject
   LoginLogoutService loginLogoutService;
 
+  @Inject
+  SessionService sessionServive;
+
   @GET
   @Path("authurls/login")
   @PermitAll
@@ -50,6 +55,16 @@ public class SessionResource {
   public Response getLoginUrl() {
 
     return this.authproviderUrlService.getLoginUrl();
+
+  }
+
+  @GET
+  @Authenticated
+  @Operation(operationId = "reloadSession", summary = "Läd die Session neu - für F5 im FE")
+  @APIResponse(name = "GetLoginUrlOKResponse", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = AppMessage.class)))
+  public Response reloadSession() {
+
+    return Response.ok(this.sessionServive.reloadSession()).build();
 
   }
 

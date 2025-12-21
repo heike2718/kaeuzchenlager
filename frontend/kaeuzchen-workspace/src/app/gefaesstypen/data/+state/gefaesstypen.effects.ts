@@ -2,10 +2,11 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { GefaesstypenHttpService } from '../gefaesstypen-http.service';
 import { gefaesstypenActions } from './gefaesstypen.actions';
-import { catchError, map, of, switchMap, tap } from 'rxjs';
+import { catchError, delay, map, of, switchMap, tap } from 'rxjs';
 import { GefaesstypenHttpErrorService } from '../gefaesstypen-http-error.service';
 import { Router } from '@angular/router';
 import { MessageService } from '@core/services';
+import { AuthFacade } from '@shared/auth/api';
 @Injectable({
     providedIn: 'root',
 })
@@ -15,6 +16,7 @@ export class GefaesstypenEffects {
     #errorService = inject(GefaesstypenHttpErrorService);
     #router = inject(Router);
     #messageService = inject(MessageService);
+    #authFacade = inject(AuthFacade);
 
     loadGefaesstypen$ = createEffect(() =>
         this.#actions$.pipe(
@@ -99,8 +101,16 @@ export class GefaesstypenEffects {
         () =>
             this.#actions$.pipe(
                 ofType(gefaesstypenActions.gefaesstypenServerError),
-                tap(() => {
-                    console.log('jetzt Fehler- oder Warnmeldung an noch nicht vorhandenen MessageService');
+                tap(error => {
+                    if (error.error.type === 'SESSION_EXPIRED') {
+                        this.#messageService.warn(error.error.message);
+                    } else {
+                        this.#messageService.error(error.error.message);
+                    }
+                    delay(0);
+                    if (error.error.type === 'SESSION_EXPIRED') {
+                        this.#authFacade.logout();
+                    }
                 })
             ),
         { dispatch: false }

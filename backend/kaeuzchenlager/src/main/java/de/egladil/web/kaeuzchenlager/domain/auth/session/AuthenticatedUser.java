@@ -6,6 +6,7 @@ package de.egladil.web.kaeuzchenlager.domain.auth.session;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,9 +33,28 @@ public class AuthenticatedUser extends QuarkusPrincipal {
     this.uuid = uuid;
   }
 
+
+
   @Override
   public String toString() {
     return "AuthenticatedUser [uuid=" + StringUtils.abbreviate(getName(), 11) + "]";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    AuthenticatedUser that = (AuthenticatedUser) o;
+    return Objects.equals(uuid, that.uuid);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), uuid);
   }
 
   @Override

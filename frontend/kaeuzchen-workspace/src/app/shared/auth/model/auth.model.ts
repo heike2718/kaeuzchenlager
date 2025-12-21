@@ -1,5 +1,7 @@
 export const AUTH_FEATURE_KEY = 'klAuth';
 
+export type LOGGED_OUT_REASON = 'technical' | 'expired' | 'unauthorized' | 'useraction';
+
 export interface AuthResult {
     expiresAt: number | undefined;
     state: string | undefined;
@@ -14,7 +16,6 @@ export interface User {
 }
 
 export interface Session {
-    readonly sessionActive: boolean; // true = Session existiert, false = ausgeloggt/abgelaufen
     readonly expiresAt: number;
     readonly user: User;
 }
@@ -26,7 +27,6 @@ const anonymousUser: User = {
 };
 
 export const anonymousSession: Session = {
-    sessionActive: false,
     expiresAt: 0,
     user: anonymousUser,
 };

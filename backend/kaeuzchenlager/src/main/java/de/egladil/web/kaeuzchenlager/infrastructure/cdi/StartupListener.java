@@ -52,7 +52,7 @@ public class StartupListener {
   @ConfigProperty(name = "public-redirect-url")
   String loginRedirectUrl;
 
-  @ConfigProperty(name = "session.idle.timeout")
+  @ConfigProperty(name = "session.idle.timeout.minutes", defaultValue = "120")
   int sessionIdleTimeoutMinutes = 120;
 
   /** The Version. */

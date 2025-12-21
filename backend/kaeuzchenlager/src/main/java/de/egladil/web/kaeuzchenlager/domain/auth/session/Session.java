@@ -24,6 +24,9 @@ public class Session {
 	@JsonIgnore
 	private String sessionId;
 
+  @JsonIgnore
+  private long createdAt;
+
 	@JsonProperty
 	private long expiresAt;
 

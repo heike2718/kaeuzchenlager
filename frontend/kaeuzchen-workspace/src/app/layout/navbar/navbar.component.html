@@ -9,7 +9,7 @@
             <span class="nav__caption">Startseite</span>
         </a>
 
-        @if (authFacade.isUserLoggedIn$ | async) {
+        @if (authFacade.isAuthorized$ | async) {
             <a mat-button class="nav__link" routerLink="/gefaesstypen">
                 <mat-icon class="nav__icon">inventory_2</mat-icon>
                 <span class="nav__caption">Gefäßtypen</span>

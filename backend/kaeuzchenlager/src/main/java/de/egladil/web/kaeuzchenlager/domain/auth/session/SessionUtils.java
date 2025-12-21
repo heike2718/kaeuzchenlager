@@ -6,8 +6,6 @@
 package de.egladil.web.kaeuzchenlager.domain.auth.session;
 
 import de.egladil.web.kaeuzchenlager.domain.auth.config.SessionCookieConfig;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.NewCookie.SameSite;
 import java.time.Instant;
@@ -16,13 +14,14 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class SessionUtils {
 
   public static final String ANONYME_UUID = "Anonym";
+
+  public static final String SESSION_ID_ATTRIBUTE_NAME = "sessionId";
 
   public static final Logger LOGGER = LoggerFactory.getLogger(SessionUtils.class);
 
@@ -33,71 +32,55 @@ public final class SessionUtils {
   /**
    * Berechnet den expiresAt-Zeitpunkt mit dem gegebenen idle timout.
    *
-   * @param sessionIdleTimeoutMinutes int Anzahl Minuten, nach denen eine Session als idle weggeräumt wird.
+   * @param sessionIdleTimeoutMinutes int Anzahl Minuten, nach denen eine Session als idle
+   *                                  weggeräumt wird.
    * @return long
    */
   public static long getExpiresAt(final int sessionIdleTimeoutMinutes) {
     ZoneId zoneId = ZoneId.systemDefault();
-    Instant instant = LocalDateTime.now(zoneId).plus(sessionIdleTimeoutMinutes, ChronoUnit.MINUTES).atZone(zoneId).toInstant();
+    Instant instant = LocalDateTime.now(zoneId).plus(sessionIdleTimeoutMinutes, ChronoUnit.MINUTES)
+        .atZone(zoneId).toInstant();
     return Date.from(instant).getTime();
 
   }
 
   /**
-   * Prüft, ob expiresAt bereits vorbei ist.
-   * @param expiresAt long (time in milli seconds)
-   * @return boolean
+   * Prüft, ob die session dead ist, weil sie ihr Lebensende erreicht hat oder wegen Inaktivität gestorben ist.
+   * @param now LocalDateTime
+   * @param session Session
+   * @param maxSessionSeconds int maximale Lebenszeit in Sekunden
+   * @return
    */
-  public static boolean isExpired(long expiresAt) {
-
-    LocalDateTime expireDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(expiresAt), ZoneId.systemDefault())
+  public static boolean isSessionExpieredOrDead(LocalDateTime now, Session session,
+      int maxSessionSeconds) {
+    LocalDateTime expireDateTime = LocalDateTime.ofInstant(
+            Instant.ofEpochMilli(session.getExpiresAt()), ZoneId.systemDefault())
         .plusSeconds(5); // bissel Toleranz lassen, oder?
-    LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
-    return now.isAfter(expireDateTime);
-  }
 
-  /**
-   * Holt die sessionId aus dem JSESSIONID-Cookie.
-   * @param requestContext ContainerRequestContext
-   * @param cookieConfig SessionCookieConfig
-   * @return String
-   */
-  public static String getSessionId(final ContainerRequestContext requestContext, SessionCookieConfig cookieConfig) {
-    return getSessionId(requestContext, cookieConfig.name());
-  }
-
-  private static String getSessionId(final ContainerRequestContext requestContext, String sessionCookieName) {
-    String sessionIdFromCookie = getSessionIdFromCookie(requestContext, sessionCookieName);
-    LOGGER.debug("sessionIdFromCookie={}", sessionIdFromCookie);
-
-    return sessionIdFromCookie;
-
-  }
-
-  private static String getSessionIdFromCookie(final ContainerRequestContext requestContext, String sessionCookieName) {
-
-    Map<String, Cookie> cookies = requestContext.getCookies();
-
-    Cookie sessionCookie = cookies.get(sessionCookieName);
-
-    if (sessionCookie != null) {
-
-      return sessionCookie.getValue();
+    if (now.isAfter(expireDateTime)) {
+      return true;
     }
 
-    String path = requestContext.getUriInfo().getPath();
-    LOGGER.debug("{}: Request ohne {}-Cookie", path, sessionCookieName);
+    LocalDateTime lebensende = LocalDateTime.ofInstant(Instant.ofEpochMilli(session.getCreatedAt()),
+            ZoneId.systemDefault())
+        .plusSeconds(5 + maxSessionSeconds); // bissel Toleranz lassen, oder?
 
-    return null;
+    if (now.isAfter(lebensende)) {
+      return true;
+    }
+
+    return false;
   }
 
   /**
    * Generiert ein SessionCookie.
+   *
    * @param cookieConfig SessionCookieConfig
-   * @param value String
+   * @param value        String
    * @return NewCookie
    */
-  public static NewCookie createSessionCookie(SessionCookieConfig cookieConfig, final String value) {
+  public static NewCookie createSessionCookie(SessionCookieConfig cookieConfig,
+      final String value) {
 
     // @formatter:off
     return new NewCookie.Builder(cookieConfig.name())
@@ -112,13 +95,15 @@ public final class SessionUtils {
 
   /**
    * Invalidiert das SessionCookie.
+   *
    * @param cookieConfig
    * @return
    */
   public static NewCookie createInvalidatedSessionCookie(SessionCookieConfig cookieConfig) {
 
-    long dateInThePast = LocalDateTime.now(ZoneId.systemDefault()).minus(10, ChronoUnit.YEARS).toEpochSecond(
-        ZoneOffset.UTC);
+    long dateInThePast = LocalDateTime.now(ZoneId.systemDefault()).minus(10, ChronoUnit.YEARS)
+        .toEpochSecond(
+            ZoneOffset.UTC);
 
     // @formatter:off
     return new NewCookie.Builder(cookieConfig.name())

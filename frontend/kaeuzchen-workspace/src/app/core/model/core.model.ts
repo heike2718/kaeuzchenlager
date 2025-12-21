@@ -1,4 +1,4 @@
-export type ErrorType = 'VALIDATION' | 'CONCURRENT_UPDATE' | 'NOT_FOUND' | 'DUPLICATE' | 'SERVER';
+export type ErrorType = 'VALIDATION' | 'CONCURRENT_UPDATE' | 'NOT_FOUND' | 'DUPLICATE' | 'SERVER' | 'SESSION_EXPIRED';
 
 export interface KaeuzchenError {
     readonly message: string;

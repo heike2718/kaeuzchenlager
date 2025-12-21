@@ -1,17 +1,45 @@
 <section class="home">
     <img src="assets/images/kl-logo.svg" role="img" alt="Käuzchenlager Logo" class="logo-image" />
-    <header class="home__header">
-        <h1 class="home__title">Käuzchenlager</h1>
-    </header>
 
     @if (isHandset$ | async) {
+        <div class="home__actions">
+            @if (authFacade.isUserLoggedOut$ | async) {
+                <header class="home__header">
+                    <h1 class="home__title">Privatzone</h1>
+                </header>
+                <p>Bitte einloggen.</p>
+                <button mat-raised-button color="primary" class="home__button" (click)="login()">einloggen</button>
+            }
+
+            @if (authFacade.isAuthorized$ | async) {
+                <header class="home__header">
+                    <h1 class="home__title">Käuzchenlager</h1>
+                </header>
+                <button mat-raised-button color="primary" class="home__button" (click)="goToGefaesstypen()">
+                    Gefäßtypen
+                </button>
+            } @else {
+                @if (authFacade.isUserLoggedIn$ | async) {
+                    <p>Vielen Dank für Ihren Besuch, aber Sie sind leider nicht autorisiert für diese Webseite.</p>
+                }
+            }
+
+            @if (authFacade.isUserLoggedIn$ | async) {
+                <button mat-raised-button color="primary" class="home__button" (click)="logout()">ausloggen</button>
+            }
+        </div>
+    } @else {
+        @if (authFacade.isUserLoggedOut$ | async) {
+            <header class="home__header">
+                <h1 class="home__title">Privatzone</h1>
+            </header>
+            <p>Bitte loggen Sie sich ein.</p>
+        }
+
         @if (authFacade.isUserLoggedIn$ | async) {
-            <button mat-raised-button color="primary" class="home__button" (click)="goToGefaesstypen()">
-                Gefäßtypen
-            </button>
-            <button mat-raised-button color="primary" class="home__button" (click)="logout()">ausloggen</button>
-        } @else {
-            <button mat-raised-button color="primary" class="home__button" (click)="login()">einloggen</button>
+            @if (authFacade.isNotAuthorized$ | async) {
+                <p>Vielen Dank für Ihren Besuch, aber Sie sind leider nicht autorisiert für diese Webseite.</p>
+            }
         }
     }
 </section>

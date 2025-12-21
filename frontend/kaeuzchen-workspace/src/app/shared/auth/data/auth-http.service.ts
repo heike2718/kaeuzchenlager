@@ -19,6 +19,10 @@ export class AuthHttpService {
         return this.#httpClient.post<Session>(this.#url + '/session/login', authResult);
     }
 
+    reloadSession(): Observable<Session> {
+        return this.#httpClient.get<Session>(this.#url + '/session');
+    }
+
     logOut(): Observable<AppMessage> {
         return this.#httpClient.delete<AppMessage>(this.#url + '/session/logout');
     }

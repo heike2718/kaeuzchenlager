@@ -5,7 +5,7 @@
         <span class="sidenav__caption">Startseite</span>
     </a>
 
-    @if (authFacade.isUserLoggedIn$ | async) {
+    @if (authFacade.isAuthorized$ | async) {
         <a mat-list-item class="sidenav__link" routerLink="/gefaesstypen">
             <mat-icon class="sidenav__icon">inventory_2</mat-icon>
             <span class="sidenav__caption">Gefäßtypen</span>
