@@ -58,7 +58,9 @@ describe('GefaesstypenHttpErrorService', () => {
         const result = errorService.toKaeuzchenError(httpError);
 
         expect(result).toBeDefined();
-        expect(result.message).toBe('Unerwarteter Fehler');
+        expect(result.message).toBe(
+            'Ups, da ist ein unerwarteter Fehler aufgetreten. Bitte wende Dich vertrauensvoll an Deinen technischen Support.'
+        );
         expect(result.type).toBe(expectedErrorType);
     });
 

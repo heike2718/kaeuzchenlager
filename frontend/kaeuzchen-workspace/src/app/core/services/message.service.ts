@@ -7,7 +7,7 @@ import { AppMessage } from '@core/model';
 export class MessageService {
     readonly message = signal<AppMessage | null>(null);
 
-    info(text: string, dismissAfterMs = 4000): void {
+    info(text: string, dismissAfterMs = 3000): void {
         this.#show({ type: 'info', text, dismissAfterMs });
     }
 
