@@ -126,6 +126,11 @@ public class SessionService {
    * @return Session
    */
   public Session getAndRefreshSessionIfValid(String sessionId) {
+
+    if (sessionId == null) {
+      return null;
+    }
+
     Session session = sessions.get(sessionId);
 
     if (session == null) {

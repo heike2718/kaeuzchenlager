@@ -262,7 +262,7 @@ public class GefaesstypenResource {
   // CPD-ON
   public Response gefaesstypAnlegen(
       @HeaderParam(OpenApiConstants.HEADER_API_VERSION) final int apiVersion,
-      @Valid final GefaesstypDaten daten) {
+      @Valid final GefaesstypDto daten) {
 
     if (apiVersion != INT_1) {
       throw new UnsupportedVersionException(

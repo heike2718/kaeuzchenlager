@@ -9,7 +9,7 @@ package de.egladil.web.kaeuzchenlager.domain.validation;
 public final class ValidationPatternsAndMessages {
 
   /** The constant TECHNISCHE_ID. */
-  public static final String TECHNISCHE_ID = "^[a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12}$";
+  public static final String TECHNISCHE_ID = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 
   /** The constant KAEUZCHEN_INPUT_SECURED. */
   public static final String KAEUZCHEN_INPUT_SECURED = "^[a-zA-ZäöüÄÖÜß0-9\\s\"'_\\-.,:;()]*$";

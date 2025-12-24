@@ -20,7 +20,7 @@
                 </button>
             } @else {
                 @if (authFacade.isUserLoggedIn$ | async) {
-                    <p>Vielen Dank für Ihren Besuch, aber Sie sind leider nicht autorisiert für diese Webseite.</p>
+                    <p>{{ notAuthorizedMessage }}</p>
                 }
             }
 
@@ -38,7 +38,7 @@
 
         @if (authFacade.isUserLoggedIn$ | async) {
             @if (authFacade.isNotAuthorized$ | async) {
-                <p>Vielen Dank für Ihren Besuch, aber Sie sind leider nicht autorisiert für diese Webseite.</p>
+                <p>{{ notAuthorizedMessage }}</p>
             }
         }
     }

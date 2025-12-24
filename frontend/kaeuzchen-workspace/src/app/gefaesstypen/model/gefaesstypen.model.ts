@@ -36,7 +36,7 @@ export interface GefaesstypConflict {
 
 export function createInitialGefaesstyp(): Gefaesstyp {
     return {
-        uuid: TEMP_UUID_PREFIX + (globalThis.crypto?.randomUUID?.() ?? 'tmp'),
+        uuid: TEMP_UUID_PREFIX + generateUUID(),
         daten: {
             anzahl: 0,
             backgroundColor: DEFAULT_GEFAESSTYP_BG_COLOR,
@@ -45,6 +45,10 @@ export function createInitialGefaesstyp(): Gefaesstyp {
             volumen: 0,
         },
     };
+}
+
+function generateUUID(): string {
+    return globalThis.crypto?.randomUUID?.() ?? 'tmp';
 }
 
 const deCollator = new Intl.Collator('de', {

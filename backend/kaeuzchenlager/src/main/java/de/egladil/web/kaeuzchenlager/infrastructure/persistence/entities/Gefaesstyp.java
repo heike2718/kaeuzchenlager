@@ -55,7 +55,7 @@ public class Gefaesstyp {
   private Integer volumen;
 
   @Column(name = "anzahl")
-  private int anzahl;
+  private Integer anzahl;
 
   @Column(name = "background_color")
   private String backgroundColor;

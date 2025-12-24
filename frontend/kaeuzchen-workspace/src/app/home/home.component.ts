@@ -16,6 +16,9 @@ export class HomeComponent {
     #router = inject(Router);
     #breakpointObserver = inject(BreakpointObserver);
 
+    notAuthorizedMessage =
+        'Vielen Dank für Ihren Besuch, aber Sie sind leider nicht autorisiert für diese Webseite. Loggen Sie sich am besten einfach wieder aus.';
+
     authFacade = inject(AuthFacade);
 
     isHandset$ = this.#breakpointObserver.observe(Breakpoints.Handset).pipe(

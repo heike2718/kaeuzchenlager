@@ -44,7 +44,7 @@ export class GefaesstypenFacade {
 
     public saveGefaesstyp(gefaesstyp: Gefaesstyp): void {
         if (gefaesstyp.uuid.startsWith(TEMP_UUID_PREFIX)) {
-            const theUuid = gefaesstyp.uuid.substring(5, gefaesstyp.uuid.length - 1);
+            const theUuid = gefaesstyp.uuid.substring(5, gefaesstyp.uuid.length);
             const theGefaesstyp: Gefaesstyp = {
                 ...gefaesstyp,
                 uuid: theUuid,

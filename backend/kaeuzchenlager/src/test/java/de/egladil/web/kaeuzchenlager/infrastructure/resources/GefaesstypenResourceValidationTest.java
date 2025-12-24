@@ -13,13 +13,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorLevel;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorResponseDto;
 import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypDaten;
+import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypDto;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import java.util.Set;
+import java.util.UUID;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 @QuarkusTest
 @TestHTTPEndpoint(GefaesstypenResource.class)
+@TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
 public class GefaesstypenResourceValidationTest {
 
   private static final String VALID_UUID = "a003530f-97f9-4a5b-a0a3-f6f139522fa0";
@@ -57,13 +61,15 @@ public class GefaesstypenResourceValidationTest {
   void should_gefaesstypAnlegen_return_400_when_allAttributes_invalid() {
 
     // arrange
-    GefaesstypDaten requestPayload =
+    GefaesstypDaten daten =
         GefaesstypDaten.builder()
             .name("Gefäß <1>")
-            .volumen(0)
-            .anzahl(-3)
+            .volumen(Integer.valueOf(0))
+            .anzahl(Integer.valueOf(-1))
             .backgroundColor("hallo")
             .build();
+
+    GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
 
     // act
     final ErrorResponseDto errorResponseDto =
@@ -89,7 +95,9 @@ public class GefaesstypenResourceValidationTest {
   void should_gefaesstypAnlegen_return_400_when_pflichtattributeNull() {
 
     // arrange
-    GefaesstypDaten requestPayload = GefaesstypDaten.builder().build();
+    GefaesstypDaten daten = GefaesstypDaten.builder().build();
+
+    GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
     // act
     final ErrorResponseDto errorResponseDto =
         given()
@@ -115,13 +123,15 @@ public class GefaesstypenResourceValidationTest {
 
     // act
     // arrange
-    GefaesstypDaten requestPayload =
+    GefaesstypDaten daten =
         GefaesstypDaten.builder()
             .name("Gefäß 200 ml")
             .anzahl(1)
             .volumen(2)
             .backgroundColor("#ffffff")
             .build();
+
+    GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
 
     // act
     final ErrorResponseDto errorResponseDto =

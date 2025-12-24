@@ -50,8 +50,9 @@ public class GefaesstypDaten {
       description = "Anzahl Gefäße dieses Typs auf Lager",
       examples = {"23"})
   @JsonProperty
+  @NotNull(message = "anzahl ist erforderlich")
   @Min(value = 0, message = "anzahl darf nicht kleiner als {value} sein.")
-  int anzahl;
+  Integer anzahl;
 
   @Schema(
       name = "backgroundColor",
