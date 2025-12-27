@@ -1,55 +1,79 @@
 @use '@angular/material' as mat;
 @use '../theme.scss' as theme;
 
-/* Base styling for toolbar and items */
-mat-toolbar {
-  background-color: mat.m2-get-color-from-palette(theme.$primary-palette, 700);
-  color: mat.m2-get-contrast-color-from-palette(theme.$primary-palette, 700);
-  display: flex;
-  align-items: center;
-  padding: 10px 20px;
+/* Farben aus der Primary-Palette (Stufe 700 wie bisher) */
+$nav-bg: mat.m2-get-color-from-palette(theme.$primary-palette, 700);
+$nav-fg: mat.m2-get-contrast-color-from-palette(theme.$primary-palette, 700);
+
+/* Root: mat-toolbar mit Block-Klasse .nav */
+mat-toolbar.nav,
+.nav {
+    background-color: $nav-bg;
+    color: $nav-fg;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    gap: 0.5rem;
+
+    /* Elemente */
+    &__menu-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__link,
+    &__toggle,
+    &__login_logout {
+        /* entspricht: mat-toolbar a, mat-toolbar mat-button */
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 10px 15px;
+        text-decoration: none;
+        margin-right: 1em;
+        border-radius: 8px;
+        cursor: pointer;
+
+        /* gleiches Farbschema wie zuvor:
+       Text = primary(700), Hintergrund = Kontrast zu primary(700) */
+        color: $nav-bg;
+        background-color: $nav-fg;
+
+        transition:
+            background-color 0.3s,
+            color 0.3s;
+    }
+
+    &__icon {
+        margin-right: 8px;
+        inline-size: 24px;
+        block-size: 24px;
+        color: inherit; /* wie vorher */
+    }
+
+    &__caption {
+        font-size: 14px;
+        font-weight: 500; /* wie vorher */
+    }
+
+    &__spacer {
+        flex: 1 1 auto; /* ersetzt .toolbar-spacer */
+    }
 }
 
-/* Styling for menu items */
-mat-toolbar a,
-mat-toolbar mat-button {
-  display: flex;
-  align-items: center;
-  padding: 10px 15px;
-  color: mat.m2-get-color-from-palette(theme.$primary-palette, 700);
-  background-color: mat.m2-get-contrast-color-from-palette(theme.$primary-palette, 700);
-  text-decoration: none;
-  transition: background-color 0.3s, color 0.3s;
-  margin-right: 1em;
-  border-radius: 8px; // Adjust the value for more or less rounding
+/* Nur leicht abdunkeln */
+mat-toolbar.nav .nav__link:hover,
+mat-toolbar.nav .nav__toggle:hover,
+mat-toolbar.nav .nav__login_logout:hover {
+    filter: brightness(0.8);
+    transition: filter 0.15s;
 }
 
-mat-toolbar mat-button {
-  cursor: pointer;
-}
-
-/* Hover effect for menu items */
-mat-toolbar a:hover,
-mat-toolbar a:active {
-  color: mat.m2-get-color-from-palette(theme.$primary-palette, 700);
-  background-color: mat.m2-get-contrast-color-from-palette(theme.$primary-palette, 700);
-  border-radius: 8px;
-}
-
-/* Spacer for alignment */
-.toolbar-spacer {
-  flex: 1 1 auto;
-}
-
-/* Icon styling */
-mat-icon,
-.nav-item {
-  margin-right: 8px;
-  color: inherit;
-}
-
-/* Adjust text spacing */
-.nav-caption {
-  font-size: 14px;
-  font-weight: 500;
+/* Tastaturfokus konsistent */
+mat-toolbar.nav .nav__link:focus-visible,
+mat-toolbar.nav .nav__toggle:focus-visible,
+mat-toolbar.nav .nav__login_logout:focus-visible {
+    outline: 2px solid $nav-fg;
+    outline-offset: 2px;
 }

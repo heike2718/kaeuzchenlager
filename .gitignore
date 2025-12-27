@@ -1,1 +1,4 @@
 kaeuzchenlager.zip
+backend/kaeuzchenlager/src/main/resources/META-INF/resources/kaeuzchenlager
+backend/kaeuzchenlager/src/main/resources/META-INF/openapi/openapi.json
+backend/kaeuzchenlager/src/main/resources/META-INF/openapi/openapi.yaml

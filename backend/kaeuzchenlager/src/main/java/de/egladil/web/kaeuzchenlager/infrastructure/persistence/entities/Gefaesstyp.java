@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 /** The type Gefaesstyp. */
 @Data
@@ -54,7 +55,7 @@ public class Gefaesstyp {
   private Integer volumen;
 
   @Column(name = "anzahl")
-  private int anzahl;
+  private Integer anzahl;
 
   @Column(name = "background_color")
   private String backgroundColor;
@@ -75,14 +76,14 @@ public class Gefaesstyp {
 
   // Optimistic Locking
   @Version
-  @Column(name = "version", nullable = false)
+  @Column(name = "version")
   private int version;
 
   /** Pre persist. */
   @SuppressWarnings("unused")
   @PrePersist
   void prePersist() {
-    if (this.uuid == null || this.uuid.isBlank()) {
+    if (StringUtils.isBlank(this.uuid)) {
       this.uuid = UUID.randomUUID().toString();
     }
   }

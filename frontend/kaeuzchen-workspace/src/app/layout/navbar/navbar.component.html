@@ -1,35 +1,50 @@
-<mat-toolbar>
-  @if (isHandset$ | async) {
-  <div>
-    <button mat-icon-button (click)="onToggleSidenav()">
-      <mat-icon>menu</mat-icon>
-    </button>
-  </div>
-  } @else {
+<mat-toolbar class="nav">
+    @if (isHandset$ | async) {
+        <button mat-icon-button class="nav__menu-btn" (click)="onToggleSidenav()" aria-label="Menü öffnen">
+            <mat-icon class="nav__icon">menu</mat-icon>
+        </button>
+    } @else {
+        <a mat-button class="nav__link" routerLink="/home">
+            <mat-icon class="nav__icon">home</mat-icon>
+            <span class="nav__caption">Startseite</span>
+        </a>
 
-  <a mat-button routerLink="/home">
-    <mat-icon class="nav-item">home</mat-icon>
-    <span class="nav-caption">Startseite</span>
-  </a>
+        @if (authFacade.isAuthorized$ | async) {
+            <a mat-button class="nav__link" routerLink="/gefaesstypen">
+                <mat-icon class="nav__icon">inventory_2</mat-icon>
+                <span class="nav__caption">Gefäßtypen</span>
+            </a>
+        }
 
-  <span class="toolbar-spacer"></span>
+        <span class="nav__spacer"></span>
 
-  <div class="mr-2">Moin, Gast!</div>
+        @if (authFacade.user$ | async; as user) {
+            <div class="nav__greeting">Hallo {{ user.fullName }}</div>
+        } @else {
+            <div class="nav__greeting">Hallo Gast</div>
+        }
 
-  <span class="ml-2">Version: {{ version }}</span>
+        <div class="nav__version">Version: {{ config.version }}</div>
 
-  <!-- Theme Toggle  -->
-  <button
-    mat-button
-    class="ml-2"
-    (click)="theme.toggle()"
-    [aria-label]="theme.isDark() ? 'Auf helles Theme umschalten' : 'Auf dunkles Theme umschalten'"
-    matTooltip="umschalten"
-  >
-    <mat-icon fontSet="material-icons-outlined">{{
-      theme.isDark() ? 'light_mode' : 'dark_mode'
-    }}</mat-icon>
-    <span class="nav-caption">{{ theme.isDark() ? 'lieber light' : 'lieber dark' }}</span>
-  </button>
-  }
+        <button mat-button class="nav__toggle" (click)="theme.toggle()" [attr.aria-label]="theme.ariaLabel()">
+            <mat-icon fontSet="material-icons-outlined" class="nav__icon">
+                {{ theme.icon() }}
+            </mat-icon>
+            <span class="nav__caption">{{ theme.caption() }}</span>
+        </button>
+
+        @if (authFacade.isUserLoggedOut$ | async) {
+            <button mat-button class="nav__login_logout" (click)="login()" [attr.aria-label]="theme.ariaLabel()">
+                <mat-icon fontSet="material-icons-outlined" class="nav__icon"> login </mat-icon>
+                <span class="nav__caption">einloggen</span>
+            </button>
+        }
+
+        @if (authFacade.isUserLoggedIn$ | async) {
+            <button mat-button class="nav__login_logout" (click)="logout()" [attr.aria-label]="theme.ariaLabel()">
+                <mat-icon fontSet="material-icons-outlined" class="nav__icon"> logout </mat-icon>
+                <span class="nav__caption">ausloggen</span>
+            </button>
+        }
+    }
 </mat-toolbar>

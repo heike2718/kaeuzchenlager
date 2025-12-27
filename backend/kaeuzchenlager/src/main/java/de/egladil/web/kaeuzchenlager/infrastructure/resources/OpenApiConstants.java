@@ -18,6 +18,7 @@ public final class OpenApiConstants {
 
   public static final String OK_OUTCOME = "OK";
   public static final String OK_STATUS = "200";
+  public static final String NO_CONTENT_STATUS = "204";
 
   public static final String CREATED_OUTCOME = "Created";
   public static final String CREATED_STATUS = "201";
@@ -41,12 +42,13 @@ public final class OpenApiConstants {
   public static final String NOT_ACCEPTABLE_STATUS = "406";
 
   public static final String CONFLICT_ERROR = "Conflict";
-  public static final String CONFLICT_DESC =
-      "das Ergebnis des Request würde zu einem Konflikt führen";
+  public static final String CONFLICT_DESC = "die Entität wurde durch jemand anderen geändert";
   public static final String CONFLICT_STATUS = "409";
 
   public static final String PRECONDITION_FAILED_ERROR = "PreconditionFailed";
   public static final String PRECONDITION_FAILED_STATUS = "412";
+  public static final String PRECONDITION_FAILED_DESC =
+      "das Ergebnis würde zu einer constraint violation führen (gleicher Name, gleiches Volumen=";
 
   public static final String SERVER_ERROR = "ServerError";
   public static final String SERVER_ERROR_DESC = "server error";

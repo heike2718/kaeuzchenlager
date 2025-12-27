@@ -1,0 +1,9 @@
+### request the login-url
+GET http://localhost:9400/kaeuzchenlager/api/session/authurls/login
+
+### gefaesstyp anlegen
+POST http://localhost:9400/kaeuzchenlager/api/gefaesstypen
+Cookie: JSESSIONID=f3c56edeccef7c8acb1321c6960946e1624e043890fc8ce3f27176969fb644bd
+API-Version: 1
+
+{"uuid":"ca36e284-f8a8-4a42-93b5-012df24f08ee","daten":{"name":"Im Frontend angelegt","volumen":40,"anzahl":7,"backgroundColor":"#0a0a0a","version":null}}

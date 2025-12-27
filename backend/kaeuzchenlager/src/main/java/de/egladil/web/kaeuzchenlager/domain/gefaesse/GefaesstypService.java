@@ -13,6 +13,7 @@ import de.egladil.web.kaeuzchenlager.domain.exception.HighLevelErrorClassifier;
 import de.egladil.web.kaeuzchenlager.domain.exception.KaeuzchenlagerRuntimeException;
 import de.egladil.web.kaeuzchenlager.infrastructure.persistence.dao.GefaesstypDao;
 import de.egladil.web.kaeuzchenlager.infrastructure.persistence.entities.Gefaesstyp;
+import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -31,11 +32,10 @@ public class GefaesstypService {
 
   private static final String UK_VOLUMEN = "uk_gefaesstypen_volumen";
 
-  private static final String FAKE_USERE_UUID = "a003530f-97f9-4a5b-a0a3-f6f139522fa0";
-
   private static final Logger LOGGER = LoggerFactory.getLogger(GefaesstypService.class);
 
-  //  @Inject SecurityContext securityContext;
+  @Inject
+  SecurityIdentity securityIdentity;
 
   /* package-private for CDI */
   @Inject /* default */ GefaesstypDao gefaesstypDao;
@@ -54,24 +54,34 @@ public class GefaesstypService {
   }
 
   /**
+   *
+   * @param uuid String
+   * @return Optional
+   */
+  public Optional<GefaesstypDto> findGefaesstyp(String uuid) {
+
+    Gefaesstyp gefaesstyp = this.gefaesstypDao.findByUuid(uuid);
+    return gefaesstyp != null ? Optional.of(this.gefaesstypMapper.toDto(gefaesstyp)) : Optional.empty();
+  }
+
+  /**
    * Legt einen neuen Gefäßtyp an.
    *
-   * @param daten GefaesstypDaten
+   * @param gefaesstypDto GefaesstypDto
    * @return GefaesstypDto
    * @throws EntityExistsException - wenn es eine unique constraint violaton gibt
    * @throws KaeuzchenlagerRuntimeException - bei unerwarteten Exceptions
    */
-  public GefaesstypDto gefaesstypAnlegen(final GefaesstypDaten daten)
+  public GefaesstypDto gefaesstypAnlegen(final GefaesstypDto gefaesstypDto)
       throws EntityExistsException, KaeuzchenlagerRuntimeException {
 
     try {
       final Gefaesstyp gefaesstyp = Gefaesstyp.builder().build();
-      this.gefaesstypMapper.copyDaten(gefaesstyp, daten);
-      // TODO
+      this.gefaesstypMapper.copyDaten(gefaesstyp, gefaesstypDto.getDaten());
       gefaesstyp.setCreatedAt(LocalDateTime.now());
-      gefaesstyp.setCreatedBy(FAKE_USERE_UUID);
-      //            gefaesstyp.setCreatedBy(securityContext.getUserPrincipal().getName());
-      return this.doPersist(gefaesstyp);
+      // TODO
+      gefaesstyp.setCreatedBy(securityIdentity.getPrincipal().getName());
+      return this.doInsert(gefaesstyp);
     } catch (Exception e) {
       final ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
       final ErrorType errorType = errorClassification.getErrorType();
@@ -130,12 +140,17 @@ public class GefaesstypService {
       }
 
       final Gefaesstyp entity = optEntity.get();
+
+      if (daten.getVersion() != null && daten.getVersion() < entity.getVersion()) {
+        throw new ConcurrentModificationException(
+            "Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.");
+      }
+
       this.gefaesstypMapper.copyDaten(entity, daten);
-      // TODO hier securityContext nutzen!!!
-      entity.setUpdatedBy(FAKE_USERE_UUID);
+      entity.setUpdatedBy(securityIdentity.getPrincipal().getName());
       entity.setUpdatedAt(LocalDateTime.now());
-      return this.doPersist(entity);
-    } catch (NotFoundException e) {
+      return this.doUpdate(entity);
+    } catch (NotFoundException | ConcurrentModificationException e) {
       throw e;
     } catch (Exception e) {
       final ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
@@ -176,8 +191,7 @@ public class GefaesstypService {
    * @return GefaesstypLoeschenResult - auch im Fall, dass es die Entity nicht (mehr) gibt.
    * @throws KaeuzchenlagerRuntimeException - bei unerwarteten Exceptions
    */
-  public GefaesstypLoeschenResult gefaesstypLoeschen(final String uuid)
-      throws KaeuzchenlagerRuntimeException {
+  public void gefaesstypLoeschen(final String uuid) throws KaeuzchenlagerRuntimeException {
 
     try {
 
@@ -185,12 +199,10 @@ public class GefaesstypService {
 
       if (optEntity.isEmpty()) {
         LOGGER.warn("gefaesstyp mit uuid = {} existiert nicht oder nicht mehr", uuid);
-        return GefaesstypLoeschenResult.builder().uuid(uuid).build();
+        return;
       }
 
       this.gefaesstypDao.remove(optEntity.get());
-
-      return GefaesstypLoeschenResult.builder().uuid(uuid).build();
     } catch (NotFoundException e) {
       throw e;
     } catch (Exception e) {
@@ -213,16 +225,26 @@ public class GefaesstypService {
    */
   // package-private wegen transactional
   @Transactional
-  /* default */ GefaesstypDto doPersist(final Gefaesstyp gefaesstyp) {
+  /* default */ GefaesstypDto doInsert(final Gefaesstyp gefaesstyp) {
 
     Gefaesstyp persisted = gefaesstyp;
-
-    if (gefaesstyp.getUuid() == null) {
-      this.gefaesstypDao.insert(gefaesstyp);
-    } else {
-      persisted = this.gefaesstypDao.update(gefaesstyp);
-    }
-
+    this.gefaesstypDao.insert(gefaesstyp);
     return this.gefaesstypMapper.toDto(persisted);
   }
+
+  /**
+   * Do persist gefaesstyp dto.
+   *
+   * @param gefaesstyp Gefaesstyp - der zu löschende
+   * @return GefaesstypDto
+   */
+  // package-private wegen transactional
+  @Transactional
+  /* default */ GefaesstypDto doUpdate(final Gefaesstyp gefaesstyp) {
+
+    Gefaesstyp persisted = this.gefaesstypDao.update(gefaesstyp);
+    return this.gefaesstypMapper.toDto(persisted);
+  }
+
+
 }

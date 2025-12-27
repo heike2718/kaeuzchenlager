@@ -20,10 +20,9 @@ import lombok.Value;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 /** The type Gefaesstyp daten. */
-@Data
-@AllArgsConstructor
 @Value
 @Builder
+@lombok.extern.jackson.Jacksonized
 @Schema(name = "GefaesstypDaten", description = "Daten des Gefäßtyps")
 public class GefaesstypDaten {
 
@@ -51,8 +50,9 @@ public class GefaesstypDaten {
       description = "Anzahl Gefäße dieses Typs auf Lager",
       examples = {"23"})
   @JsonProperty
+  @NotNull(message = "anzahl ist erforderlich")
   @Min(value = 0, message = "anzahl darf nicht kleiner als {value} sein.")
-  int anzahl;
+  Integer anzahl;
 
   @Schema(
       name = "backgroundColor",
@@ -62,4 +62,6 @@ public class GefaesstypDaten {
   @NotNull(message = "backgroundColor ist erforderlich.")
   @Pattern(regexp = "^#[0-9A-Fa-f]{6}$", message = "backgroundColor muss ein hex-Farbcode sein.")
   String backgroundColor;
+
+  @JsonProperty Integer version;
 }

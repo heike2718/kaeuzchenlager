@@ -6,6 +6,14 @@ npx nx g @nx/angular:component --name=home --path=src/app/home/home --style=scss
 npx nx g @nx/angular:component --name=sidenav --path=src/app/layout/sidenav/sidenav --style=scss --dry-run
 
 npx nx g @nx/angular:component --name=navbar --path=src/app/layout/navbar/navbar --style=scss --dry-run
+
+npx nx g @nx/angular:component --name=gaefaesstypen-list.component --path=src/app/gefaesstypen/features/gaefaesstypen-list/gaefaesstypen-list --style=scss --dry-run
+
+npx nx g @nx/angular:component --name=gefaesstyp-overview.component --path=src/app/gefaesstypen/features/gaefaesstyp-overview/gefaesstyp-overview.component --style=scss --dry-run
+
+npx nx g @nx/angular:component --name=edit-gefaesstyp.component --path=src/app/gefaesstypen/features/edit-gefaesstyp/edit-gefaesstyp.component --style=scss --dry-run
+
+npx nx g @nx/angular:directive --name=trim-on-blur --path=src/app/shared/directives/trim-on-blur --standalone --dry-run
 ```
 
 ```

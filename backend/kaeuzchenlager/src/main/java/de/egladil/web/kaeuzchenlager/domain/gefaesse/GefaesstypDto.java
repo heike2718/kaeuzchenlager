@@ -7,19 +7,19 @@ package de.egladil.web.kaeuzchenlager.domain.gefaesse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.egladil.web.kaeuzchenlager.domain.validation.ValidationPatternsAndMessages;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Value;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-/** The type Gefaesstyp dto. */
-@Data
-@AllArgsConstructor
+/**
+ * The type Gefaesstyp dto.
+ */
 @Value
 @Builder
+@lombok.extern.jackson.Jacksonized
 @Schema(name = "GefaesstypDto", description = "Daten des Gefäßtyps")
 public class GefaesstypDto {
 
@@ -36,5 +36,6 @@ public class GefaesstypDto {
   @Schema(name = "daten", description = "die Daten des Gefäßtyps")
   @JsonProperty
   @NotNull
+  @Valid
   GefaesstypDaten daten;
 }

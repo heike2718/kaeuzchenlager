@@ -1,4 +1,45 @@
-<div class="centered mt-2">
-  <img src="assets/images/kl-logo.svg" role="img" alt="Käuzchenlager Logo" class="logo-image" />
-  <h1>Hier ist das Käuzchenlager</h1>
-</div>
+<section class="home">
+    <img src="assets/images/kl-logo.svg" role="img" alt="Käuzchenlager Logo" class="logo-image" />
+
+    @if (isHandset$ | async) {
+        <div class="home__actions">
+            @if (authFacade.isUserLoggedOut$ | async) {
+                <header class="home__header">
+                    <h1 class="home__title">Privatzone</h1>
+                </header>
+                <p>Bitte einloggen.</p>
+                <button mat-raised-button color="primary" class="home__button" (click)="login()">einloggen</button>
+            }
+
+            @if (authFacade.isAuthorized$ | async) {
+                <header class="home__header">
+                    <h1 class="home__title">Käuzchenlager</h1>
+                </header>
+                <button mat-raised-button color="primary" class="home__button" (click)="goToGefaesstypen()">
+                    Gefäßtypen
+                </button>
+            } @else {
+                @if (authFacade.isUserLoggedIn$ | async) {
+                    <p>{{ notAuthorizedMessage }}</p>
+                }
+            }
+
+            @if (authFacade.isUserLoggedIn$ | async) {
+                <button mat-raised-button color="primary" class="home__button" (click)="logout()">ausloggen</button>
+            }
+        </div>
+    } @else {
+        @if (authFacade.isUserLoggedOut$ | async) {
+            <header class="home__header">
+                <h1 class="home__title">Privatzone</h1>
+            </header>
+            <p>Bitte loggen Sie sich ein.</p>
+        }
+
+        @if (authFacade.isUserLoggedIn$ | async) {
+            @if (authFacade.isNotAuthorized$ | async) {
+                <p>{{ notAuthorizedMessage }}</p>
+            }
+        }
+    }
+</section>

@@ -7,29 +7,42 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLinkWithHref } from '@angular/router';
 import { ThemeStore } from '../theme.store';
+import { KL_CONFIGURATION, KLConfiguration } from '@config';
+import { AuthFacade } from '@shared/auth/api';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'kl-sidenav',
-  imports: [
-    MatButtonModule,
-    MatIconModule,
-    MatListModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    MatSidenavModule,
-    RouterLinkWithHref,
-  ],
-  templateUrl: './sidenav.component.html',
-  styleUrl: './sidenav.component.scss',
+    selector: 'kl-sidenav',
+    imports: [
+        MatButtonModule,
+        MatIconModule,
+        MatListModule,
+        MatToolbarModule,
+        MatTooltipModule,
+        MatSidenavModule,
+        RouterLinkWithHref,
+        AsyncPipe,
+    ],
+    templateUrl: './sidenav.component.html',
+    styleUrl: './sidenav.component.scss',
 })
 export class SidenavComponent {
-  version = '1.0.0-SNAPSHOT';
-  readonly theme = inject(ThemeStore);
+    readonly config: KLConfiguration = inject(KL_CONFIGURATION);
+    readonly theme = inject(ThemeStore);
+    authFacade = inject(AuthFacade);
 
-  @Output()
-  sidenavClose = new EventEmitter();
+    @Output()
+    sidenavClose = new EventEmitter();
 
-  public onSidenavClose = () => {
-    this.sidenavClose.emit();
-  };
+    public onSidenavClose = () => {
+        this.sidenavClose.emit();
+    };
+
+    public login(): void {
+        this.authFacade.login();
+    }
+
+    public logout(): void {
+        this.authFacade.logout();
+    }
 }

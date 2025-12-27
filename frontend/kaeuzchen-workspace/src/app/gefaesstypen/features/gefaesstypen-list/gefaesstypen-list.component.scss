@@ -1,0 +1,76 @@
+/* Block: Liste der Gefäßtypen */
+.gt-list {
+    box-sizing: border-box;
+    padding: clamp(0.75rem, 2vw, 1.25rem);
+    inline-size: 100%;
+
+    &__header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: end;
+        gap: 0.75rem;
+        margin-block-end: clamp(0.5rem, 2vw, 1rem);
+    }
+
+    &__title {
+        margin: 0;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    /* Grid für Karten, mobile first */
+    &__grid {
+        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(28rem, 100%), 1fr));
+        gap: clamp(0.75rem, 2vw, 1rem);
+        margin: 0;
+        padding: 0;
+        justify-items: stretch; /* Karten füllen die Spalte */
+    }
+
+    &__item {
+        /* Platzhalter für zukünftige Varianten */
+        min-width: 0;
+    }
+
+    /* Host der Child-Card kann optional begrenzt werden */
+    &__card {
+        display: block; /* verhindert inline-Gaps */
+        max-inline-size: 48rem; /* Sicherheits-Deckel für sehr breite Screens */
+        margin-inline: auto; /* mittig, wenn Spalte breiter als Card */
+    }
+
+    &__add-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    &__add-button {
+        // FAB ist rund; hier etwas größer machen
+        width: 4rem;
+        height: 4rem;
+
+        // Icon größer
+        font-size: 2rem;
+    }
+
+    &__loading {
+        margin: 0;
+        opacity: 0.8;
+    }
+}
+
+/* breitere Screens: etwas luftiger */
+@media (min-width: 48rem) {
+    .gt-list {
+        &__header {
+            margin-block-end: 1.25rem;
+        }
+        &__grid {
+            gap: 1.25rem;
+        }
+    }
+}

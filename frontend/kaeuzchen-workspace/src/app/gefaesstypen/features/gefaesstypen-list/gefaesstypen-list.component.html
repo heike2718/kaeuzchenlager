@@ -1,0 +1,36 @@
+<section class="gt-list">
+    <header class="gt-list__header">
+        <h1 class="gt-list__title">Gefäßtypen</h1>
+    </header>
+
+    @if (gefaesstypenFacade.gefaesstypenLoaded$ | async) {
+        @if (gefaesstypenFacade.gefaesstypen$ | async; as gefaesstypen) {
+            <ul class="gt-list__grid" role="list">
+                @for (gefaesstyp of gefaesstypen; track $index) {
+                    <li class="gt-list__item" role="listitem">
+                        <kl-gefaesstyp-overview
+                            class="gt-list__card"
+                            [gefaesstyp]="gefaesstyp"
+                            (edit)="onEditGefaesstyp($event)"
+                            (delete)="onDeleteGefaesstyp($event)">
+                        </kl-gefaesstyp-overview>
+                    </li>
+                }
+            </ul>
+        }
+
+        <div class="gt-list__add-wrapper">
+            <button
+                mat-fab
+                color="primary"
+                class="gt-list__add-button"
+                type="button"
+                (click)="onAddGefaesstyp()"
+                aria-label="Neuen Gefäßtyp anlegen">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+    } @else {
+        <p class="gt-list__loading">Lade Daten…</p>
+    }
+</section>

@@ -1,0 +1,65 @@
+STAGE=DEV
+
+SESSION_IDLE_TIMEOUT=1
+SESSION_LIFETIME_SECONDS=90
+
+TARGET_ORIGIN=localhost:4200,localhost:9400
+QUARKUS_HTTP_CORS_ORIGINS=http://localhost:9400,http://localhost:4200,https://fonts.googleapis.com
+
+#=================================================================#
+#    authprovider, Redirect URLs, REST-Client, CORS               #
+#                                                                 #
+# PUBLIC_REDIRECT_URL muss ohne http:// und endenden / in         #
+# CLIENTS.REDIRECT_URLS vorkommen!! Für das korrekte redirect     #
+# sollten sie aber u.U. vorhanden sein.                           #
+#                                                                 #
+#=================================================================#
+PUBLIC-CLIENT-ID=4O2UEGhpdGvhJt0Fk3aHkxS078jBsLlBf6XZ6BgR31cj
+PUBLIC-CLIENT-SECRET=start123
+
+# ---- lokale Entwicklung (authprovider in docker, kaeuzchenlager mit npm gestartet) ----
+AUTH_APP_URL=http://localhost:9000/authprovider/
+PUBLIC_REDIRECT_URL=http://localhost:4200
+QUARKUS_REST_CLIENT_AUTHPROVIDER_URL=http://localhost:9000
+AUTHPROVIDER_URL=http://localhost:9000/authprovider
+
+# ---- lokale Entwicklung (authprovider in docker, kaeuzchenlager von quarkus geserved) ----
+#AUTH_APP_URL=http://localhost:9000/authprovider/
+#PUBLIC_REDIRECT_URL=http://localhost:9400/kaeuzchenlager/
+#QUARKUS_REST_CLIENT_AUTHPROVIDER_URL=http://localhost:9000
+#AUTHPROVIDER_URL=http://localhost:9000/authprovider
+
+#=================================================================#
+#        Database                                                 #
+#=================================================================#
+# falls die IP sich geändert hat, startet Quarkus nicht
+# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' kaeuzchen-test-db
+#QUARKUS_DATASOURCE_JDBC_URL=jdbc:mariadb://172.18.0.2:3306/kaeuzchen
+
+# für Tests: username muss überschrieben werden, weil die propertiy direkt in die Testklasse injected wird.
+QUARKUS_DATASOURCE_JDBC_URL=jdbc:mariadb://172.26.0.2:3306/kaeuzchen
+QUARKUS_DATASOURCE_USERNAME=kaeuzchen
+QUARKUS_DATASOURCE_PASSWORD=hwinkel
+
+# ---- man muss auch das MIN-Level auf TRACE setzen, wenn man das SQL von namedQueries sehen will ---
+QUARKUS_LOG_MIN_LEVEL=TRACE
+QUARKUS_HIBERNATE_ORM_LOG_BIND_PARAMETERS=true
+QUARKUS_HIBERNATE_ORM_LOG_SQL=true
+
+#=============================================================================================#
+#        Logging                                                                              #
+#=============================================================================================#
+quarkus.log.level=INFO
+QUARKUS_LOG_CATEGORY__ORG_HIBERNATE_SQL__LEVEL=ERROR
+QUARKUS_LOG_CATEGORY__ORG_FLYWAYDB__LEVEL=INFO
+
+QUARKUS_LOG_FILE_ENABLE=false
+QUARKUS_HTTP_ACCESS_LOG_LOG_TO_FILE=false
+
+QUARKUS_SWAGGER_UI_ALWAYS_INCLUDE=true
+QUARKUS_SWAGGER_UI_PATH=/swagger-ui
+
+QUARKUS_HTTP_TEST_TIMEOUT=5m
+
+QUARKUS_DEVSERVICES_ENABLED=false
+

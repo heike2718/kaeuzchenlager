@@ -1,0 +1,44 @@
+<mat-card
+    class="gt-card"
+    [class.gt-card--dark]="isDarkBackground"
+    [style.background-color]="backgroundColor"
+    [attr.aria-label]="ariaLabel">
+    <mat-card-header class="gt-card__header">
+        <mat-card-title class="gt-card__title">
+            {{ gefaesstyp?.daten.name }}
+        </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="gt-card__grid">
+        <div class="gt-card__row">
+            <span class="gt-card__label">Volumen:</span>
+            <span class="gt-card__value">{{ gefaesstyp?.daten.volumen }} ml</span>
+        </div>
+
+        <div class="gt-card__row">
+            <span class="gt-card__label">Anzahl:</span>
+            <span class="gt-card__value">{{ gefaesstyp?.daten.anzahl }}</span>
+        </div>
+    </mat-card-content>
+    <mat-card-actions class="gt-card__actions">
+        <button
+            mat-fab
+            color="primary"
+            class="gt-card__action-button"
+            type="button"
+            (click)="onEdit()"
+            aria-label="Gefäßtyp bearbeiten">
+            <mat-icon>edit</mat-icon>
+        </button>
+
+        <button
+            mat-fab
+            color="warn"
+            class="gt-card__action-button"
+            type="button"
+            (click)="onDelete()"
+            aria-label="Gefäßtyp löschen">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </mat-card-actions>
+</mat-card>

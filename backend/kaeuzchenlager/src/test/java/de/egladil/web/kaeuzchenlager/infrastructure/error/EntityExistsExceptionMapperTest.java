@@ -37,7 +37,7 @@ public class EntityExistsExceptionMapperTest {
         final ErrorResponseDto errorResponseDto = (ErrorResponseDto) response.getEntity();
 
         assertAll(
-            () -> assertEquals(409, status),
+            () -> assertEquals(412, status),
             () -> assertEquals(ErrorLevel.WARN, errorResponseDto.getErrorLevel()),
             () -> assertEquals("gibet schon", errorResponseDto.getMessage()));
       } catch (ClassCastException e) {

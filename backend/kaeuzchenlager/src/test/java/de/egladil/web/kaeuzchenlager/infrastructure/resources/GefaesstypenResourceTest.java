@@ -16,11 +16,11 @@ import de.egladil.web.kaeuzchenlager.domain.exception.ErrorLevel;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorResponseDto;
 import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypDaten;
 import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypDto;
-import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypLoeschenResult;
 import de.egladil.web.kaeuzchenlager.infrastructure.persistence.dao.GefaesstypDao;
 import de.egladil.web.kaeuzchenlager.infrastructure.persistence.entities.Gefaesstyp;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
@@ -28,6 +28,7 @@ import jakarta.validation.Validator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 @QuarkusTest
 @TestHTTPEndpoint(GefaesstypenResource.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
 public class GefaesstypenResourceTest {
 
   private static final String AENDERN_UUID = "8efeed81-85ae-458b-8de0-481ff38ac1d4";
@@ -95,14 +97,17 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp")
             .backgroundColor("#ccffff")
             .anzahl(4)
+            .version(null)
             .build();
+
+    GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
 
     // act
     GefaesstypDto gefaesstypDto =
         given()
             .header("API-Version", 1)
             .contentType(ContentType.JSON)
-            .body(daten)
+            .body(requestPayload)
             .post()
             .then()
             .statusCode(201)
@@ -145,20 +150,19 @@ public class GefaesstypenResourceTest {
   void should_aendern_work() {
 
     // arrange
-    List<Gefaesstyp> gefaesstypen = this.gefaesstypDao.loadAll();
-    Optional<Gefaesstyp> optEntity =
-        gefaesstypen.stream().filter(gt -> "Gefäßtyp".equals(gt.getName())).findFirst();
+    Gefaesstyp gefaesstyp =  this.gefaesstypDao.findByUuid("6ff63774-ec09-496b-b7f5-ddb85bb2edc2");
+    assertNotNull(gefaesstyp);
 
-    assertTrue(optEntity.isPresent());
-    String uuid = optEntity.get().getUuid();
+    String uuid = gefaesstyp.getUuid();
 
     // arrange 2
     GefaesstypDaten daten =
         GefaesstypDaten.builder()
-            .volumen(50)
+            .volumen(45)
             .name("Gefäßtyp 7")
             .backgroundColor("#ffccff")
             .anzahl(14)
+            .version(0)
             .build();
 
     GefaesstypDto gefaesstypUpdated =
@@ -166,7 +170,7 @@ public class GefaesstypenResourceTest {
             .header("API-Version", 1)
             .contentType(ContentType.JSON)
             .body(daten)
-            .put(uuid)
+            .put(gefaesstyp.getUuid())
             .then()
             .statusCode(200)
             .extract()
@@ -178,7 +182,7 @@ public class GefaesstypenResourceTest {
         () -> assertNotNull(gefaesstypUpdated.getUuid()),
         () -> assertNotNull(datenUpdated),
         () -> assertEquals("Gefäßtyp 7", datenUpdated.getName()),
-        () -> assertEquals(50, datenUpdated.getVolumen()),
+        () -> assertEquals(45, datenUpdated.getVolumen()),
         () -> assertEquals(14, datenUpdated.getAnzahl()),
         () -> assertEquals("#ffccff", datenUpdated.getBackgroundColor()));
 
@@ -195,44 +199,25 @@ public class GefaesstypenResourceTest {
     final String uuid = "ac29258e-a6be-49e1-8ae4-953cbb1fe1c0";
 
     // act 3
-    GefaesstypLoeschenResult gefaesstypLoeschenResult =
-        given()
-            .header("API-Version", 1)
-            .delete(uuid)
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(GefaesstypLoeschenResult.class);
+    given().header("API-Version", 1).delete(uuid).then().statusCode(204);
 
     Optional<Gefaesstyp> optEntityDeleted = this.gefaesstypDao.findById(uuid);
 
-    assertAll(
-        () -> assertEquals(uuid, gefaesstypLoeschenResult.getUuid()),
-        () -> assertTrue(optEntityDeleted.isEmpty()));
+    assertTrue(optEntityDeleted.isEmpty());
   }
 
   @Test
   @Order(4)
-  void should_loeschen_return_200_when_unknown_uuid() {
+  void should_loeschen_return_204_when_unknown_uuid() {
 
     // arrange
     final String uuid = "5c29258e-a6be-49e1-8ae4-953cbb1fe1c0";
 
-    // act 3
-    GefaesstypLoeschenResult gefaesstypLoeschenResult =
-        given()
-            .header("API-Version", 1)
-            .delete(uuid)
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(GefaesstypLoeschenResult.class);
-
     Optional<Gefaesstyp> optEntityDeleted = this.gefaesstypDao.findById(uuid);
+    assertTrue(optEntityDeleted.isEmpty());
 
-    assertAll(
-        () -> assertEquals(uuid, gefaesstypLoeschenResult.getUuid()),
-        () -> assertTrue(optEntityDeleted.isEmpty()));
+    // act
+    given().header("API-Version", 1).delete(uuid).then().statusCode(204);
   }
 
   @Test
@@ -242,21 +227,25 @@ public class GefaesstypenResourceTest {
     // arrange
     GefaesstypDaten daten =
         GefaesstypDaten.builder()
-            .volumen(10)
+            .volumen(300)
             .name("Gefäßtyp 3")
             .backgroundColor("#ccffff")
             .anzahl(4)
+            .version(null)
             .build();
+
+    GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
+
 
     // act
     final ErrorResponseDto errorResponseDto =
         given()
             .header("API-Version", 1)
             .contentType(ContentType.JSON)
-            .body(daten)
+            .body(requestPayload)
             .post()
             .then()
-            .statusCode(409)
+            .statusCode(412)
             .extract()
             .as(ErrorResponseDto.class);
 
@@ -280,17 +269,21 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp 1")
             .backgroundColor("#ccffff")
             .anzahl(4)
+            .version(null)
             .build();
+
+    GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
+
 
     // act
     final ErrorResponseDto errorResponseDto =
         given()
             .header("API-Version", 1)
             .contentType(ContentType.JSON)
-            .body(daten)
+            .body(requestPayload)
             .post()
             .then()
-            .statusCode(409)
+            .statusCode(412)
             .extract()
             .as(ErrorResponseDto.class);
 
@@ -310,10 +303,11 @@ public class GefaesstypenResourceTest {
     // arrange
     GefaesstypDaten daten =
         GefaesstypDaten.builder()
-            .volumen(10)
-            .name("Gefäßtyp 3")
+            .volumen(2)
+            .name("Gefäßtyp 9")
             .backgroundColor("#ccffff")
             .anzahl(4)
+            .version(0)
             .build();
 
     // act
@@ -324,7 +318,7 @@ public class GefaesstypenResourceTest {
             .body(daten)
             .put(AENDERN_UUID)
             .then()
-            .statusCode(409)
+            .statusCode(412)
             .extract()
             .as(ErrorResponseDto.class);
 
@@ -348,6 +342,7 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp 1")
             .backgroundColor("#ccffff")
             .anzahl(4)
+            .version(0)
             .build();
 
     // act
@@ -358,7 +353,7 @@ public class GefaesstypenResourceTest {
             .body(daten)
             .put(AENDERN_UUID)
             .then()
-            .statusCode(409)
+            .statusCode(412)
             .extract()
             .as(ErrorResponseDto.class);
 
@@ -384,6 +379,7 @@ public class GefaesstypenResourceTest {
             .name("Gefäßtyp 6")
             .backgroundColor("#ccffff")
             .anzahl(2)
+            .version(0)
             .build();
 
     // act
@@ -416,9 +412,10 @@ public class GefaesstypenResourceTest {
     GefaesstypDaten daten =
         GefaesstypDaten.builder()
             .volumen(10)
-            .name("Gefäßtyp 2")
+            .name("Gefäßtyp 7")
             .backgroundColor("#ffffcc")
             .anzahl(19)
+            .version(1)
             .build();
 
     // act
@@ -437,5 +434,42 @@ public class GefaesstypenResourceTest {
     assertAll(
         () -> assertEquals(19, dto.getDaten().getAnzahl()),
         () -> assertEquals("#ffffcc", dto.getDaten().getBackgroundColor()));
+  }
+
+  @Test
+  @Order(11)
+  void should_gefaesstypAendern_return_409_when_concurrent_update() {
+
+    // arrange
+    String uuid = "5aad23ff-3983-459e-9431-b23969394051";
+
+    GefaesstypDaten daten =
+        GefaesstypDaten.builder()
+            .volumen(2)
+            .name("Gefäßtyp 1")
+            .backgroundColor("#ccccff")
+            .anzahl(5)
+            .version(0)
+            .build();
+
+    // act
+    final ErrorResponseDto errorResponseDto =
+        given()
+            .header("API-Version", 1)
+            .contentType(ContentType.JSON)
+            .body(daten)
+            .put(uuid)
+            .then()
+            .statusCode(409)
+            .extract()
+            .as(ErrorResponseDto.class);
+
+    // assert
+    assertAll(
+        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+        () ->
+            assertEquals(
+                "Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.",
+                errorResponseDto.getMessage()));
   }
 }

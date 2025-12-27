@@ -1,0 +1,36 @@
+.sidenav {
+    &__icon {
+        margin-inline-end: 0.5rem;
+    }
+
+    &__footer {
+        margin-block-start: 1.5rem;
+        margin-left: 0.5rem;
+    }
+
+    /* Stile für alle Button-Listenelemente (__login_logout und __toggle) */
+    &__login_logout.mat-mdc-list-item,
+    &__toggle.mat-mdc-list-item {
+        // 1. Visuelle Neutralisierung (Hintergrund, Rahmen)
+        border: none;
+        background-color: transparent;
+
+        // 2. WICHTIG: Wiederherstellung der korrekten Ausrichtung
+        // Wir zielen auf den inneren Content-Container ab und setzen das Standard-Padding:
+        .mat-mdc-list-item-content {
+            // Setzt 0px vertikalen und 16px horizontalen Abstand
+            padding: 0 16px;
+
+            // Stellt sicher, dass das Listenelement die volle Breite einnimmt
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    /* Rahmen und Abstand nur für den Toggle-Eintrag */
+    &__toggle.mat-mdc-list-item {
+        margin-block-start: 1rem;
+        /* Die Einrückung kommt jetzt aus dem .mat-mdc-list-item-content,
+           daher benötigen wir hier kein zusätzliches margin-left mehr. */
+    }
+}

@@ -12,10 +12,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** The type Gefaesstyp dao. */
 @RequestScoped
 public class GefaesstypDao {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(GefaesstypDao.class);
 
   /** The Entity manager. */
   @Inject /*default*/ EntityManager entityManager;
@@ -70,6 +74,16 @@ public class GefaesstypDao {
   }
 
   /**
+   * Gibt den Gefäßtyp mit der gegebenen uuid zurück.
+   * @param uuid String technische ID
+   * @return Gefaesstyp oder null
+   */
+  public Gefaesstyp findByUuid(String uuid) {
+
+    return entityManager.find(Gefaesstyp.class, uuid);
+  }
+
+  /**
    * Persistiert einen neuen Gefäßtyp.
    *
    * @param gefaesstyp Gefaesstyp
@@ -98,7 +112,9 @@ public class GefaesstypDao {
     Gefaesstyp result = entity;
     if (!entityManager.contains(result)) {
       result = entityManager.merge(entity);
+      LOGGER.info("====> entity merged into the persistence context");
     }
     entityManager.remove(result);
+    LOGGER.info("====> entity with uuid {} deleted", entity.getUuid());
   }
 }

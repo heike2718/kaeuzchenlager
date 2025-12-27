@@ -1,0 +1,83 @@
+/* Block: Gefäßtyp-Karte (BEM) */
+.gt-card {
+    /* Standard: schwarzer Text auf hellem Hintergrund */
+    color: rgba(0, 0, 0, 0.87);
+    padding: var(--space-4, 1rem);
+    border-radius: var(--radius-3, 0.75rem);
+
+    /* Elemente erben die Blockfarbe */
+    &__title,
+    &__label,
+    &__value {
+        color: inherit;
+    }
+
+    /* Kopfbereich */
+    &__header {
+        margin-block-end: var(--space-3, 0.75rem);
+    }
+
+    &__title {
+        margin: 0;
+        font-weight: 600;
+        line-height: 1.2;
+    }
+
+    /* Inhalt als Grid */
+    &__grid {
+        display: grid;
+        gap: var(--space-2, 0.5rem);
+    }
+
+    /* Zeilen mit schmalem Label und bündigem Wert */
+    &__row {
+        display: grid;
+        grid-template-columns: 10ch 1fr;
+        align-items: baseline;
+        gap: var(--space-2, 0.5rem);
+    }
+
+    /* Labels leicht abgeschwächt, bleibt kontrast-sicher durch inherit */
+    &__label {
+        font-weight: 600;
+        text-align: right; /* falls linksbündig gewünscht: entfernen */
+        white-space: nowrap;
+    }
+
+    &__value {
+        min-width: 0; /* verhindert Textüberlauf */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Modifier: dunkler Hintergrund -> weißer Text */
+    &--dark {
+        color: #fff;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        padding: 0.75rem 0 1rem;
+    }
+
+    &__action-button {
+        width: 3.5rem;
+        height: 3.5rem;
+        // Icon größer
+        font-size: 1.75rem;
+    }
+}
+
+/* Responsive Feinschliff */
+@media (min-width: 48rem) {
+    .gt-card {
+        &__grid {
+            gap: var(--space-3, 0.75rem);
+        }
+        &__row {
+            grid-template-columns: 12ch 1fr;
+        }
+    }
+}

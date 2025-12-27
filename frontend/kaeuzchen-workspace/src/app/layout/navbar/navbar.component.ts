@@ -10,41 +10,53 @@ import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AsyncPipe } from '@angular/common';
+import { KL_CONFIGURATION, KLConfiguration } from '@config';
+import { AuthFacade } from '@shared/auth/api';
 
 @Component({
-  selector: 'kl-navbar',
-  imports: [
-    MatMenuModule,
-    MatIconModule,
-    MatListModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    RouterLinkWithHref,
-    AsyncPipe,
-  ],
-  templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss',
+    selector: 'kl-navbar',
+    imports: [
+        MatMenuModule,
+        MatIconModule,
+        MatListModule,
+        MatToolbarModule,
+        MatTooltipModule,
+        RouterLinkWithHref,
+        AsyncPipe,
+    ],
+    templateUrl: './navbar.component.html',
+    styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent {
-  version = '1.0.0-SNAPSHOT';
-  readonly theme = inject(ThemeStore);
+    readonly config: KLConfiguration = inject(KL_CONFIGURATION);
+    readonly theme = inject(ThemeStore);
 
-  @Output()
-  sidenavToggle = new EventEmitter();
+    @Output()
+    sidenavToggle = new EventEmitter();
 
-  #breakpointObserver = inject(BreakpointObserver);
-  #router = inject(Router);
+    authFacade = inject(AuthFacade);
 
-  isHandset$ = this.#breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(result => result.matches),
-    shareReplay()
-  );
+    #breakpointObserver = inject(BreakpointObserver);
+    #router = inject(Router);
 
-  onToggleSidenav(): void {
-    this.sidenavToggle.emit();
-  }
+    isHandset$ = this.#breakpointObserver.observe(Breakpoints.Handset).pipe(
+        map(result => result.matches),
+        shareReplay()
+    );
 
-  onMenuItemClick(id: number): void {
-    this.#router.navigate(['/home', id]);
-  }
+    onToggleSidenav(): void {
+        this.sidenavToggle.emit();
+    }
+
+    onMenuItemClick(id: number): void {
+        this.#router.navigate(['/home', id]);
+    }
+
+    login(): void {
+        this.authFacade.login();
+    }
+
+    logout(): void {
+        this.authFacade.logout();
+    }
 }
