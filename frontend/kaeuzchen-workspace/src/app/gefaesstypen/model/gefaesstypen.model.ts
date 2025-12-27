@@ -48,7 +48,30 @@ export function createInitialGefaesstyp(): Gefaesstyp {
 }
 
 function generateUUID(): string {
-    return globalThis.crypto?.randomUUID?.() ?? 'tmp';
+    const c = globalThis.crypto as Crypto | undefined;
+
+    // Best case (secure context)
+    if (c?.randomUUID) {
+        return c.randomUUID();
+    }
+
+    // Good fallback (usually available even on http)
+    if (c?.getRandomValues) {
+        const bytes = new Uint8Array(16);
+        c.getRandomValues(bytes);
+
+        // RFC 4122 UUID v4 bits
+        bytes[6] = (bytes[6] & 0x0f) | 0x40; // version 4
+        bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant 10
+
+        const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+        console.log('use fallback wegen insecure');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+
+    // Last resort: unique-ish (not crypto)
+    console.log('use fallback ohne crypto');
+    return `id-${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}-${Math.random().toString(16).slice(2)}`;
 }
 
 const deCollator = new Intl.Collator('de', {

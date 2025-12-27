@@ -85,8 +85,8 @@ public class StartupListener {
     LOGGER.info(" ===========>  loginRedirectUrl={}", loginRedirectUrl);
     LOGGER.info(" ===========>  port={}", port);
 
-    if (csrfCookieConfig.signatureKey() == null || csrfCookieConfig.signatureKey().toLowerCase().startsWith("ueberschreiben")) {
-      throw new KaeuzchenlagerRuntimeException("csrf-cookie.signature-key muss ueberschrieben werden!!!");
+    if (csrfCookieConfig.signatureKey() == null) {
+      throw new KaeuzchenlagerRuntimeException("csrf-cookie.signature-key muss gesetzt werden!!!");
     }
   }
 }

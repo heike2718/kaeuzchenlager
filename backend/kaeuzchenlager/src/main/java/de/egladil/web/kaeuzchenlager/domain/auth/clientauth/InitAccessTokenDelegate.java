@@ -28,6 +28,7 @@ public class InitAccessTokenDelegate {
   AuthproviderRestClient authproviderRestClient;
 
   public ResponsePayload authenticateClient(final OAuthClientCredentials credentials) {
+
     try (Response authResponse = authproviderRestClient.authenticateClient(credentials);) {
 
       ResponsePayload responsePayload = authResponse.readEntity(ResponsePayload.class);
@@ -38,6 +39,7 @@ public class InitAccessTokenDelegate {
 
       String msg = "Unerwarteter Fehler beim Anfordern eines client-accessTokens: " + e.getMessage();
       LOGGER.error(msg, e);
+
       throw new KaeuzchenlagerRuntimeException(msg, e);
     }
   }

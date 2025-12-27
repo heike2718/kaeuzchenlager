@@ -5,8 +5,8 @@
     "scripts": {
         "start": "nx serve --proxy-config=proxy.conf.json",
         "build:local": "nx build --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/",
-        "build:qs": "nx build",
-        "build:prod": "nx build:production --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/",
+        "build:qs": "nx build --configuration=qs --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/",
+        "build:prod": "nx build --configuration=production --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/",
         "test": "npx nx test",
         "test:coverage": "vitest --coverage",
         "test:ci": "vitest run --coverage --bail=1",

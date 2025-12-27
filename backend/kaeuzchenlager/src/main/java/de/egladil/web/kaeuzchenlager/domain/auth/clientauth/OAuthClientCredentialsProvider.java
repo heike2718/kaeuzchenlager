@@ -26,9 +26,6 @@ public class OAuthClientCredentialsProvider {
    * @return
    */
   public OAuthClientCredentials getClientCredentials(final String nonce) {
-
-    LOGGER.debug(">>>>>>>> publicClientId={}, publicClientSecret={}  <<<<<<<<", publicClientId, publicClientSecret);
-
     return OAuthClientCredentials.create(publicClientId, publicClientSecret, nonce);
   }
 

@@ -6,6 +6,8 @@
 package de.egladil.web.kaeuzchenlager.domain.auth.session;
 
 import de.egladil.web.kaeuzchenlager.domain.auth.config.SessionCookieConfig;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.NewCookie;
 import jakarta.ws.rs.core.NewCookie.SameSite;
 import java.time.Instant;
@@ -14,6 +16,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,6 +120,35 @@ public final class SessionUtils {
         .build();
     // @formatter:on
 
+  }
+
+  public static String getSessionId(final ContainerRequestContext requestContext, String sessionCookieName) {
+    String sessionIdFromCookie = getSessionIdFromCookie(requestContext, sessionCookieName);
+    LOGGER.debug("sessionIdFromCookie={}", sessionIdFromCookie);
+
+    return sessionIdFromCookie;
+
+  }
+
+  /**
+   * @param requestContext
+   * @return String oder null
+   */
+  private static String getSessionIdFromCookie(final ContainerRequestContext requestContext, String sessionCookieName) {
+
+    Map<String, Cookie> cookies = requestContext.getCookies();
+
+    Cookie sessionCookie = cookies.get(sessionCookieName);
+
+    if (sessionCookie != null) {
+
+      return sessionCookie.getValue();
+    }
+
+    String path = requestContext.getUriInfo().getPath();
+    LOGGER.debug("{}: Request ohne {}-Cookie", path, sessionCookieName);
+
+    return null;
   }
 
 

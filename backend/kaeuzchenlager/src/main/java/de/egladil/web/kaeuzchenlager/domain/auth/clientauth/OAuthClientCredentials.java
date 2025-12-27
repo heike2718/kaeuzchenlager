@@ -28,9 +28,9 @@ public class OAuthClientCredentials {
   public static OAuthClientCredentials create(final String clientId, final String clientSecret, final String nonce) {
 
     OAuthClientCredentials result = new OAuthClientCredentials();
-    result.clientId = clientId;
-    result.clientSecret = clientSecret;
-    result.nonce = nonce;
+    result.clientId = clientId.trim();
+    result.clientSecret = clientSecret.trim();
+    result.nonce = nonce != null ? nonce.trim() : null;
     return result;
 
   }
@@ -40,29 +40,14 @@ public class OAuthClientCredentials {
     return clientId;
   }
 
-  public void setClientId(final String clientId) {
-
-    this.clientId = clientId;
-  }
-
   public String getClientSecret() {
 
     return clientSecret;
   }
 
-  public void setClientSecret(final String clientSecret) {
-
-    this.clientSecret = clientSecret;
-  }
-
   public String getNonce() {
 
     return nonce;
-  }
-
-  public void setNonce(final String nonce) {
-
-    this.nonce = nonce;
   }
 
   public void clean() {
