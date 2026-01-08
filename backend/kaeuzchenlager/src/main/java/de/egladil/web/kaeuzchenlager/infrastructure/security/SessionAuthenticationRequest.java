@@ -1,34 +1,34 @@
 package de.egladil.web.kaeuzchenlager.infrastructure.security;
 
-import io.quarkus.security.identity.request.AuthenticationRequest;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.quarkus.security.identity.request.AuthenticationRequest;
+
 public record SessionAuthenticationRequest(String sessionId, Map<String, Object> attributes)
-    implements AuthenticationRequest {
+        implements AuthenticationRequest {
 
-  public SessionAuthenticationRequest(String sessionId) {
-    this(sessionId, new ConcurrentHashMap<>());
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public <T> T getAttribute(String name) {
-    return (T) attributes.get(name);
-  }
-
-  @Override
-  public void setAttribute(String name, Object value) {
-    if (value == null) {
-      attributes.remove(name);
-    } else {
-      attributes.put(name, value);
+    public SessionAuthenticationRequest(String sessionId) {
+        this(sessionId, new ConcurrentHashMap<>());
     }
-  }
 
-  @Override
-  public Map<String, Object> getAttributes() {
-    return attributes;
-  }
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getAttribute(String name) {
+        return (T) attributes.get(name);
+    }
+
+    @Override
+    public void setAttribute(String name, Object value) {
+        if (value == null) {
+            attributes.remove(name);
+        } else {
+            attributes.put(name, value);
+        }
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
 }

@@ -1,7 +1,7 @@
-//=====================================================
+// =====================================================
 // Project: kaeuzchenlager
 // (c) Heike Winkelvoß
-//=====================================================
+// =====================================================
 package de.egladil.web.kaeuzchenlager.domain.auth.config;
 
 import io.smallrye.config.ConfigMapping;
@@ -9,18 +9,18 @@ import io.smallrye.config.ConfigMapping;
 @ConfigMapping(prefix = "session-cookie")
 public interface SessionCookieConfig {
 
-	String name();
+    String name();
 
-	String sameSite();
+    String sameSite();
 
-	boolean secure();
+    boolean secure();
 
-	String path();
+    String path();
 
-	default String toLog() {
+    default String toLog() {
 
-		return "SessionCookieConfig=[name=" + name() + ", path=" + path() + ", sameSite=" + sameSite() + ", secure=" + secure()
-		+ "]";
+        return "SessionCookieConfig=[name=" + name() + ", path=" + path() + ", sameSite=" + sameSite() + ", secure="
+                + secure() + "]";
 
-	}
+    }
 }

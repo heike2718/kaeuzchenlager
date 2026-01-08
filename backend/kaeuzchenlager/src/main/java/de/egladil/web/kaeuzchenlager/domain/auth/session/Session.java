@@ -6,11 +6,11 @@ package de.egladil.web.kaeuzchenlager.domain.auth.session;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 /**
  * Session
@@ -21,83 +21,81 @@ import lombok.Value;
 @Builder
 public class Session {
 
-	@JsonIgnore
-	private String sessionId;
+    @JsonIgnore
+    private String sessionId;
 
-  @JsonIgnore
-  private long createdAt;
+    @JsonIgnore
+    private long createdAt;
 
-	@JsonProperty
-	private long expiresAt;
+    @JsonProperty
+    private long expiresAt;
 
-	@JsonProperty
-	private boolean sessionActive;
+    @JsonProperty
+    private boolean sessionActive;
 
-	@JsonIgnore
-	private String csrfTokenHmac;
+    @JsonIgnore
+    private String csrfTokenHmac;
 
-	@JsonIgnore
-	private AuthenticatedUser authenticatedUser;
+    @JsonIgnore
+    private AuthenticatedUser authenticatedUser;
 
-  @JsonProperty
-  private UserDto user;
+    @JsonProperty
+    private UserDto user;
 
+    public static Session createAnonymous(final String sessionId) {
 
-	public static Session createAnonymous(final String sessionId) {
+        Session session = new Session();
+        session.sessionId = sessionId;
+        session.sessionActive = false;
+        return session;
 
-		Session session = new Session();
-		session.sessionId = sessionId;
-		session.sessionActive = false;
-		return session;
+    }
 
-	}
+    @Override
+    public String toString() {
 
-	@Override
-	public String toString() {
+        return "Session [sessionId=" + sessionId + ", expiresAt=" + expiresAt + ", admin=" + authenticatedUser + "]";
+    }
 
-		return "Session [sessionId=" + sessionId + ", expiresAt=" + expiresAt + ", admin=" + authenticatedUser
-        + "]";
-	}
+    @JsonIgnore
+    public boolean isAnonym() {
 
-	@JsonIgnore
-	public boolean isAnonym() {
+        return authenticatedUser == null;
+    }
 
-		return authenticatedUser == null;
-	}
+    @Override
+    public int hashCode() {
 
-	@Override
-	public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((sessionId == null) ? 0 : sessionId.hashCode());
+        return result;
+    }
 
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((sessionId == null) ? 0 : sessionId.hashCode());
-		return result;
-	}
+    @Override
+    public boolean equals(final Object obj) {
 
-	@Override
-	public boolean equals(final Object obj) {
+        if (this == obj) {
 
-		if (this == obj) {
+            return true;
+        }
 
-			return true;
-		}
+        if (!(obj instanceof Session)) {
 
-		if (!(obj instanceof Session)) {
+            return false;
+        }
+        Session other = (Session) obj;
 
-			return false;
-		}
-		Session other = (Session) obj;
+        if (sessionId == null) {
 
-		if (sessionId == null) {
+            if (other.sessionId != null) {
 
-			if (other.sessionId != null) {
+                return false;
+            }
+        } else if (!sessionId.equals(other.sessionId)) {
 
-				return false;
-			}
-		} else if (!sessionId.equals(other.sessionId)) {
-
-			return false;
-		}
-		return true;
-	}
+            return false;
+        }
+        return true;
+    }
 }
