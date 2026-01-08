@@ -32,7 +32,7 @@ describe('MessageService', () => {
             expect(message).not.toBeNull();
             expect(message?.type).toBe('info');
             expect(message?.text).toBe(text);
-            expect(message?.dismissAfterMs).toBe(4000);
+            expect(message?.dismissAfterMs).toBe(3000);
         });
 
         it('should set info message with custom dismiss timeout', () => {

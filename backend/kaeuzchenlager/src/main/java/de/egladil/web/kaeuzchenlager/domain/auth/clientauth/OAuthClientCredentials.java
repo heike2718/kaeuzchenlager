@@ -1,7 +1,7 @@
-//=====================================================
+// =====================================================
 // Projekt: kaeuzchenlager
 // (c) Heike Winkelvoß
-//=====================================================
+// =====================================================
 
 package de.egladil.web.kaeuzchenlager.domain.auth.clientauth;
 
@@ -11,49 +11,49 @@ import jakarta.validation.constraints.Size;
 
 public class OAuthClientCredentials {
 
-  @NotBlank
-  @Pattern(regexp = "[a-zA-Z0-9+=]*")
-  @Size(max = 50)
-  private String clientId;
+    @NotBlank
+    @Pattern(regexp = "[a-zA-Z0-9+=]*")
+    @Size(max = 50)
+    private String clientId;
 
-  @NotBlank
-  @Pattern(regexp = "[a-zA-Z0-9+=]*")
-  @Size(max = 50)
-  private String clientSecret;
+    @NotBlank
+    @Pattern(regexp = "[a-zA-Z0-9+=]*")
+    @Size(max = 50)
+    private String clientSecret;
 
-  @Pattern(regexp = "^[a-zA-Z0-9\\-]*$")
-  @Size(max = 36)
-  private String nonce;
+    @Pattern(regexp = "^[a-zA-Z0-9\\-]*$")
+    @Size(max = 36)
+    private String nonce;
 
-  public static OAuthClientCredentials create(final String clientId, final String clientSecret, final String nonce) {
+    public static OAuthClientCredentials create(final String clientId, final String clientSecret, final String nonce) {
 
-    OAuthClientCredentials result = new OAuthClientCredentials();
-    result.clientId = clientId.trim();
-    result.clientSecret = clientSecret.trim();
-    result.nonce = nonce != null ? nonce.trim() : null;
-    return result;
+        OAuthClientCredentials result = new OAuthClientCredentials();
+        result.clientId = clientId.trim();
+        result.clientSecret = clientSecret.trim();
+        result.nonce = nonce != null ? nonce.trim() : null;
+        return result;
 
-  }
+    }
 
-  public String getClientId() {
+    public String getClientId() {
 
-    return clientId;
-  }
+        return clientId;
+    }
 
-  public String getClientSecret() {
+    public String getClientSecret() {
 
-    return clientSecret;
-  }
+        return clientSecret;
+    }
 
-  public String getNonce() {
+    public String getNonce() {
 
-    return nonce;
-  }
+        return nonce;
+    }
 
-  public void clean() {
+    public void clean() {
 
-    clientId = SecUtils.wipe(clientId);
-    clientSecret = SecUtils.wipe(clientSecret);
-  }
+        clientId = SecUtils.wipe(clientId);
+        clientSecret = SecUtils.wipe(clientSecret);
+    }
 
 }

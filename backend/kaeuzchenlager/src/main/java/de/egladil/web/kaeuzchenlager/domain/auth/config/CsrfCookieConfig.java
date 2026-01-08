@@ -1,12 +1,12 @@
-//=====================================================
+// =====================================================
 // Project: kaeuzchenlager
 // (c) Heike Winkelvoß
-//=====================================================
+// =====================================================
 package de.egladil.web.kaeuzchenlager.domain.auth.config;
 
-import org.apache.commons.lang3.StringUtils;
-
 import io.smallrye.config.ConfigMapping;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -14,25 +14,26 @@ import io.smallrye.config.ConfigMapping;
 @ConfigMapping(prefix = "csrf-cookie")
 public interface CsrfCookieConfig {
 
-	String name();
+    String name();
 
-	String sameSite();
+    String sameSite();
 
-	boolean secure();
+    boolean secure();
 
-	String path();
+    String path();
 
-	/**
-	 * Base64 encoded. Muss also decoded werden.
-	 * @return
-	 */
-	String signatureKey();
+    /**
+     * Base64 encoded. Muss also decoded werden.
+     *
+     * @return
+     */
+    String signatureKey();
 
-	default String toLog() {
+    default String toLog() {
 
-		return "CsrfCookieConfig=[name=" + name() + ", path=" + path() + ", sameSite=" + sameSite() + ", secure=" + secure()
-			+ ", secretKey=" + StringUtils.abbreviate(signatureKey(), 6) + "]";
+        return "CsrfCookieConfig=[name=" + name() + ", path=" + path() + ", sameSite=" + sameSite() + ", secure="
+                + secure() + ", secretKey=" + StringUtils.abbreviate(signatureKey(), 6) + "]";
 
-	}
+    }
 
 }

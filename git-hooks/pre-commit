@@ -31,7 +31,7 @@ fi
 # 4) Backend – Format + schneller Lint
 if echo "$STAGED" | grep -qE '\.java$'; then
   echo "☕ format and sort (backend)"
-  (cd backend/kaeuzchenlager && mvn formatter:format@format-apply impsort:sort@impsort-sort)
+  (cd backend/kaeuzchenlager && mvn -Pformat-apply formatter:format@format-apply impsort:sort@impsort-sort)
   git ls-files -m | grep -E '\.java$' | xargs -r git add
 
 #  echo "🔍 Checkstyle (schnell)"

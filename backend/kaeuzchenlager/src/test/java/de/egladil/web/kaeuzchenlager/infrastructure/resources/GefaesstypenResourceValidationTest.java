@@ -5,342 +5,328 @@
 
 package de.egladil.web.kaeuzchenlager.infrastructure.resources;
 
-import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Set;
+import java.util.UUID;
+
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import io.quarkus.test.common.http.TestHTTPEndpoint;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
+
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorLevel;
 import de.egladil.web.kaeuzchenlager.domain.exception.ErrorResponseDto;
 import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypDaten;
 import de.egladil.web.kaeuzchenlager.domain.gefaesse.GefaesstypDto;
-import io.quarkus.test.common.http.TestHTTPEndpoint;
-import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.test.security.TestSecurity;
+
 import io.restassured.http.ContentType;
-import jakarta.inject.Inject;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
-import java.util.Set;
-import java.util.UUID;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.given;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 @TestHTTPEndpoint(GefaesstypenResource.class)
 @TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
 public class GefaesstypenResourceValidationTest {
 
-  private static final String VALID_UUID = "a003530f-97f9-4a5b-a0a3-f6f139522fa0";
+    private static final String VALID_UUID = "a003530f-97f9-4a5b-a0a3-f6f139522fa0";
 
-  @Inject Validator validator;
+    @Inject
+    Validator validator;
 
-  @ConfigProperty(name = "quarkus.datasource.jdbc.url")
-  String jdbcUrl;
+    @ConfigProperty(name = "quarkus.datasource.jdbc.url")
+    String jdbcUrl;
 
-  @ConfigProperty(name = "quarkus.datasource.username")
-  String datasoureUsername;
+    @ConfigProperty(name = "quarkus.datasource.username")
+    String datasoureUsername;
 
-  @ConfigProperty(name = "quarkus.devservices.enabled")
-  boolean devsourceEnabled;
+    @ConfigProperty(name = "quarkus.devservices.enabled")
+    boolean devsourceEnabled;
 
-  @Inject Config config;
+    @Inject
+    Config config;
 
-  @BeforeEach
-  void beforeEach() {
-    System.out.println("=== GefaesstypenResourceValidationTest BEFORE EACH ===");
-    System.out.println("===> devServicesEnabled=" + this.devsourceEnabled);
-    System.out.println("===> jdbcUrl=" + this.jdbcUrl);
-    System.out.println("===> username=" + this.datasoureUsername);
-    System.out.println("=============================================");
-  }
+    @BeforeEach
+    void beforeEach() {
+        System.out.println("=== GefaesstypenResourceValidationTest BEFORE EACH ===");
+        System.out.println("===> devServicesEnabled=" + this.devsourceEnabled);
+        System.out.println("===> jdbcUrl=" + this.jdbcUrl);
+        System.out.println("===> username=" + this.datasoureUsername);
+        System.out.println("=============================================");
+    }
 
-  @Test
-  void should_gefaesstypAnlegen_return_400_when_allAttributes_invalid() {
+    @Test
+    void should_gefaesstypAnlegen_return_400_when_allAttributes_invalid() {
 
-    // arrange
-    GefaesstypDaten daten =
-        GefaesstypDaten.builder()
-            .name("Gefäß <1>")
-            .volumen(Integer.valueOf(0))
-            .anzahl(Integer.valueOf(-1))
-            .backgroundColor("hallo")
-            .build();
+        // arrange
+        GefaesstypDaten daten = GefaesstypDaten
+                .builder()
+                .name("Gefäß <1>")
+                .volumen(Integer.valueOf(0))
+                .anzahl(Integer.valueOf(-1))
+                .backgroundColor("hallo")
+                .build();
 
-    GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
+        GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
 
-    // act
-    final ErrorResponseDto errorResponseDto =
+        // act
+        final ErrorResponseDto errorResponseDto = given()
+                .header("API-Version", 1)
+                .contentType(ContentType.JSON)
+                .body(requestPayload)
+                .post()
+                .then()
+                .statusCode(400)
+                .extract()
+                .as(ErrorResponseDto.class);
+
+        // assert
+        final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
+
+        assertAll(() -> assertTrue(cvs.isEmpty()),
+                () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()));
+    }
+
+    @Test
+    void should_gefaesstypAnlegen_return_400_when_pflichtattributeNull() {
+
+        // arrange
+        GefaesstypDaten daten = GefaesstypDaten.builder().build();
+
+        GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
+        // act
+        final ErrorResponseDto errorResponseDto = given()
+                .header("API-Version", 1)
+                .contentType(ContentType.JSON)
+                .body(requestPayload)
+                .post()
+                .then()
+                .statusCode(400)
+                .extract()
+                .as(ErrorResponseDto.class);
+
+        // assert
+        final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
+
+        assertAll(() -> assertTrue(cvs.isEmpty()),
+                () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()));
+    }
+
+    @Test
+    void should_gefaesstypAnlegen_return_406_when_unsupportedAPIVersion() {
+
+        // act
+        // arrange
+        GefaesstypDaten daten = GefaesstypDaten
+                .builder()
+                .name("Gefäß 200 ml")
+                .anzahl(1)
+                .volumen(2)
+                .backgroundColor("#ffffff")
+                .build();
+
+        GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
+
+        // act
+        final ErrorResponseDto errorResponseDto = given()
+                .header("API-Version", 10)
+                .contentType(ContentType.JSON)
+                .body(requestPayload)
+                .post()
+                .then()
+                .statusCode(406)
+                .extract()
+                .as(ErrorResponseDto.class);
+
+        // assert
+        final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
+
+        assertAll(() -> assertTrue(cvs.isEmpty()),
+                () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+                () -> assertEquals(
+                        "API-Version wird nicht unterstützt. Bitte Header API-Version prüfen. Unterstützte Versionen: 1",
+                        errorResponseDto.getMessage()));
+    }
+
+    @Test
+    void should_gefaesstypAendern_return_400_when_allAttributes_invalid() {
+
+        // arrange
+        GefaesstypDaten requestPayload = GefaesstypDaten
+                .builder()
+                .name("Gefäß <1>")
+                .volumen(0)
+                .anzahl(-3)
+                .backgroundColor("hallo")
+                .version(0)
+                .build();
+
+        // act
+        final ErrorResponseDto errorResponseDto = given()
+                .header("API-Version", 1)
+                .contentType(ContentType.JSON)
+                .body(requestPayload)
+                .put(VALID_UUID)
+                .then()
+                .statusCode(400)
+                .extract()
+                .as(ErrorResponseDto.class);
+
+        // assert
+        final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
+
+        assertAll(() -> assertTrue(cvs.isEmpty()),
+                () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()));
+    }
+
+    @Test
+    void should_gefaesstypAendern_return_400_when_uuidInvalid() {
+
+        // arrange
+        GefaesstypDaten requestPayload = GefaesstypDaten
+                .builder()
+                .name("Gefäß 200 ml")
+                .anzahl(1)
+                .volumen(100)
+                .backgroundColor("#f99999")
+                .version(0)
+                .build();
+
+        // act
+        final ErrorResponseDto errorResponseDto = given()
+                .header("API-Version", 1)
+                .contentType(ContentType.JSON)
+                .body(requestPayload)
+                .put("INVALID-UUID-hähä")
+                .then()
+                .statusCode(400)
+                .extract()
+                .as(ErrorResponseDto.class);
+
+        // assert
+        final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
+
+        assertAll(() -> assertTrue(cvs.isEmpty()),
+                () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+                () -> assertEquals("Inputvalidierung fehlgeschlagen: uuid ist keine UUID.",
+                        errorResponseDto.getMessage()));
+    }
+
+    @Test
+    void should_gefaesstypAendern_return_400_when_uuidNull() {
+
+        // arrange
+        GefaesstypDaten requestPayload = GefaesstypDaten
+                .builder()
+                .name("Gefäß 200 ml")
+                .anzahl(1)
+                .volumen(200)
+                .backgroundColor("#f99999")
+                .version(0)
+                .build();
+
+        // act
         given()
-            .header("API-Version", 1)
-            .contentType(ContentType.JSON)
-            .body(requestPayload)
-            .post()
-            .then()
-            .statusCode(400)
-            .extract()
-            .as(ErrorResponseDto.class);
+                .header("API-Version", 1)
+                .contentType(ContentType.JSON)
+                .body(requestPayload)
+                .put()
+                .then()
+                .statusCode(405);
+    }
 
-    // assert
-    final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
+    @Test
+    void should_gefaesstypAendern_return_406_when_unsupportedAPIVersion() {
 
-    assertAll(
-        () -> assertTrue(cvs.isEmpty()),
-        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()));
-  }
+        // arrange
+        GefaesstypDaten requestPayload = GefaesstypDaten
+                .builder()
+                .name("Gefäß 200 ml")
+                .anzahl(1)
+                .volumen(100)
+                .backgroundColor("#ffffff")
+                .version(0)
+                .build();
 
-  @Test
-  void should_gefaesstypAnlegen_return_400_when_pflichtattributeNull() {
+        // act
+        final ErrorResponseDto errorResponseDto = given()
+                .header("API-Version", 10)
+                .contentType(ContentType.JSON)
+                .body(requestPayload)
+                .put(VALID_UUID)
+                .then()
+                .statusCode(406)
+                .extract()
+                .as(ErrorResponseDto.class);
 
-    // arrange
-    GefaesstypDaten daten = GefaesstypDaten.builder().build();
+        // assert
+        final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
 
-    GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
-    // act
-    final ErrorResponseDto errorResponseDto =
-        given()
-            .header("API-Version", 1)
-            .contentType(ContentType.JSON)
-            .body(requestPayload)
-            .post()
-            .then()
-            .statusCode(400)
-            .extract()
-            .as(ErrorResponseDto.class);
+        assertAll(() -> assertTrue(cvs.isEmpty()),
+                () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+                () -> assertEquals(
+                        "API-Version wird nicht unterstützt. Bitte Header API-Version prüfen. Unterstützte Versionen: 1",
+                        errorResponseDto.getMessage()));
+    }
 
-    // assert
-    final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
+    @Test
+    void should_gefaesstypLoeschen_return_400_when_uuidInvalid() {
 
-    assertAll(
-        () -> assertTrue(cvs.isEmpty()),
-        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()));
-  }
+        // act
+        final ErrorResponseDto errorResponseDto = given()
+                .header("API-Version", 1)
+                .delete("INVALID-UUID-hähä")
+                .then()
+                .statusCode(400)
+                .extract()
+                .as(ErrorResponseDto.class);
 
-  @Test
-  void should_gefaesstypAnlegen_return_406_when_unsupportedAPIVersion() {
+        // assert
+        final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
 
-    // act
-    // arrange
-    GefaesstypDaten daten =
-        GefaesstypDaten.builder()
-            .name("Gefäß 200 ml")
-            .anzahl(1)
-            .volumen(2)
-            .backgroundColor("#ffffff")
-            .build();
+        assertAll(() -> assertTrue(cvs.isEmpty()),
+                () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+                () -> assertEquals("Inputvalidierung fehlgeschlagen: uuid ist keine UUID.",
+                        errorResponseDto.getMessage()));
+    }
 
-    GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
+    @Test
+    void should_gefaesstypLoeschen_return_400_when_uuidNull() {
 
-    // act
-    final ErrorResponseDto errorResponseDto =
-        given()
-            .header("API-Version", 10)
-            .contentType(ContentType.JSON)
-            .body(requestPayload)
-            .post()
-            .then()
-            .statusCode(406)
-            .extract()
-            .as(ErrorResponseDto.class);
+        // act
+        given().header("API-Version", 1).delete().then().statusCode(405);
+    }
 
-    // assert
-    final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
+    @Test
+    void should_gefaesstypAendernLoeschen_return_406_when_unsupportedAPIVersion() {
 
-    assertAll(
-        () -> assertTrue(cvs.isEmpty()),
-        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
-        () ->
-            assertEquals(
-                "API-Version wird nicht unterstützt. Bitte Header API-Version prüfen. Unterstützte Versionen: 1",
-                errorResponseDto.getMessage()));
-  }
+        // act
+        final ErrorResponseDto errorResponseDto = given()
+                .header("API-Version", 10)
+                .delete(VALID_UUID)
+                .then()
+                .statusCode(406)
+                .extract()
+                .as(ErrorResponseDto.class);
 
-  @Test
-  void should_gefaesstypAendern_return_400_when_allAttributes_invalid() {
+        // assert
+        final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
 
-    // arrange
-    GefaesstypDaten requestPayload =
-        GefaesstypDaten.builder()
-            .name("Gefäß <1>")
-            .volumen(0)
-            .anzahl(-3)
-            .backgroundColor("hallo")
-            .version(0)
-            .build();
-
-    // act
-    final ErrorResponseDto errorResponseDto =
-        given()
-            .header("API-Version", 1)
-            .contentType(ContentType.JSON)
-            .body(requestPayload)
-            .put(VALID_UUID)
-            .then()
-            .statusCode(400)
-            .extract()
-            .as(ErrorResponseDto.class);
-
-    // assert
-    final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
-
-    assertAll(
-        () -> assertTrue(cvs.isEmpty()),
-        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()));
-  }
-
-  @Test
-  void should_gefaesstypAendern_return_400_when_uuidInvalid() {
-
-    // arrange
-    GefaesstypDaten requestPayload =
-        GefaesstypDaten.builder()
-            .name("Gefäß 200 ml")
-            .anzahl(1)
-            .volumen(100)
-            .backgroundColor("#f99999")
-            .version(0)
-            .build();
-
-    // act
-    final ErrorResponseDto errorResponseDto =
-        given()
-            .header("API-Version", 1)
-            .contentType(ContentType.JSON)
-            .body(requestPayload)
-            .put("INVALID-UUID-hähä")
-            .then()
-            .statusCode(400)
-            .extract()
-            .as(ErrorResponseDto.class);
-
-    // assert
-    final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
-
-    assertAll(
-        () -> assertTrue(cvs.isEmpty()),
-        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
-        () ->
-            assertEquals(
-                "Inputvalidierung fehlgeschlagen: uuid ist keine UUID.",
-                errorResponseDto.getMessage()));
-  }
-
-  @Test
-  void should_gefaesstypAendern_return_400_when_uuidNull() {
-
-    // arrange
-    GefaesstypDaten requestPayload =
-        GefaesstypDaten.builder()
-            .name("Gefäß 200 ml")
-            .anzahl(1)
-            .volumen(200)
-            .backgroundColor("#f99999")
-            .version(0)
-            .build();
-
-    // act
-    given()
-        .header("API-Version", 1)
-        .contentType(ContentType.JSON)
-        .body(requestPayload)
-        .put()
-        .then()
-        .statusCode(405);
-  }
-
-  @Test
-  void should_gefaesstypAendern_return_406_when_unsupportedAPIVersion() {
-
-    // arrange
-    GefaesstypDaten requestPayload =
-        GefaesstypDaten.builder()
-            .name("Gefäß 200 ml")
-            .anzahl(1)
-            .volumen(100)
-            .backgroundColor("#ffffff")
-            .version(0)
-            .build();
-
-    // act
-    final ErrorResponseDto errorResponseDto =
-        given()
-            .header("API-Version", 10)
-            .contentType(ContentType.JSON)
-            .body(requestPayload)
-            .put(VALID_UUID)
-            .then()
-            .statusCode(406)
-            .extract()
-            .as(ErrorResponseDto.class);
-
-    // assert
-    final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
-
-    assertAll(
-        () -> assertTrue(cvs.isEmpty()),
-        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
-        () ->
-            assertEquals(
-                "API-Version wird nicht unterstützt. Bitte Header API-Version prüfen. Unterstützte Versionen: 1",
-                errorResponseDto.getMessage()));
-  }
-
-  @Test
-  void should_gefaesstypLoeschen_return_400_when_uuidInvalid() {
-
-    // act
-    final ErrorResponseDto errorResponseDto =
-        given()
-            .header("API-Version", 1)
-            .delete("INVALID-UUID-hähä")
-            .then()
-            .statusCode(400)
-            .extract()
-            .as(ErrorResponseDto.class);
-
-    // assert
-    final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
-
-    assertAll(
-        () -> assertTrue(cvs.isEmpty()),
-        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
-        () ->
-            assertEquals(
-                "Inputvalidierung fehlgeschlagen: uuid ist keine UUID.",
-                errorResponseDto.getMessage()));
-  }
-
-  @Test
-  void should_gefaesstypLoeschen_return_400_when_uuidNull() {
-
-    // act
-    given().header("API-Version", 1).delete().then().statusCode(405);
-  }
-
-  @Test
-  void should_gefaesstypAendernLoeschen_return_406_when_unsupportedAPIVersion() {
-
-    // act
-    final ErrorResponseDto errorResponseDto =
-        given()
-            .header("API-Version", 10)
-            .delete(VALID_UUID)
-            .then()
-            .statusCode(406)
-            .extract()
-            .as(ErrorResponseDto.class);
-
-    // assert
-    final Set<ConstraintViolation<ErrorResponseDto>> cvs = validator.validate(errorResponseDto);
-
-    assertAll(
-        () -> assertTrue(cvs.isEmpty()),
-        () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
-        () ->
-            assertEquals(
-                "API-Version wird nicht unterstützt. Bitte Header API-Version prüfen. Unterstützte Versionen: 1",
-                errorResponseDto.getMessage()));
-  }
+        assertAll(() -> assertTrue(cvs.isEmpty()),
+                () -> assertEquals(ErrorLevel.ERROR, errorResponseDto.getErrorLevel()),
+                () -> assertEquals(
+                        "API-Version wird nicht unterstützt. Bitte Header API-Version prüfen. Unterstützte Versionen: 1",
+                        errorResponseDto.getMessage()));
+    }
 }

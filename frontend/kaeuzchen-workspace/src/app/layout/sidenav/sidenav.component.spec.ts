@@ -10,11 +10,21 @@ import { ThemeStore } from '../theme.store';
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { KL_CONFIGURATION } from '@config';
 import { mockConfig } from '@testing';
+import { AuthFacade } from '@shared/auth/api';
 
 describe('SidenavComponent', () => {
     let component: SidenavComponent;
     let fixture: ComponentFixture<SidenavComponent>;
     let loader: HarnessLoader;
+
+    const authFacadeMock: Pick<AuthFacade, 'login' | 'logout'> & Partial<AuthFacade> = {
+        login: vi.fn(),
+        logout: vi.fn(),
+
+        // nur falls dein Template darauf zugreift:
+        // sessionLoaded$: of(true),
+        // user$: of({ ... } as any),
+    };
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -24,6 +34,7 @@ describe('SidenavComponent', () => {
                     provide: KL_CONFIGURATION,
                     useValue: mockConfig,
                 },
+                { provide: AuthFacade, useValue: authFacadeMock },
             ],
         }).compileComponents();
 
