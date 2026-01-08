@@ -72,7 +72,6 @@ public class SPARouteFilter {
                     LOGGER.debug("(6) Anzahl token = {}", tokens.length);
 
                     if (tokens.length > 2) {
-
                         // /kaeuzchenlager/ => 2 tokens!
                         String rerouted = "/" + tokens[1] + "/";
                         LOGGER.debug("(7) Umleiten von deep Angular router links: {} nach {} ", path, rerouted);
