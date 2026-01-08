@@ -1,8 +1,8 @@
 // =====================================================
-// Project: raetselbaukasten
+// Project: kaeuzchenlager
 // (c) Heike Winkelvoß
 // =====================================================
-package de.egladil.raetselbaukasten.infrastructure.filters;
+package de.egladil.web.kaeuzchenlager.infrastructure.filters;
 
 import java.util.Map;
 import java.util.function.Predicate;
