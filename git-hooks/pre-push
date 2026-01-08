@@ -9,10 +9,10 @@ echo "🚀 Running comprehensive pre-push checks..."
 # FRONTEND: Build + Tests mit Vitest Coverage
 if [ -d "$FRONTEND_DIR" ]; then
   echo "🔬 Frontend: running build..."
-  (cd "$FRONTEND_DIR" && npm run build)
+  (cd "$FRONTEND_DIR" && nvm use 22 && npm run build:local)
   
   echo "📊 Running frontend tests with Vitest coverage..."
-  (cd "$FRONTEND_DIR" && npm run test:ci)
+  (cd "$FRONTEND_DIR" && nvm use 22 && npm run test:ci)
 fi
 
 # BACKEND: verify (Tests + Quality Gates)
