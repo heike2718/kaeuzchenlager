@@ -1,9 +1,7 @@
 #!/usr/bin/env sh
 set -e
 
-export NVM_DIR="~/.nvm"
-
-# nvm laden (Pfad ggf. anpassen)
+export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
 FRONTEND_DIR="frontend/kaeuzchen-workspace"
