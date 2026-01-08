@@ -13,11 +13,21 @@ import { ThemeStore } from '../theme.store';
 import { MatIcon } from '@angular/material/icon';
 import { KL_CONFIGURATION } from '@config';
 import { mockConfig } from '@testing';
+import { AuthFacade } from '@shared/auth/api';
 
 describe('NavbarComponent', () => {
     let component: NavbarComponent;
     let fixture: ComponentFixture<NavbarComponent>;
     let loader: HarnessLoader;
+
+    const authFacadeMock: Pick<AuthFacade, 'login' | 'logout'> & Partial<AuthFacade> = {
+        login: vi.fn(),
+        logout: vi.fn(),
+
+        // nur falls dein Template darauf zugreift:
+        // sessionLoaded$: of(true),
+        // user$: of({ ... } as any),
+    };
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -27,6 +37,7 @@ describe('NavbarComponent', () => {
                     provide: KL_CONFIGURATION,
                     useValue: mockConfig,
                 },
+                { provide: AuthFacade, useValue: authFacadeMock },
             ],
         }).compileComponents();
 

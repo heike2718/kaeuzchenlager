@@ -5,15 +5,26 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatButtonHarness } from '@angular/material/button/testing';
 import { of } from 'rxjs';
+import { AuthFacade } from '@shared/auth/api';
 
 describe('HomeComponent', () => {
     let component: HomeComponent;
     let fixture: ComponentFixture<HomeComponent>;
     let loader: HarnessLoader;
 
+    const authFacadeMock: Pick<AuthFacade, 'login' | 'logout'> & Partial<AuthFacade> = {
+        login: vi.fn(),
+        logout: vi.fn(),
+
+        // nur falls dein Template darauf zugreift:
+        // sessionLoaded$: of(true),
+        // user$: of({ ... } as any),
+    };
+
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [HomeComponent],
+            providers: [{ provide: AuthFacade, useValue: authFacadeMock }],
         }).compileComponents();
 
         fixture = TestBed.createComponent(HomeComponent);
