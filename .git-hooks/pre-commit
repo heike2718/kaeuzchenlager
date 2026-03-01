@@ -4,38 +4,93 @@ set -e
 FRONTEND_DIR="frontend/kaeuzchen-workspace"
 BACKEND_DIR="backend/kaeuzchenlager"
 
-# 1) Gestagte Dateien
+# 1) Staged files (repo-root relative paths)
 STAGED="$(git diff --cached --name-only --diff-filter=ACM || true)"
 [ -z "$STAGED" ] && exit 0
 
-# Hilfsfunktion: prüft, ob gestagte Dateien ein Pattern matchen
 has_staged() {
+  # $1 = extended regex
   echo "$STAGED" | grep -E "$1" >/dev/null 2>&1
 }
 
-# CSV-Liste für Nx (kommagetrennt)
-STAGED_CSV="$(printf '%s\n' "$STAGED" | paste -sd, -)"
+# Re-stage only files that were originally staged and match regex
+restage_matching_from_staged() {
+  # $1 = extended regex
+  printf '%s\n' "$STAGED" | grep -E "$1" | while IFS= read -r f; do
+    [ -f "$f" ] && git add "$f"
+  done
+}
 
-# 2) FRONTEND – lint-staged (ESLint --fix + Prettier)
-if has_staged '\.(html|js|ts|jsx|tsx|css|scss|json|md|yml|yaml)$'; then
-  echo "🔧 lint-staged (frontend)"
-  (cd "$FRONTEND_DIR" && npx nx clear-cache && npx lint-staged --quiet)
+# -------- FRONTEND --------
+FRONTEND_STAGED="$(printf '%s\n' "$STAGED" | grep -E '^frontend/' || true)"
+
+# File types lint-staged should handle
+FE_FILETYPES_RE='\.(html|js|ts|jsx|tsx|css|scss|json|md|yml|yaml)$'
+
+# If config/tooling files changed, run project-wide nx affected lint
+FE_CONFIG_RE="^$FRONTEND_DIR/(
+  eslint\.config\.(js|mjs|cjs)|
+  \.eslintrc(\..*)?|
+  \.eslintignore|
+  \.prettierrc(\..*)?|
+  prettier\.config\.(js|cjs|mjs)|
+  \.prettierignore|
+  package\.json|
+  package-lock\.json|
+  nx\.json|
+  project\.json|
+  angular\.json|
+  tsconfig(\..*)?\.json|
+  vite\.config\.(js|ts|mjs|cjs|mts|cts)|
+  vitest\.config\.(js|ts|mjs|cjs|mts|cts)|
+  playwright\.config\.(js|ts|mjs|cjs|mts|cts)
+)$"
+
+# Normalize FE_CONFIG_RE: remove whitespace/newlines (POSIX sh friendly)
+FE_CONFIG_RE_CLEAN="$(printf "%s" "$FE_CONFIG_RE" | tr -d '\n' | tr -d ' ')"
+
+if [ -d "$FRONTEND_DIR" ] \
+  && [ -n "$FRONTEND_STAGED" ] \
+  && echo "$FRONTEND_STAGED" | grep -E "$FE_FILETYPES_RE" >/dev/null 2>&1; then
+
+  echo "🔧 Frontend: lint-staged (fix + prettier)"
+  (cd "$FRONTEND_DIR" && npx lint-staged --quiet)
+
+  # Re-stage potentially fixed frontend files
+  restage_matching_from_staged "^frontend/.*$FE_FILETYPES_RE"
+
+  # Decide if we need project-wide lint
+  RUN_FE_AFFECTED_LINT=false
+  if echo "$STAGED" | grep -E "$FE_CONFIG_RE_CLEAN" >/dev/null 2>&1; then
+    RUN_FE_AFFECTED_LINT=true
+  fi
+
+  if [ "$RUN_FE_AFFECTED_LINT" = "true" ]; then
+    # Nx affected needs file paths relative to the workspace we run in (FRONTEND_DIR).
+    FRONTEND_FILES_REL="$(
+      printf '%s\n' "$FRONTEND_STAGED" \
+        | grep -E "^$FRONTEND_DIR/" \
+        | sed "s|^$FRONTEND_DIR/||" \
+        | paste -sd, - \
+        || true
+    )"
+
+    if [ -n "$FRONTEND_FILES_REL" ]; then
+      echo "🔎 Frontend: nx affected -t lint (config/tooling changed)"
+      (cd "$FRONTEND_DIR" && npx nx affected -t lint --files="$FRONTEND_FILES_REL" --parallel=3)
+    fi
+  else
+    echo "ℹ️  Frontend: skipping nx affected lint (no config/tooling changes staged)"
+  fi
 fi
 
-# 3) FRONTEND – projektweit linten (Tag-/Layer-Regeln etc.)
-if has_staged '\.(html|js|ts|jsx|tsx|css|scss|json|md|yml|yaml)$'; then
-  echo "🔎 nx affected -t lint (frontend, projektweit)"
-  (cd "$FRONTEND_DIR" && npx nx clear-cache && npx nx affected -t lint --files="$STAGED_CSV" --parallel=3)
-fi
+# -------- BACKEND --------
+if [ -d "$BACKEND_DIR" ] && has_staged '^backend/.*\.java$'; then
+  echo "☕ Backend: format + import sort"
+  (cd "$BACKEND_DIR" && mvn -Pformat-apply formatter:format@format-apply impsort:sort@impsort-sort)
 
-# 4) Backend – Format + schneller Lint
-if echo "$STAGED" | grep -qE '\.java$'; then
-  echo "☕ format and sort (backend)"
-  (cd backend/kaeuzchenlager && mvn -Pformat-apply formatter:format@format-apply impsort:sort@impsort-sort)
-  git ls-files -m | grep -E '\.java$' | xargs -r git add
-
-#  echo "🔍 Checkstyle (schnell)"
-#  (cd backend/kaeuzchenlager && mvn -q checkstyle:check)
+  # Re-stage only staged Java files under backend/
+  restage_matching_from_staged '^backend/.*\.java$'
 fi
 
 exit 0
