@@ -238,7 +238,7 @@
         <configuration>
           <gitConfig>
             <!-- The location of the directory you are using to store the Git hooks in your project. -->
-            <core.hooksPath>../../git-hooks/</core.hooksPath>
+            <core.hooksPath>./.git-hooks/</core.hooksPath>
             <!-- Some other project specific git config that you want to set. -->
             <custom.configuration>true</custom.configuration>
           </gitConfig>

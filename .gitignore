@@ -1,4 +1,83 @@
-kaeuzchenlager.zip
-backend/kaeuzchenlager/src/main/resources/META-INF/resources/kaeuzchenlager
-backend/kaeuzchenlager/src/main/resources/META-INF/openapi/openapi.json
-backend/kaeuzchenlager/src/main/resources/META-INF/openapi/openapi.yaml
+# ==========================
+# Node / Nx (Root)
+# ==========================
+/node_modules/
+/.nx/
+/dist/
+/.secrets/
+
+# ==========================
+# Frontend Workspace
+# ==========================
+/frontend/kaeuzchen-workspace/node_modules/
+/frontend/kaeuzchen-workspace/dist/
+/frontend/kaeuzchen-workspace/.nx/
+/frontend/kaeuzchen-workspace/.angular/
+/frontend/kaeuzchen-workspace/.sass-cache
+/frontend/kaeuzchen-workspace/connect.lock
+/frontend/kaeuzchen-workspace/coverage
+/frontend/kaeuzchen-workspace/libpeerconnection.log
+/frontend/kaeuzchen-workspace/npm-debug.log
+/frontend/kaeuzchen-workspace/yarn-error.log
+/frontend/kaeuzchen-workspace/testem.log
+/frontend/kaeuzchen-workspace/typings
+/frontend/kaeuzchen-workspace/*.bkp
+/frontend/kaeuzchen-workspace/lint.log
+/frontend/kaeuzchen-workspace/tmp/
+/frontend/kaeuzchen-workspace/migrations.json
+
+# ======================================
+# Maven (alle Projekte unter backend/*)
+# ======================================
+/backend/**/target/
+**/pom.xml.tag
+**/pom.xml.releaseBackup
+**/pom.xml.versionsBackup
+**/release.properties
+**/maven.log
+
+/backend/**/.mvn/
+/backend/**/dependency-reduced-pom.xml
+/backend/**/log/
+/backend/**/ObjectStore/
+
+# ==========================
+# Generierte Files
+# ==========================
+/backend/kaeuzchenlager/src/main/resources/META-INF/openapi/openapi.json
+/backend/kaeuzchenlager/src/main/resources/META-INF/openapi/openapi.yaml
+/backend/kaeuzchenlager/src/main/resources/META-INF/resources/
+
+# ==========================
+# IDE (global)
+# ==========================
+.project
+.classpath
+.settings/
+bin/
+.idea
+*.ipr
+*.iml
+*.iws
+nb-configuration.xml
+.factorypath
+
+# ==========================
+# OS / Misc
+# ==========================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.orig
+*.rej
+.env
+.dbeaver/
+dbeaver-bak/
+*.pdf
+*.aux
+*.out
+*.dvi
+*.log
+*.png
+.project

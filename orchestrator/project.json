@@ -1,0 +1,82 @@
+{
+  "name": "orchestrator",
+  "targets": {
+    "build-frontend": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "rm -rf dist/kaeuzchen-workspace && nx build kaeuzchen-workspace --configuration=development --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/"
+      },
+      "configurations": {
+        "qs": {
+          "command": "rm -rf dist/kaeuzchen-workspace && nx build kaeuzchen-workspace --configuration=qs --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/"
+        },
+        "prod": {
+          "command": "rm -rf dist/kaeuzchen-workspace && nx build kaeuzchen-workspace --configuration=production --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/"
+        }
+      },
+      "outputs": [
+        "{workspaceRoot}/frontend/kaeuzchen-workspace/dist/kaeuzchen-workspace"
+      ]
+    },
+    "copy-frontend-into-backend": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        { "target": "build-frontend", "projects": "self", "params": "forward" }
+      ],
+      "options": {
+        "parallel": false,
+        "commands": [
+          "rm -rf backend/kaeuzchenlager/src/main/resources/META-INF/resources/kaeuzchenlager",
+          "mkdir -p backend/kaeuzchenlager/src/main/resources/META-INF/resources/kaeuzchenlager",
+          "rsync -a --delete frontend/kaeuzchen-workspace/dist/kaeuzchen-workspace/browser/ backend/kaeuzchenlager/src/main/resources/META-INF/resources/kaeuzchenlager/"
+        ]
+      }
+    },
+
+    "package-backend": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        {
+          "target": "copy-frontend-into-backend",
+          "projects": "self",
+          "params": "forward"
+        }
+      ],
+      "options": {
+        "cwd": "backend/kaeuzchenlager",
+        "envFile": ".secrets/secrets",
+        "command": "mvn clean package -Dmaven.test.skip=true -DnvdApiDelay=8000 -DnvdApiKeyEnvironmentVariable=NVD_API_KEY"
+      },
+      "outputs": ["{workspaceRoot}/backend/kaeuzchenlager/target/quarkus-app"]
+    },
+
+    "deploy": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        { "target": "package-backend", "projects": "self", "params": "forward" }
+      ],
+      "options": {
+        "parallel": false,
+        "commands": [
+          "rm -rf /home/heike/deployments/x300-heikeqs/kaeuzchen/kaeuzchenlager/quarkus-app",
+          "mv backend/kaeuzchenlager/target/quarkus-app /home/heike/deployments/x300-heikeqs/kaeuzchen/kaeuzchenlager"
+        ]
+      },
+      "configurations": {
+        "heikeqs": {
+          "commands": [
+            "rm -rf /home/heike/deployments/x300-heikeqs/kaeuzchen/kaeuzchenlager/quarkus-app",
+            "mv backend/kaeuzchenlager/target/quarkus-app /home/heike/deployments/x300-heikeqs/kaeuzchen/kaeuzchenlager"
+          ]
+        },
+        "prod": {
+          "commands": [
+            "rm -rf /home/heike/deployments/vserver1/kaeuzchen/kaeuzchenlager/quarkus-app",
+            "mv backend/kaeuzchenlager/target/quarkus-app /home/heike/deployments/vserver1/kaeuzchen/kaeuzchenlager"
+          ]
+        }
+      }
+    }
+  }
+}

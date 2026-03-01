@@ -2,20 +2,6 @@
     "name": "@kaeuzchen-workspace/source",
     "version": "1.0.0",
     "license": "MIT",
-    "scripts": {
-        "start": "nx serve --proxy-config=proxy.conf.json",
-        "build:local": "nx build --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/",
-        "build:qs": "nx build --configuration=qs --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/",
-        "build:prod": "nx build --configuration=production --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/",
-        "test": "npx nx test",
-        "test:coverage": "vitest --coverage",
-        "test:ci": "vitest run --coverage --bail=1",
-        "format": "prettier --write \"**/*.{ts,html,scss}\" --ignore-path .gitignore",
-        "format:check": "prettier --check \"**/*.{ts,html,scss}\" --ignore-path .gitignore",
-        "lint": "eslint \"src/**/*.ts\"",
-        "lint:fix": "eslint --fix \"src/**/*.ts\"",
-        "cleanup": "npm run lint:fix && npm run format"
-    },
     "private": true,
     "dependencies": {
         "@angular-architects/ngrx-toolkit": "~20.4.0",
