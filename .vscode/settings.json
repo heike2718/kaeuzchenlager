@@ -38,13 +38,13 @@
 
   /* --- Terminal Profile für dein Monorepo --- */
   "terminal.integrated.profiles.linux": {
-    "Raetselbaukasten-Backend": {
+    "Kaeuzchenlager-Backend": {
       "path": "/bin/bash",
       "cwd": "${workspaceFolder}/backend/kaeuzchenlager",
       "icon": "server",
       "color": "terminal.ansiBlue"
     },
-    "RBK-Frontend": {
+    "Kaeuzchenlager-Frontend": {
       "path": "/bin/bash",
       "cwd": "${workspaceFolder}/frontend/kaeuzchen-workspace",
       "icon": "globe",
@@ -56,5 +56,5 @@
   /* --- Java Minimalismus (kein automatischer Build-Stress) --- */
   "java.configuration.updateBuildConfiguration": "interactive",
   "java.autobuild.enabled": false,
-  "java.import.maven.enabled": true  
+  "java.import.maven.enabled": true
 }
