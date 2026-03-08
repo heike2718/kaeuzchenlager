@@ -13,9 +13,16 @@ const isAuthorized = createSelector(user, user => {
     return user.roles.filter(r => 'KL_ADMIN' === r).length > 0;
 });
 
+const authorizationState = createSelector(user, user => {
+    if (user.anonym) {
+        return 'loggedOut';
+    }
+    return isAuthorized ? 'authorized' : 'unauthorized';
+});
+
 export const fromAuth = {
     session,
     sessionLoaded,
     user,
-    isAuthorized,
+    authorizationState,
 };
