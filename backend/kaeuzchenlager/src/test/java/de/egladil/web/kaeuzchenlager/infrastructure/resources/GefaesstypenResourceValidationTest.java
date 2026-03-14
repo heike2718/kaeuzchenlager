@@ -37,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 @TestHTTPEndpoint(GefaesstypenResource.class)
-@TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
 public class GefaesstypenResourceValidationTest {
 
     private static final String VALID_UUID = "a003530f-97f9-4a5b-a0a3-f6f139522fa0";
@@ -67,6 +66,7 @@ public class GefaesstypenResourceValidationTest {
     }
 
     @Test
+    @TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
     void should_gefaesstypAnlegen_return_400_when_allAttributes_invalid() {
 
         // arrange
@@ -99,6 +99,7 @@ public class GefaesstypenResourceValidationTest {
     }
 
     @Test
+    @TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
     void should_gefaesstypAnlegen_return_400_when_pflichtattributeNull() {
 
         // arrange
@@ -124,6 +125,7 @@ public class GefaesstypenResourceValidationTest {
     }
 
     @Test
+    @TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
     void should_gefaesstypAnlegen_return_406_when_unsupportedAPIVersion() {
 
         // act
@@ -160,6 +162,7 @@ public class GefaesstypenResourceValidationTest {
     }
 
     @Test
+    @TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
     void should_gefaesstypAendern_return_400_when_allAttributes_invalid() {
 
         // arrange
@@ -191,6 +194,7 @@ public class GefaesstypenResourceValidationTest {
     }
 
     @Test
+    @TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
     void should_gefaesstypAendern_return_400_when_uuidInvalid() {
 
         // arrange
@@ -224,6 +228,7 @@ public class GefaesstypenResourceValidationTest {
     }
 
     @Test
+    @TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
     void should_gefaesstypAendern_return_400_when_uuidNull() {
 
         // arrange
@@ -247,6 +252,7 @@ public class GefaesstypenResourceValidationTest {
     }
 
     @Test
+    @TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
     void should_gefaesstypAendern_return_406_when_unsupportedAPIVersion() {
 
         // arrange
@@ -281,6 +287,7 @@ public class GefaesstypenResourceValidationTest {
     }
 
     @Test
+    @TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
     void should_gefaesstypLoeschen_return_400_when_uuidInvalid() {
 
         // act
@@ -302,6 +309,7 @@ public class GefaesstypenResourceValidationTest {
     }
 
     @Test
+    @TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
     void should_gefaesstypLoeschen_return_400_when_uuidNull() {
 
         // act
@@ -309,6 +317,7 @@ public class GefaesstypenResourceValidationTest {
     }
 
     @Test
+    @TestSecurity(user = "ca36e284-f8a8-4a42-93b5-012df24f08ee", roles = { "KL_ADMIN" })
     void should_gefaesstypAendernLoeschen_return_406_when_unsupportedAPIVersion() {
 
         // act

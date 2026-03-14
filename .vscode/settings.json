@@ -54,7 +54,9 @@
   "terminal.integrated.defaultProfile.linux": "bash",
 
   /* --- Java Minimalismus (kein automatischer Build-Stress) --- */
+  "java.jdt.ls.vmargs": "-javaagent:${userHome}/.m2/repository/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar -Xms512m -Xmx2G",
   "java.configuration.updateBuildConfiguration": "interactive",
   "java.autobuild.enabled": false,
-  "java.import.maven.enabled": true
+  "java.import.maven.enabled": true,
+  "java.compile.nullAnalysis.mode": "automatic"
 }

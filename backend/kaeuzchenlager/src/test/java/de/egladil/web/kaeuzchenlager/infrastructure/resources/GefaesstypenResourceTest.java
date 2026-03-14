@@ -72,7 +72,7 @@ public class GefaesstypenResourceTest {
     void should_return_406_when_unsupportedAPIVersion() {
 
         // act
-        ErrorResponseDto errorResponse = given()
+        final ErrorResponseDto errorResponse = given()
                 .header("API-Version", 5)
                 .get()
                 .then()
@@ -92,10 +92,46 @@ public class GefaesstypenResourceTest {
 
     @Test
     @Order(1)
+    void should_laden_work() {
+
+        // act
+        GefaesstypDto[] gefaesstypen = given()
+                .header("API-Version", 1)
+                .get()
+                .then()
+                .statusCode(200)
+                .and()
+                .extract()
+                .as(GefaesstypDto[].class);
+
+        //
+        assertAll(() -> assertTrue(gefaesstypen.length > 0));
+    }
+
+    @Test
+    @Order(2)
+    void should_getGefaesstyp_work() {
+
+        // act
+        GefaesstypDto gefaesstyp = given()
+                .header("API-Version", 1)
+                .get(AENDERN_UUID)
+                .then()
+                .statusCode(200)
+                .and()
+                .extract()
+                .as(GefaesstypDto.class);
+
+        //
+        assertAll(() -> assertNotNull(gefaesstyp), () -> assertEquals(AENDERN_UUID, gefaesstyp.getUuid()));
+    }
+
+    @Test
+    @Order(3)
     void should_anlegen_work() {
 
         // arrange
-        GefaesstypDaten daten = GefaesstypDaten
+        final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(50)
                 .name("Gefäßtyp")
@@ -104,10 +140,14 @@ public class GefaesstypenResourceTest {
                 .version(null)
                 .build();
 
-        GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
+        final GefaesstypDto requestPayload = GefaesstypDto
+                .builder()
+                .uuid(UUID.randomUUID().toString())
+                .daten(daten)
+                .build();
 
         // act
-        GefaesstypDto gefaesstypDto = given()
+        final GefaesstypDto gefaesstypDto = given()
                 .header("API-Version", 1)
                 .contentType(ContentType.JSON)
                 .body(requestPayload)
@@ -118,20 +158,20 @@ public class GefaesstypenResourceTest {
                 .as(GefaesstypDto.class);
 
         // assert
-        GefaesstypDaten resultDaten = gefaesstypDto.getDaten();
+        final GefaesstypDaten resultDaten = gefaesstypDto.getDaten();
 
         assertAll(() -> assertNotNull(gefaesstypDto.getUuid()), () -> assertNotNull(resultDaten),
                 () -> assertEquals("Gefäßtyp", resultDaten.getName()), () -> assertEquals(50, resultDaten.getVolumen()),
                 () -> assertEquals(4, resultDaten.getAnzahl()),
                 () -> assertEquals("#ccffff", resultDaten.getBackgroundColor()));
 
-        String uuid = gefaesstypDto.getUuid();
+        final String uuid = gefaesstypDto.getUuid();
 
-        Optional<Gefaesstyp> optEntity = this.gefaesstypDao.findById(uuid);
+        final Optional<Gefaesstyp> optEntity = this.gefaesstypDao.findById(uuid);
 
         assertTrue(optEntity.isPresent());
 
-        Gefaesstyp entity = optEntity.get();
+        final Gefaesstyp entity = optEntity.get();
 
         assertAll(() -> assertEquals(uuid, entity.getUuid()), () -> assertEquals("Gefäßtyp", entity.getName()),
                 () -> assertEquals(50, entity.getVolumen()), () -> assertEquals(4, entity.getAnzahl()),
@@ -141,17 +181,17 @@ public class GefaesstypenResourceTest {
     }
 
     @Test
-    @Order(2)
+    @Order(4)
     void should_aendern_work() {
 
         // arrange
-        Gefaesstyp gefaesstyp = this.gefaesstypDao.findByUuid("6ff63774-ec09-496b-b7f5-ddb85bb2edc2");
+        final Gefaesstyp gefaesstyp = this.gefaesstypDao.findByUuid("6ff63774-ec09-496b-b7f5-ddb85bb2edc2");
         assertNotNull(gefaesstyp);
 
-        String uuid = gefaesstyp.getUuid();
+        final String uuid = gefaesstyp.getUuid();
 
         // arrange 2
-        GefaesstypDaten daten = GefaesstypDaten
+        final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(45)
                 .name("Gefäßtyp 7")
@@ -160,7 +200,7 @@ public class GefaesstypenResourceTest {
                 .version(0)
                 .build();
 
-        GefaesstypDto gefaesstypUpdated = given()
+        final GefaesstypDto gefaesstypUpdated = given()
                 .header("API-Version", 1)
                 .contentType(ContentType.JSON)
                 .body(daten)
@@ -170,20 +210,20 @@ public class GefaesstypenResourceTest {
                 .extract()
                 .as(GefaesstypDto.class);
 
-        GefaesstypDaten datenUpdated = gefaesstypUpdated.getDaten();
+        final GefaesstypDaten datenUpdated = gefaesstypUpdated.getDaten();
 
         assertAll(() -> assertNotNull(gefaesstypUpdated.getUuid()), () -> assertNotNull(datenUpdated),
                 () -> assertEquals("Gefäßtyp 7", datenUpdated.getName()),
                 () -> assertEquals(45, datenUpdated.getVolumen()), () -> assertEquals(14, datenUpdated.getAnzahl()),
                 () -> assertEquals("#ffccff", datenUpdated.getBackgroundColor()));
 
-        Optional<Gefaesstyp> optEntityUpdated = this.gefaesstypDao.findById(uuid);
+        final Optional<Gefaesstyp> optEntityUpdated = this.gefaesstypDao.findById(uuid);
 
         assertTrue(optEntityUpdated.isPresent());
     }
 
     @Test
-    @Order(3)
+    @Order(5)
     void should_loeschen_work() {
 
         // arrange
@@ -192,19 +232,19 @@ public class GefaesstypenResourceTest {
         // act 3
         given().header("API-Version", 1).delete(uuid).then().statusCode(204);
 
-        Optional<Gefaesstyp> optEntityDeleted = this.gefaesstypDao.findById(uuid);
+        final Optional<Gefaesstyp> optEntityDeleted = this.gefaesstypDao.findById(uuid);
 
         assertTrue(optEntityDeleted.isEmpty());
     }
 
     @Test
-    @Order(4)
+    @Order(6)
     void should_loeschen_return_204_when_unknown_uuid() {
 
         // arrange
         final String uuid = "5c29258e-a6be-49e1-8ae4-953cbb1fe1c0";
 
-        Optional<Gefaesstyp> optEntityDeleted = this.gefaesstypDao.findById(uuid);
+        final Optional<Gefaesstyp> optEntityDeleted = this.gefaesstypDao.findById(uuid);
         assertTrue(optEntityDeleted.isEmpty());
 
         // act
@@ -212,11 +252,11 @@ public class GefaesstypenResourceTest {
     }
 
     @Test
-    @Order(5)
+    @Order(7)
     void should_anlegen_be_rejected_when_volumen_exists() {
 
         // arrange
-        GefaesstypDaten daten = GefaesstypDaten
+        final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(300)
                 .name("Gefäßtyp 3")
@@ -225,7 +265,11 @@ public class GefaesstypenResourceTest {
                 .version(null)
                 .build();
 
-        GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
+        final GefaesstypDto requestPayload = GefaesstypDto
+                .builder()
+                .uuid(UUID.randomUUID().toString())
+                .daten(daten)
+                .build();
 
         // act
         final ErrorResponseDto errorResponseDto = given()
@@ -245,11 +289,11 @@ public class GefaesstypenResourceTest {
     }
 
     @Test
-    @Order(6)
+    @Order(8)
     void should_anlegen_be_rejected_when_name_exists() {
 
         // arrange
-        GefaesstypDaten daten = GefaesstypDaten
+        final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(500)
                 .name("Gefäßtyp 1")
@@ -258,7 +302,11 @@ public class GefaesstypenResourceTest {
                 .version(null)
                 .build();
 
-        GefaesstypDto requestPayload = GefaesstypDto.builder().uuid(UUID.randomUUID().toString()).daten(daten).build();
+        final GefaesstypDto requestPayload = GefaesstypDto
+                .builder()
+                .uuid(UUID.randomUUID().toString())
+                .daten(daten)
+                .build();
 
         // act
         final ErrorResponseDto errorResponseDto = given()
@@ -278,11 +326,11 @@ public class GefaesstypenResourceTest {
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     void should_aendern_be_rejected_when_volumen_exists() {
 
         // arrange
-        GefaesstypDaten daten = GefaesstypDaten
+        final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(2)
                 .name("Gefäßtyp 9")
@@ -309,11 +357,11 @@ public class GefaesstypenResourceTest {
     }
 
     @Test
-    @Order(8)
+    @Order(10)
     void should_aendern_be_rejected_when_name_exists() {
 
         // arrange
-        GefaesstypDaten daten = GefaesstypDaten
+        final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(10)
                 .name("Gefäßtyp 1")
@@ -340,13 +388,13 @@ public class GefaesstypenResourceTest {
     }
 
     @Test
-    @Order(9)
+    @Order(11)
     void should_aendern_fail_when_unknown_uuid() {
 
         // arrange
-        String uuid = "06c34cab-756e-4197-a0a7-e1ec7c3b509f";
+        final String uuid = "06c34cab-756e-4197-a0a7-e1ec7c3b509f";
 
-        GefaesstypDaten daten = GefaesstypDaten
+        final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(150)
                 .name("Gefäßtyp 6")
@@ -372,13 +420,13 @@ public class GefaesstypenResourceTest {
     }
 
     @Test
-    @Order(10)
+    @Order(12)
     void should_aendern_not_be_rejected_when_gleiche_entity() {
 
         // arrange
-        String uuid = "6ff63774-ec09-496b-b7f5-ddb85bb2edc2";
+        final String uuid = "6ff63774-ec09-496b-b7f5-ddb85bb2edc2";
 
-        GefaesstypDaten daten = GefaesstypDaten
+        final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(10)
                 .name("Gefäßtyp 7")
@@ -404,13 +452,13 @@ public class GefaesstypenResourceTest {
     }
 
     @Test
-    @Order(11)
+    @Order(13)
     void should_gefaesstypAendern_return_409_when_concurrent_update() {
 
         // arrange
-        String uuid = "5aad23ff-3983-459e-9431-b23969394051";
+        final String uuid = "5aad23ff-3983-459e-9431-b23969394051";
 
-        GefaesstypDaten daten = GefaesstypDaten
+        final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(2)
                 .name("Gefäßtyp 1")
