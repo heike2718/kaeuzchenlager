@@ -14,21 +14,14 @@ has_staged() {
 }
 
 # Re-stage only files that were originally staged and match regex
+# nur die Dateien, die vorher gestaged waren und durch prettier oder impsort/format 
+# möglicherweise geändert wurden, werden nach der Änderung wieder added
 restage_matching_from_staged() {
   # $1 = extended regex
   printf '%s\n' "$STAGED" | grep -E "$1" | while IFS= read -r f; do
     [ -f "$f" ] && git add "$f"
   done
 }
-
-# -------- BACKEND --------
-if [ -d "$BACKEND_DIR" ] && has_staged '^backend/.*\.java$'; then
-  echo "☕ Backend: import sort + format"
-  (cd "$BACKEND_DIR" && mvn -Pformat-apply impsort:sort@impsort-sort formatter:format@format-apply)
-
-  # Re-stage only staged Java files under backend/
-  restage_matching_from_staged '^backend/.*\.java$'
-fi
 
 # -------- FRONTEND --------
 FRONTEND_STAGED="$(printf '%s\n' "$STAGED" | grep -E '^frontend/' || true)"
@@ -50,6 +43,15 @@ if [ -d "$FRONTEND_DIR" ] \
 
   # Re-stage only staged frontend files that prettier may have changed
   restage_matching_from_staged "^frontend/.*$FE_PRETTIER_RE"
+fi
+
+# -------- BACKEND --------
+if [ -d "$BACKEND_DIR" ] && has_staged '^backend/.*\.java$'; then
+  echo "☕ Backend: import sort + format"
+  (cd "$BACKEND_DIR" && mvn -Pformat-apply impsort:sort@impsort-sort formatter:format@format-apply)
+
+  # Re-stage only staged Java files under backend/
+  restage_matching_from_staged '^backend/.*\.java$'
 fi
 
 exit 0
