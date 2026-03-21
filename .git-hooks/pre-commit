@@ -76,8 +76,8 @@ if [ -d "$FRONTEND_DIR" ] \
     )"
 
     if [ -n "$FRONTEND_FILES_REL" ]; then
-      echo "🔎 Frontend: nx affected -t lint (config/tooling changed)"
-      (cd "$FRONTEND_DIR" && npx nx affected -t lint --files="$FRONTEND_FILES_REL" --parallel=3)
+      echo "🔎 Frontend: lint affected (config/tooling changed)"
+      (cd "$FRONTEND_DIR" && npx nx affected -t lint --skip-nx-cache --files="$FRONTEND_FILES_REL" --parallel=3)
     fi
   else
     echo "ℹ️  Frontend: skipping nx affected lint (no config/tooling changes staged)"
@@ -86,8 +86,8 @@ fi
 
 # -------- BACKEND --------
 if [ -d "$BACKEND_DIR" ] && has_staged '^backend/.*\.java$'; then
-  echo "☕ Backend: format + import sort"
-  (cd "$BACKEND_DIR" && mvn -Pformat-apply formatter:format@format-apply impsort:sort@impsort-sort)
+  echo "☕ Backend: import sort + format"
+  (cd "$BACKEND_DIR" && mvn -Pformat-apply impsort:sort@impsort-sort formatter:format@format-apply)
 
   # Re-stage only staged Java files under backend/
   restage_matching_from_staged '^backend/.*\.java$'
