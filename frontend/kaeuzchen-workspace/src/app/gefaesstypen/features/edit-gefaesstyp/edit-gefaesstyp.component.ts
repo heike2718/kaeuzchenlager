@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { GefaesstypenFacade } from '@gefaesstypen/api';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TextFieldModule } from '@angular/cdk/text-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInput, MatInputModule } from '@angular/material/input';
@@ -17,7 +16,6 @@ import { TrimOnBlurDirective } from '@shared/directives';
     imports: [
         FormsModule,
         ReactiveFormsModule,
-        TextFieldModule,
         MatButtonModule,
         MatGridListModule,
         MatIconModule,

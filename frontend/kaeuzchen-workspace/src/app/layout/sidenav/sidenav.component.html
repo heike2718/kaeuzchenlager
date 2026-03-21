@@ -5,14 +5,14 @@
         <span class="sidenav__caption">Startseite</span>
     </a>
 
-    @if (authFacade.isAuthorized$ | async) {
+    @if ((authFacade.authorizationState$ | async) === 'authorized') {
         <a mat-list-item class="sidenav__link" routerLink="/gefaesstypen">
             <mat-icon class="sidenav__icon">inventory_2</mat-icon>
             <span class="sidenav__caption">Gefäßtypen</span>
         </a>
     }
 
-    @if (authFacade.isUserLoggedOut$ | async) {
+    @if ((authFacade.authorizationState$ | async) === 'loggedOut') {
         <button mat-list-item class="sidenav__login_logout" (click)="login()" [attr.aria-label]="theme.ariaLabel()">
             <mat-icon class="sidenav__icon">login</mat-icon>
             <span class="sidenav__caption">einloggen</span>

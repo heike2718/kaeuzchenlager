@@ -50,7 +50,6 @@ import de.egladil.web.kaeuzchenlager.domain.validation.ValidationPatternsAndMess
 /** The type Gefaesstypen resource. */
 @Path("api/gefaesstypen")
 @Produces(MediaType.APPLICATION_JSON)
-@RolesAllowed({ "KL_ADMIN" })
 @Tag(name = "Gefaesstypen")
 public class GefaesstypenResource {
 
@@ -79,7 +78,6 @@ public class GefaesstypenResource {
      * @param apiVersion the api version
      * @return the response
      */
-    @SuppressWarnings(UNUSED)
     @GET
     // CPD-OFF
     @Operation(operationId = LOAD_GEFAESSTYPEN, summary = "Gibt alle Gefaesstypen zurück.")
@@ -92,7 +90,7 @@ public class GefaesstypenResource {
             responseCode = OpenApiConstants.OK_STATUS,
             content = @Content(
                     mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
-                    schema = @Schema(type = SchemaType.ARRAY, implementation = GefaesstypDto.class)))
+                    schema = @Schema(type = SchemaType.ARRAY, implementation = GefaesstypDto[].class)))
     @APIResponse(
             name = OpenApiConstants.NOT_AUTHORIZED_ERROR,
             responseCode = OpenApiConstants.NOT_AUTHORIZED_STATUS,
@@ -113,6 +111,7 @@ public class GefaesstypenResource {
                     mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
                     schema = @Schema(implementation = ErrorResponseDto.class)))
     // CPD-ON
+    @RolesAllowed({ "KL_ADMIN" })
     public Response loadGefaesstypen(@HeaderParam(OpenApiConstants.HEADER_API_VERSION) final int apiVersion) {
 
         if (apiVersion != INT_1) {
@@ -124,7 +123,6 @@ public class GefaesstypenResource {
         return Response.ok(gefaesstypService.loadGefaesstypen()).build();
     }
 
-    @SuppressWarnings(UNUSED)
     @GET
     @Path("{uuid}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -167,6 +165,7 @@ public class GefaesstypenResource {
                     mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
                     schema = @Schema(implementation = ErrorResponseDto.class)))
     // CPD-ON
+    @RolesAllowed({ "KL_ADMIN" })
     public Response getGefaesstypWithId(@HeaderParam(OpenApiConstants.HEADER_API_VERSION) final int apiVersion,
             @PathParam("uuid") @Pattern(
                     regexp = ValidationPatternsAndMessages.TECHNISCHE_ID,
@@ -192,7 +191,6 @@ public class GefaesstypenResource {
      * @param daten      the daten
      * @return the response
      */
-    @SuppressWarnings(UNUSED)
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     // CPD-OFF
@@ -241,6 +239,7 @@ public class GefaesstypenResource {
                     mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
                     schema = @Schema(implementation = ErrorResponseDto.class)))
     // CPD-ON
+    @RolesAllowed({ "KL_ADMIN" })
     public Response gefaesstypAnlegen(@HeaderParam(OpenApiConstants.HEADER_API_VERSION) final int apiVersion,
             @Valid final GefaesstypDto daten) {
 
@@ -260,7 +259,6 @@ public class GefaesstypenResource {
      * @param daten      the daten
      * @return the response
      */
-    @SuppressWarnings(UNUSED)
     @PUT
     @Path("{uuid}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -324,6 +322,7 @@ public class GefaesstypenResource {
                     mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
                     schema = @Schema(implementation = ErrorResponseDto.class)))
     // CPD-ON
+    @RolesAllowed({ "KL_ADMIN" })
     public Response gefaesstypAendern(@HeaderParam(OpenApiConstants.HEADER_API_VERSION) final int apiVersion,
             @PathParam("uuid") @Pattern(
                     regexp = ValidationPatternsAndMessages.TECHNISCHE_ID,
@@ -346,7 +345,6 @@ public class GefaesstypenResource {
      * @param uuid       the uuid
      * @return the response
      */
-    @SuppressWarnings(UNUSED)
     @DELETE
     @Path("{uuid}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -391,6 +389,7 @@ public class GefaesstypenResource {
                     mediaType = OpenApiConstants.JSON_MEDIA_TYPE,
                     schema = @Schema(implementation = ErrorResponseDto.class)))
     // CPD-ON
+    @RolesAllowed({ "KL_ADMIN" })
     public Response gefaesstypLoeschen(@HeaderParam(OpenApiConstants.HEADER_API_VERSION) final int apiVersion,
             @PathParam("uuid") @Pattern(
                     regexp = ValidationPatternsAndMessages.TECHNISCHE_ID,

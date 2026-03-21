@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NavbarComponent } from './navbar.component';
 import { of } from 'rxjs';
-import { Router, RouterLink, RouterLinkWithHref, RouterModule, UrlTree } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkWithHref, RouterModule, UrlTree } from '@angular/router';
 import { HomeComponent } from '../../home/home.component';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
@@ -14,47 +14,97 @@ import { MatIcon } from '@angular/material/icon';
 import { KL_CONFIGURATION } from '@config';
 import { mockConfig } from '@testing';
 import { AuthFacade } from '@shared/auth/api';
+import { User } from '@shared/auth/model';
 
 describe('NavbarComponent', () => {
-    let component: NavbarComponent;
-    let fixture: ComponentFixture<NavbarComponent>;
     let loader: HarnessLoader;
+    let fixture: ComponentFixture<NavbarComponent>;
+    let activatedRouteStub: Partial<ActivatedRoute>;
 
-    const authFacadeMock: Pick<AuthFacade, 'login' | 'logout'> & Partial<AuthFacade> = {
-        login: vi.fn(),
-        logout: vi.fn(),
+    describe('NavbarComponent handset', () => {
+        const authFacadeMock: Pick<AuthFacade, 'login' | 'logout'> & Partial<AuthFacade> = {
+            login: vi.fn(),
+            logout: vi.fn(),
+        };
 
-        // nur falls dein Template darauf zugreift:
-        // sessionLoaded$: of(true),
-        // user$: of({ ... } as any),
-    };
+        let component: NavbarComponent;
+        let fixture: ComponentFixture<NavbarComponent>;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [NavbarComponent, HomeComponent, RouterModule.forRoot([{ path: '', component: HomeComponent }])],
-            providers: [
-                {
-                    provide: KL_CONFIGURATION,
-                    useValue: mockConfig,
-                },
-                { provide: AuthFacade, useValue: authFacadeMock },
-            ],
-        }).compileComponents();
-
-        fixture = TestBed.createComponent(NavbarComponent);
-        loader = TestbedHarnessEnvironment.loader(fixture);
-        component = fixture.componentInstance;
-    });
-
-    it('should create', () => {
-        fixture.detectChanges();
-        expect(component).toBeTruthy();
-    });
-
-    describe('when not handset', () => {
         beforeEach(async () => {
-            component.isHandset$ = of(false);
+            await TestBed.configureTestingModule({
+                imports: [
+                    NavbarComponent,
+                    HomeComponent,
+                    RouterModule.forRoot([{ path: '', component: HomeComponent }]),
+                ],
+                providers: [
+                    {
+                        provide: KL_CONFIGURATION,
+                        useValue: mockConfig,
+                    },
+                    { provide: AuthFacade, useValue: authFacadeMock },
+                ],
+            }).compileComponents();
+
+            fixture = TestBed.createComponent(NavbarComponent);
+            component = fixture.componentInstance;
+            component.isHandset$ = of(true);
+            await render(fixture);
+        });
+        it('should show hamburger menu button', async () => {
+            const spy = vi.spyOn(component.sidenavToggle, 'emit');
+            const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
+            expect(toolbarDe).toBeTruthy();
+
+            const buttonDe = toolbarDe.query(By.css('button[mat-icon-button]'));
+            expect(buttonDe).toBeTruthy();
+
+            const buttonEl = buttonDe.nativeElement as HTMLButtonElement;
+            buttonEl.click();
             fixture.detectChanges();
+            await fixture.whenStable();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+
+            // Alle MatIcons innerhalb der Toolbar in DOM-Reihenfolge
+            const iconDes: DebugElement[] = toolbarDe.queryAll(By.directive(MatIcon));
+            expect(iconDes.length).toBe(1);
+
+            const menuIcon = iconDes[0].nativeElement as HTMLElement;
+            expect(menuIcon.textContent.trim()).toBe('menu');
+        });
+    });
+
+    describe('NavbarComponent not handset and loggedOut', () => {
+        const user: User = { fullName: 'Gast', roles: [], anonym: true };
+        const authFacadeMock: Pick<AuthFacade, 'login' | 'logout'> & Partial<AuthFacade> = {
+            login: vi.fn(),
+            logout: vi.fn(),
+            authorizationState$: of('loggedOut'),
+            user$: of(user),
+        };
+
+        beforeEach(async () => {
+            await TestBed.configureTestingModule({
+                imports: [
+                    NavbarComponent,
+                    HomeComponent,
+                    RouterModule.forRoot([{ path: '', component: HomeComponent }]),
+                ],
+                providers: [
+                    {
+                        provide: KL_CONFIGURATION,
+                        useValue: mockConfig,
+                    },
+                    { provide: AuthFacade, useValue: authFacadeMock },
+                    { provide: ActivatedRoute, useFactory: () => activatedRouteStub },
+                    // { provide: ThemeStore, useValue: themeStoreMock },
+                ],
+            }).compileComponents();
+
+            fixture = TestBed.createComponent(NavbarComponent);
+            loader = TestbedHarnessEnvironment.loader(fixture);
+            await render(fixture);
         });
 
         it('should render mat-toolbar element', () => {
@@ -162,6 +212,199 @@ describe('NavbarComponent', () => {
             expect(path).toBe('/home');
         });
 
+        it('should render a toolbar spacer', () => {
+            const spacer = findToolbarSpacer(fixture);
+            expect(spacer).toBeTruthy();
+            expect(spacer.classList.contains('nav__spacer')).toBe(true);
+        });
+
+        it('should render begrüßungstext next right to toolbar spacer', () => {
+            const spacer = findToolbarSpacer(fixture);
+            const begruessung = spacer.nextElementSibling as HTMLElement;
+            expect(begruessung).toBeTruthy();
+            expect(begruessung.textContent.trim()).toBe('Hallo Gast');
+            expect(begruessung.tagName.toLowerCase()).toBe('div');
+            expect(begruessung.classList).toContain('nav__greeting');
+        });
+
+        it('should render version two right to toolbar spacer', () => {
+            const expectedVersionText = `Version: 1.2.0`;
+
+            const spacer = findToolbarSpacer(fixture);
+            // spacer ist an dieser Stelle vorhanden, weil die function eine exception wirft, wenn nicht
+            const begruessung = spacer.nextElementSibling as HTMLElement;
+
+            // Version ist das zweite Element nach dem Spacer
+            const version = begruessung.nextElementSibling as HTMLElement;
+            expect(version).toBeTruthy();
+            expect(version.textContent.trim()).toBe(expectedVersionText);
+            expect(version.tagName.toLowerCase()).toBe('div');
+            expect(version.classList).toContain('nav__version');
+        });
+
+        it('toggles aria-label and label text when clicking the theme button - start with dark theme', async () => {
+            const store = TestBed.inject(ThemeStore);
+            const spy = vi.spyOn(store, 'toggle');
+
+            const btn = await loader.getHarness(MatButtonHarness.with({ selector: 'button.nav__toggle' }));
+            const host = await btn.host();
+
+            // Initial: dark === true
+            await fixture.whenStable();
+            expect(await host.getAttribute('aria-label')).toBe('auf hellen Stil umschalten'); // aus dem Template
+            expect((await btn.getText()).trim()).toContain('heller Stil'); // sichtbarer Buttontext
+
+            // Klick -> toggleTheme()
+            await btn.click();
+            fixture.detectChanges();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+            expect(await host.getAttribute('aria-label')).toBe('auf dunklen Stil umschalten');
+            expect((await btn.getText()).trim()).toContain('dunkler Stil');
+
+            // jetzt ist es light, nochmal klicken
+            await btn.click();
+            fixture.detectChanges();
+
+            expect(spy).toHaveBeenCalledTimes(2);
+            expect(await host.getAttribute('aria-label')).toBe('auf hellen Stil umschalten');
+            expect((await btn.getText()).trim()).toContain('heller Stil');
+        });
+        it('should render a login button and call login when clicking the button', () => {
+            const authFacade = TestBed.inject(AuthFacade);
+            const loginSpy = vi.spyOn(authFacade, 'login');
+
+            const buttons = fixture.nativeElement.querySelectorAll('button.nav__login_logout');
+            expect(buttons.length).toBe(1);
+
+            const button = buttons[0] as HTMLButtonElement;
+            const caption = button.querySelector('span.nav__caption') as HTMLElement;
+
+            expect(caption).toBeTruthy();
+            expect(caption.textContent?.trim()).toBe('einloggen');
+
+            button.click();
+
+            expect(loginSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('NavbarComponent not handset and unauthorized', () => {
+        const user: User = { fullName: 'Freddie', roles: [], anonym: false };
+        const authFacadeMock: Pick<AuthFacade, 'login' | 'logout'> & Partial<AuthFacade> = {
+            login: vi.fn(),
+            logout: vi.fn(),
+            authorizationState$: of('unauthorized'),
+            user$: of(user),
+        };
+        let fixture: ComponentFixture<NavbarComponent>;
+
+        beforeEach(async () => {
+            await TestBed.configureTestingModule({
+                imports: [NavbarComponent],
+                providers: [
+                    {
+                        provide: KL_CONFIGURATION,
+                        useValue: mockConfig,
+                    },
+                    // { provide: ThemeStore, useValue: themeStoreMock },
+                    { provide: ActivatedRoute, useFactory: () => activatedRouteStub },
+                    { provide: AuthFacade, useValue: authFacadeMock },
+                ],
+            }).compileComponents();
+
+            fixture = TestBed.createComponent(NavbarComponent);
+            loader = TestbedHarnessEnvironment.loader(fixture);
+            await render(fixture);
+        });
+
+        it('should render begrüßungstext next right to toolbar spacer', () => {
+            const spacer = findToolbarSpacer(fixture);
+            const begruessung = spacer.nextElementSibling as HTMLElement;
+            expect(begruessung).toBeTruthy();
+            expect(begruessung.textContent.trim()).toBe('Hallo Freddie');
+            expect(begruessung.tagName.toLowerCase()).toBe('div');
+            expect(begruessung.classList).toContain('nav__greeting');
+        });
+
+        it('does not render the gefaesstypen router link', async () => {
+            // Arrange
+            const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
+            expect(toolbarDe).toBeDefined();
+
+            // Alle RouterLinks innerhalb der Toolbar in DOM-Reihenfolge
+            const linkDes: DebugElement[] = toolbarDe.queryAll(By.directive(RouterLink));
+            expect(linkDes.length).toBe(1);
+
+            // Wir wollen explizit den ERSTEN Link validieren (links außen)
+            const firstLinkDe = linkDes[0];
+
+            // 1) Strukturelle Strenge: es MUSS ein <a> bleiben (kein <button> etc.)
+            const native = firstLinkDe.nativeElement as HTMLElement;
+            expect(native.tagName).toBe('A'); // bricht, wenn später ein Button verwendet wird
+
+            // 2) Ziel prüfen – bevorzugt über das gerenderte href-Attribut (roh, nicht absolut)
+            const hrefAttr = (native as HTMLAnchorElement).getAttribute('href');
+            expect(hrefAttr).toBe('/home');
+        });
+
+        it('should render a logout button and call logout when clicking the button', () => {
+            const authFacade = TestBed.inject(AuthFacade);
+            const loginSpy = vi.spyOn(authFacade, 'logout');
+
+            const buttons = fixture.nativeElement.querySelectorAll('button.nav__login_logout');
+            expect(buttons.length).toBe(1);
+
+            const button = buttons[0] as HTMLButtonElement;
+            const caption = button.querySelector('span.nav__caption') as HTMLElement;
+
+            expect(caption).toBeTruthy();
+            expect(caption.textContent?.trim()).toBe('ausloggen');
+
+            button.click();
+
+            expect(loginSpy).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('NavbarComponent not handset and authorized', () => {
+        const user: User = { fullName: 'Gunilla', roles: ['kl_admin'], anonym: false };
+        const authFacadeMock: Pick<AuthFacade, 'login' | 'logout'> & Partial<AuthFacade> = {
+            login: vi.fn(),
+            logout: vi.fn(),
+            authorizationState$: of('authorized'),
+            user$: of(user),
+        };
+        let fixture: ComponentFixture<NavbarComponent>;
+
+        beforeEach(async () => {
+            await TestBed.configureTestingModule({
+                imports: [NavbarComponent],
+                providers: [
+                    {
+                        provide: KL_CONFIGURATION,
+                        useValue: mockConfig,
+                    },
+                    // { provide: ThemeStore, useValue: themeStoreMock },
+                    { provide: ActivatedRoute, useFactory: () => activatedRouteStub },
+                    { provide: AuthFacade, useValue: authFacadeMock },
+                ],
+            }).compileComponents();
+
+            fixture = TestBed.createComponent(NavbarComponent);
+            loader = TestbedHarnessEnvironment.loader(fixture);
+            await render(fixture);
+        });
+
+        it('should render begrüßungstext next right to toolbar spacer', () => {
+            const spacer = findToolbarSpacer(fixture);
+            const begruessung = spacer.nextElementSibling as HTMLElement;
+            expect(begruessung).toBeTruthy();
+            expect(begruessung.textContent.trim()).toBe('Hallo Gunilla');
+            expect(begruessung.tagName.toLowerCase()).toBe('div');
+            expect(begruessung.classList).toContain('nav__greeting');
+        });
+
         it('renders the gefaesstypen router link as the SECOND item in the toolbar', async () => {
             // Arrange
             const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
@@ -232,96 +475,22 @@ describe('NavbarComponent', () => {
 
             expect(path).toBe('/gefaesstypen');
         });
+        it('should render a logout button and call logout when clicking the button', () => {
+            const authFacade = TestBed.inject(AuthFacade);
+            const loginSpy = vi.spyOn(authFacade, 'logout');
 
-        it('should render a toolbar spacer', () => {
-            const spacer = findToolbarSpacer(fixture);
-            expect(spacer).toBeTruthy();
-            expect(spacer.classList.contains('nav__spacer')).toBe(true);
-        });
+            const buttons = fixture.nativeElement.querySelectorAll('button.nav__login_logout');
+            expect(buttons.length).toBe(1);
 
-        it('should render begrüßungstext next right to toolbar spacer', () => {
-            const spacer = findToolbarSpacer(fixture);
-            const begruessung = spacer.nextElementSibling as HTMLElement;
-            expect(begruessung).toBeTruthy();
-            expect(begruessung.textContent.trim()).toContain('Moin, ');
-            expect(begruessung.tagName.toLowerCase()).toBe('div');
-            expect(begruessung.classList).toContain('nav__greeting');
-        });
+            const button = buttons[0] as HTMLButtonElement;
+            const caption = button.querySelector('span.nav__caption') as HTMLElement;
 
-        it('should render version two right to toolbar spacer', () => {
-            const expectedVersionText = `Version: 1.2.0`;
+            expect(caption).toBeTruthy();
+            expect(caption.textContent?.trim()).toBe('ausloggen');
 
-            const spacer = findToolbarSpacer(fixture);
-            // spacer ist an dieser Stelle vorhanden, weil die function eine exception wirft, wenn nicht
-            const begruessung = spacer.nextElementSibling as HTMLElement;
-            expect(begruessung).toBeTruthy();
-            expect(begruessung.textContent.trim()).toContain('Moin, ');
+            button.click();
 
-            // Version ist das zweite Element nach dem Spacer
-            const version = begruessung.nextElementSibling as HTMLElement;
-            expect(version).toBeTruthy();
-            expect(version.textContent.trim()).toBe(expectedVersionText);
-            expect(version.tagName.toLowerCase()).toBe('div');
-            expect(version.classList).toContain('nav__version');
-        });
-
-        it('toggles aria-label and label text when clicking the theme button - start with dark theme', async () => {
-            const store = TestBed.inject(ThemeStore);
-            const spy = vi.spyOn(store, 'toggle');
-
-            const btn = await loader.getHarness(MatButtonHarness.with({ selector: 'button.nav__toggle' }));
-            const host = await btn.host();
-
-            // Initial: dark === true
-            await fixture.whenStable();
-            expect(await host.getAttribute('aria-label')).toBe('auf hellen Stil umschalten'); // aus dem Template
-            expect((await btn.getText()).trim()).toContain('heller Stil'); // sichtbarer Buttontext
-
-            // Klick -> toggleTheme()
-            await btn.click();
-            fixture.detectChanges();
-
-            expect(spy).toHaveBeenCalledTimes(1);
-            expect(await host.getAttribute('aria-label')).toBe('auf dunklen Stil umschalten');
-            expect((await btn.getText()).trim()).toContain('dunkler Stil');
-
-            // jetzt ist es light, nochmal klicken
-            await btn.click();
-            fixture.detectChanges();
-
-            expect(spy).toHaveBeenCalledTimes(2);
-            expect(await host.getAttribute('aria-label')).toBe('auf hellen Stil umschalten');
-            expect((await btn.getText()).trim()).toContain('heller Stil');
-        });
-    });
-
-    describe('when handset', () => {
-        beforeEach(async () => {
-            component.isHandset$ = of(true);
-            fixture.detectChanges();
-        });
-
-        it('should show hamburger menu button', async () => {
-            const spy = vi.spyOn(component.sidenavToggle, 'emit');
-            const toolbarDe = fixture.debugElement.query(By.css('mat-toolbar'));
-            expect(toolbarDe).toBeTruthy();
-
-            const buttonDe = toolbarDe.query(By.css('button[mat-icon-button]'));
-            expect(buttonDe).toBeTruthy();
-
-            const buttonEl = buttonDe.nativeElement as HTMLButtonElement;
-            buttonEl.click();
-            fixture.detectChanges();
-            await fixture.whenStable();
-
-            expect(spy).toHaveBeenCalledTimes(1);
-
-            // Alle MatIcons innerhalb der Toolbar in DOM-Reihenfolge
-            const iconDes: DebugElement[] = toolbarDe.queryAll(By.directive(MatIcon));
-            expect(iconDes.length).toBe(1);
-
-            const menuIcon = iconDes[0].nativeElement as HTMLElement;
-            expect(menuIcon.textContent.trim()).toBe('menu');
+            expect(loginSpy).toHaveBeenCalledTimes(1);
         });
     });
 });
@@ -345,4 +514,10 @@ function findToolbarSpacer(fixture: ComponentFixture<NavbarComponent>): HTMLElem
     }
 
     return toolbarSpacer;
+}
+
+async function render(fixture: ComponentFixture<NavbarComponent>) {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
 }

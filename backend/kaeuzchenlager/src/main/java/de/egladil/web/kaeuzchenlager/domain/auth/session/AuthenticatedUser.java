@@ -1,5 +1,5 @@
 // =====================================================
-// Project: benutzerprofil
+// Project: kaeuzchenlager
 // (c) Heike Winkelvoß
 // =====================================================
 package de.egladil.web.kaeuzchenlager.domain.auth.session;

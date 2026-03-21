@@ -26,7 +26,7 @@
 
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.27.1</quarkus.platform.version>
+    <quarkus.platform.version>3.27.2</quarkus.platform.version>
     <lombock.version>1.18.42</lombock.version>
 
   </properties>
@@ -238,15 +238,19 @@
         <configuration>
           <gitConfig>
             <!-- The location of the directory you are using to store the Git hooks in your project. -->
-            <core.hooksPath>../../git-hooks/</core.hooksPath>
-            <!-- Some other project specific git config that you want to set. -->
-            <custom.configuration>true</custom.configuration>
+            <core.hooksPath>.git-hooks/</core.hooksPath>
+            <core.autocrlf>false</core.autocrlf>
+            <core.eol>lf</core.eol>
+            <core.safecrlf>true</core.safecrlf>
+            <!-- Optional, oft praktisch -->
+            <pull.rebase>false</pull.rebase>
+            <fetch.prune>true</fetch.prune>
           </gitConfig>
         </configuration>
         <executions>
           <execution>
+            <phase>initialize</phase>
             <goals>
-              <!-- Sets git config specified under configuration > gitConfig. -->
               <goal>configure</goal>
             </goals>
           </execution>

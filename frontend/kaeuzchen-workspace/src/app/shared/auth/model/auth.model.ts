@@ -2,6 +2,8 @@ export const AUTH_FEATURE_KEY = 'klAuth';
 
 export type LOGGED_OUT_REASON = 'technical' | 'expired' | 'unauthorized' | 'useraction';
 
+export type AUTHORIZATION_STATE = 'loggedOut' | 'unauthorized' | 'authorized';
+
 export interface AuthResult {
     expiresAt: number | undefined;
     state: string | undefined;

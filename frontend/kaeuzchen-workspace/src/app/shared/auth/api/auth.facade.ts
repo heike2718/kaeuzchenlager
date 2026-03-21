@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { fromAuth, authActions } from '@shared/auth/data';
-import { AuthResult, User } from '@shared/auth/model';
+import { AUTHORIZATION_STATE, AuthResult, User } from '@shared/auth/model';
 
 @Injectable({
     providedIn: 'root',
@@ -14,13 +14,7 @@ export class AuthFacade {
 
     readonly user$: Observable<User> = this.#store.select(fromAuth.user);
 
-    readonly isAuthorized$: Observable<boolean> = this.#store.select(fromAuth.isAuthorized);
-
-    readonly isNotAuthorized$ = this.isAuthorized$.pipe(map(v => !v));
-
-    readonly isUserLoggedIn$ = this.#store.select(fromAuth.user).pipe(map(user => !user.anonym));
-
-    readonly isUserLoggedOut$ = this.isUserLoggedIn$.pipe(map(v => !v));
+    readonly authorizationState$: Observable<AUTHORIZATION_STATE> = this.#store.select(fromAuth.authorizationState);
 
     login(): void {
         // Dies triggert einen SideEffect (siehe auth.effects.ts)

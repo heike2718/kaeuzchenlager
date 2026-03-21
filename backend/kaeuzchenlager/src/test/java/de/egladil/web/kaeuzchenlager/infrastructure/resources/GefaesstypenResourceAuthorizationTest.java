@@ -22,18 +22,35 @@ import static io.restassured.RestAssured.given;
 
 @QuarkusTest
 @TestHTTPEndpoint(GefaesstypenResource.class)
-@TestSecurity(user = "cc73be9f-4fea-43ff-bff3-588fd1dae843", roles = { "ADMIN", "LEHRER" })
 public class GefaesstypenResourceAuthorizationTest {
 
     @Test
-    void should_alle_laden_be_rejected() {
+    void should_loadGefaesstypen_be_rejected_when_not_authenticated() {
+
+        given().header("API-Version", 1).contentType(ContentType.JSON).get().then().statusCode(401);
+
+    }
+
+    @Test
+    void should_getGefaesstypWithId_be_rejected_when_not_authenticated() {
+
+        String uuid = "8efeed81-85ae-458b-8de0-481ff38ac1d4";
+
+        given().header("API-Version", 1).contentType(ContentType.JSON).get(uuid).then().statusCode(401);
+
+    }
+
+    @Test
+    @TestSecurity(user = "cc73be9f-4fea-43ff-bff3-588fd1dae843", roles = { "ADMIN", "LEHRER" })
+    void should_loadGefaesstypen_be_rejected_when_not_authorized() {
 
         given().header("API-Version", 1).contentType(ContentType.JSON).get().then().statusCode(403);
 
     }
 
     @Test
-    void should_getGefaesstypWithId_be_rejected() {
+    @TestSecurity(user = "cc73be9f-4fea-43ff-bff3-588fd1dae843", roles = { "ADMIN", "LEHRER" })
+    void should_getGefaesstypWithId_be_rejected_when_not_authorized() {
 
         String uuid = "8efeed81-85ae-458b-8de0-481ff38ac1d4";
 
@@ -42,6 +59,7 @@ public class GefaesstypenResourceAuthorizationTest {
     }
 
     @Test
+    @TestSecurity(user = "cc73be9f-4fea-43ff-bff3-588fd1dae843", roles = { "ADMIN", "LEHRER" })
     void should_anlegen_be_rejected() {
 
         // arrange
@@ -67,6 +85,7 @@ public class GefaesstypenResourceAuthorizationTest {
     }
 
     @Test
+    @TestSecurity(user = "cc73be9f-4fea-43ff-bff3-588fd1dae843", roles = { "ADMIN", "LEHRER" })
     void should_aendern_be_rejected() {
 
         // arrange
@@ -86,6 +105,7 @@ public class GefaesstypenResourceAuthorizationTest {
     }
 
     @Test
+    @TestSecurity(user = "cc73be9f-4fea-43ff-bff3-588fd1dae843", roles = { "ADMIN", "LEHRER" })
     void should_loeschen_be_rejected() {
 
         // arrange

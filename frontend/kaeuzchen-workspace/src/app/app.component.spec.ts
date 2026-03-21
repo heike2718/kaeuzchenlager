@@ -11,10 +11,18 @@ import { NavbarComponent } from './layout/navbar/navbar.component';
 import { of } from 'rxjs';
 import { KL_CONFIGURATION } from '@config';
 import { mockConfig } from '@testing';
+import { AuthFacade } from '@shared/auth/api';
 
 describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
     let loader: HarnessLoader;
+
+    const authFacadeMock: Pick<AuthFacade, 'login' | 'logout'> & Partial<AuthFacade> = {
+        login: vi.fn(),
+        logout: vi.fn(),
+        initClearOrRestoreSession: vi.fn(),
+        authorizationState$: of('loggedOut'),
+    };
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -24,6 +32,7 @@ describe('AppComponent', () => {
                     provide: KL_CONFIGURATION,
                     useValue: mockConfig,
                 },
+                { provide: AuthFacade, useValue: authFacadeMock },
             ],
         }).compileComponents();
         fixture = TestBed.createComponent(AppComponent);

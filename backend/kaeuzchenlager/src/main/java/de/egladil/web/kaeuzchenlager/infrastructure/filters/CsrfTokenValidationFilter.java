@@ -56,6 +56,9 @@ public class CsrfTokenValidationFilter implements ContainerRequestFilter {
     @ConfigProperty(name = "session-cookie.name")
     String sessionCookieName;
 
+    @ConfigProperty(name = "csrf.validation.enabled")
+    boolean csrfEnabled;
+
     @Inject
     SessionService sessionservice;
 
@@ -66,6 +69,10 @@ public class CsrfTokenValidationFilter implements ContainerRequestFilter {
     public void filter(final ContainerRequestContext requestContext) throws IOException {
 
         LOGGER.debug("entering filter");
+
+        if (!csrfEnabled) {
+            return;
+        }
 
         String path = requestContext.getUriInfo().getPath();
         String method = requestContext.getMethod();

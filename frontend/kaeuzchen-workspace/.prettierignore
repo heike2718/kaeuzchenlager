@@ -27,6 +27,7 @@ logs/
 .nx/cache/
 /.nx/workspace-data
 .angular
+.nxignore
 
 # Angular specific
 *.ngsummary.json

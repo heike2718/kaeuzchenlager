@@ -1,0 +1,68 @@
+{
+  "name": "frontend",
+  "projectType": "application",
+  "root": "frontend",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "nx serve"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "nx test"
+      }
+    },
+    "test-coverage": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "vitest --coverage"
+      }
+    },
+    "test-ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "vitest run --coverage --bail=1"
+      }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "prettier --write \"**/*.{ts,html,scss}\" --ignore-path .gitignore"
+      }
+    },
+    "format-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "prettier --check \"**/*.{ts,html,scss}\" --ignore-path .gitignore"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "eslint \"src/**/*.ts\""
+      }
+    },
+    "lint-fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "eslint --fix \"src/**/*.ts\""
+      }
+    },
+    "cleanup": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["lint-fix", "format"],
+      "options": { "command": "true" }
+    }
+  }
+}

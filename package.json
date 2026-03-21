@@ -1,0 +1,24 @@
+{
+  "name": "kaeuzchenlager-monorepo",
+  "private": true,
+  "scripts": {
+    "check-node": "node -e \"if(!process.version.startsWith('v22.')){console.error('\\n❌ Node 22 required. Current:',process.version,'\\n');process.exit(1)}\"",
+    "preinstall": "npm run -s check-node",
+    "fe:serve": "npm run check-node && npx nx run kaeuzchenlager:fe-serve",
+    "fe:test": "npm run check-node && npx nx run kaeuzchenlager:fe-test",
+    "fe:lint": "npm run check-node && npx nx run kaeuzchenlager:fe-lint",
+    "fe:graph": "npm run check-node && npx nx run kaeuzchenlager:fe-graph",
+    "be:dev": "npx nx run kaeuzchenlager:be-dev",
+    "be:debug": "npx nx run kaeuzchenlager:be-debug",
+    "be:dev-build": "npx nx run kaeuzchenlager:be-dev-build",
+    "prepare:qs": "npm run check-node && npx nx run kaeuzchenlager:deploy --configuration=qs",
+    "prepare:prod": "npm run check-node && npx nx run kaeuzchenlager:deploy --configuration=prod"
+  },
+  "devDependencies": {
+    "nx": "22.5.2"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "nx": {}
+}
