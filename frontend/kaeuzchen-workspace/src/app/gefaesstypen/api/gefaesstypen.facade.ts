@@ -4,7 +4,6 @@ import {
     createInitialGefaesstyp,
     Gefaesstyp,
     GefaesstypConflict,
-    GefaesstypDaten,
     GefaesstypUniqueKey,
     TEMP_UUID_PREFIX,
 } from '@gefaesstypen/model';
