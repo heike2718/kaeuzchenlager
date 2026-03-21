@@ -19,7 +19,7 @@ if [ -d "$FRONTEND_DIR" ]; then
   echo "🔎 Frontend: lint"
   (
     cd "$FRONTEND_DIR" && \
-    npx nx lint kaeuzchen-workspace --skip-nx-cache
+    npx nx lint kaeuzchen-workspace --skip-nx-cache --max-warnings=0
   )
 
   echo "🔬 Frontend: build"
