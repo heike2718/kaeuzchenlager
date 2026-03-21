@@ -1,29 +1,48 @@
 #!/usr/bin/env bash
 set -e
 
+FRONTEND_DIR="frontend/kaeuzchen-workspace"
+BACKEND_DIR="backend/kaeuzchenlager"
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-echo "🚀 Running comprehensive pre-push checks..."
+echo "🚀 Running pre-push checks..."
 
 nvm use 22 >/dev/null 2>&1 || {
   echo "❌ Node 22 required"
   exit 1
 }
 
-# FRONTEND: Lint + Build + Tests
-echo "🔎 Frontend: linting..."
-npx nx run kaeuzchen-workspace:lint --skip-nx-cache
+# -------- FRONTEND --------
+if [ -d "$FRONTEND_DIR" ]; then
+  echo "🔎 Frontend: lint"
+  (
+    cd "$FRONTEND_DIR" && \
+    npx nx lint kaeuzchen-workspace --skip-nx-cache
+  )
 
-echo "🔬 Frontend: building (development)..."
-npx nx run kaeuzchenlager:fe-build
+  echo "🔬 Frontend: build"
+  (
+    cd "$FRONTEND_DIR" && \
+    npx nx build kaeuzchen-workspace --skip-nx-cache
+  )
 
-echo "📊 Frontend: running CI tests..."
-npx nx run frontend:test-ci
+  echo "🧪 Frontend: test"
+  (
+    cd "$FRONTEND_DIR" && \
+    npx nx test kaeuzchen-workspace --skip-nx-cache
+  )
+fi
 
-# BACKEND: Tests
-echo "☕ Backend: running tests..."
-npx nx run kaeuzchenlager:be-test
+# -------- BACKEND --------
+if [ -d "$BACKEND_DIR" ]; then
+  echo "☕ Backend: test"
+  (
+    cd "$BACKEND_DIR" && \
+    mvn test
+  )
+fi
 
 echo "✅ All pre-push checks passed!"
 exit 0
