@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { GefaesstypenFacade } from './gefaesstypen.facade';
 import { fromGefaesstypen, gefaesstypenActions } from '@gefaesstypen/data';
-import { Gefaesstyp, GefaesstypConflict } from '@gefaesstypen/model';
+import { Gefaesstyp, GefaesstypConflict, GefaesstypUniqueKey } from '@gefaesstypen/model';
 import { firstGefaesstyp, secondGefaesstyp, thirdGefaesstyp } from '@testing';
 import { GefaesstypSelectionService } from './gefaesstyp-selection.service';
 
@@ -190,6 +190,90 @@ describe('GefaesstypenFacade', () => {
 
             // kein erneutes laden
             expect(dispatchSpy).not.toHaveBeenCalledWith(gefaesstypenActions.loadGefaesstypen());
+        });
+    });
+
+    describe('test method isGefaesstypNichtEindeutig', () => {
+        it('liefert true, wenn ein anderer Gefäßtyp mit gleichem Namen, unabhängig von Groß-Kleinschreibung und gleichem Volumen existiert', async () => {
+            const gefaesstypen = store.overrideSelector(fromGefaesstypen.selectGefaesstypen, []);
+            gefaesstypen.setResult([firstGefaesstyp, secondGefaesstyp, thirdGefaesstyp]);
+            store.refreshState();
+
+            const gefaesstypUniqueKey: GefaesstypUniqueKey = {
+                name: ' ' + firstGefaesstyp.daten.name.toLowerCase() + ' ',
+                volumen: firstGefaesstyp.daten.volumen,
+            };
+
+            // act
+            const nichtEindeutig = facade.isGefaesstypNichtEindeutig(gefaesstypUniqueKey, '17');
+
+            // assert
+            expect(nichtEindeutig).toBeTruthy();
+        });
+        it('liefert true, wenn ein anderer Gefäßtyp mit zusätzlichem Leerzeichen im Namen, unabhängig von Groß-Kleinschreibung und bei gleichem Volumen existiert', async () => {
+            const gefaesstypen = store.overrideSelector(fromGefaesstypen.selectGefaesstypen, []);
+            gefaesstypen.setResult([firstGefaesstyp, secondGefaesstyp, thirdGefaesstyp]);
+            store.refreshState();
+
+            const gefaesstypUniqueKey: GefaesstypUniqueKey = {
+                name: 'Erster    Gefäßtyp',
+                volumen: firstGefaesstyp.daten.volumen,
+            };
+
+            // act
+            const nichtEindeutig = facade.isGefaesstypNichtEindeutig(gefaesstypUniqueKey, '17');
+
+            // assert
+            expect(nichtEindeutig).toBeTruthy();
+        });
+        it('liefert false, wenn ein anderer Gefäßtyp mit gleichem Namen aber anderem Volumen existiert', async () => {
+            const gefaesstypen = store.overrideSelector(fromGefaesstypen.selectGefaesstypen, []);
+            gefaesstypen.setResult([firstGefaesstyp, secondGefaesstyp, thirdGefaesstyp]);
+            store.refreshState();
+
+            const gefaesstypUniqueKey: GefaesstypUniqueKey = {
+                name: firstGefaesstyp.daten.name.toLowerCase(),
+                volumen: 356,
+            };
+
+            // act
+            const nichtEindeutig = facade.isGefaesstypNichtEindeutig(gefaesstypUniqueKey, '17');
+
+            // assert
+            expect(nichtEindeutig).toBeFalsy();
+        });
+        it('liefert false, wenn ein anderer Gefäßtyp mit verschiedenen Namen und gleichem Volumen existiert', async () => {
+            const gefaesstypen = store.overrideSelector(fromGefaesstypen.selectGefaesstypen, []);
+            gefaesstypen.setResult([firstGefaesstyp, secondGefaesstyp, thirdGefaesstyp]);
+            store.refreshState();
+
+            const gefaesstypUniqueKey: GefaesstypUniqueKey = {
+                name: 'neuer Gefäßtyp',
+                volumen: firstGefaesstyp.daten.volumen,
+            };
+
+            // act
+            const nichtEindeutig = facade.isGefaesstypNichtEindeutig(gefaesstypUniqueKey, '17');
+
+            // assert
+            expect(nichtEindeutig).toBeFalsy();
+        });
+
+        it('liefert false, wenn es der gleiche Gefäßtyp ist', async () => {
+            const gefaesstypen = store.overrideSelector(fromGefaesstypen.selectGefaesstypen, []);
+            gefaesstypen.setResult([firstGefaesstyp, secondGefaesstyp, thirdGefaesstyp]);
+            store.refreshState();
+
+            const gefaesstypUniqueKey: GefaesstypUniqueKey = {
+                name: ' ' + firstGefaesstyp.daten.name.toLowerCase() + ' ',
+                volumen: firstGefaesstyp.daten.volumen,
+            };
+
+            // act
+            const nichtEindeutig = facade.isGefaesstypNichtEindeutig(gefaesstypUniqueKey, firstGefaesstyp.uuid);
+
+            // assert
+            expect(nichtEindeutig).toBeFalsy();
         });
     });
 });

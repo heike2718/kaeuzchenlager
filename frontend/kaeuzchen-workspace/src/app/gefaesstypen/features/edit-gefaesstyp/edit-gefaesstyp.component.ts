@@ -1,13 +1,22 @@
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { GefaesstypenFacade } from '@gefaesstypen/api';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+    AbstractControl,
+    FormBuilder,
+    FormGroup,
+    FormsModule,
+    ReactiveFormsModule,
+    ValidationErrors,
+    ValidatorFn,
+    Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInput, MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map, Subject, takeUntil, tap } from 'rxjs';
-import { Gefaesstyp, GefaesstypDaten, NAME_PATTERN, TEMP_UUID_PREFIX } from '@gefaesstypen/model';
+import { Gefaesstyp, GefaesstypDaten, GefaesstypUniqueKey, NAME_PATTERN, TEMP_UUID_PREFIX } from '@gefaesstypen/model';
 import { MatIconModule } from '@angular/material/icon';
 import { TrimOnBlurDirective } from '@shared/directives';
 
@@ -38,21 +47,24 @@ export class EditGefaesstypComponent implements OnInit, OnDestroy, AfterViewInit
     @ViewChild('nameInput', { read: MatInput }) nameInput!: MatInput;
     @ViewChild('volumenInput', { read: MatInput }) volumenInput!: MatInput;
 
-    nameNichtEindeutig = false;
-    volumenNichtEindeutig = false;
-
     readonly #destroy$ = new Subject<void>();
 
     constructor() {
-        this.form = this.#fb.nonNullable.group({
-            name: this.#fb.control<string>('', {
-                nonNullable: true,
-                validators: [Validators.required, Validators.pattern(NAME_PATTERN)],
-            }),
-            backgroundColor: this.#fb.control<string>('#ffffff', { nonNullable: true }),
-            volumen: this.#fb.control<number>(0),
-            anzahl: this.#fb.control<number>(0),
-        });
+        this.form = this.#fb.nonNullable.group(
+            {
+                name: this.#fb.control<string>('', {
+                    nonNullable: true,
+                    validators: [Validators.required, Validators.pattern(NAME_PATTERN)],
+                    updateOn: 'blur',
+                }),
+                backgroundColor: this.#fb.control<string>('#ffffff', { nonNullable: true }),
+                volumen: this.#fb.control<number>(0, { updateOn: 'blur' }),
+                anzahl: this.#fb.control<number>(0),
+            },
+            {
+                validators: [this.#gefaesstypValidator()],
+            }
+        );
     }
 
     ngOnInit(): void {
@@ -124,54 +136,6 @@ export class EditGefaesstypComponent implements OnInit, OnDestroy, AfterViewInit
         this.facade.cancelEditGefaesstyp(this.#currentUuid);
     }
 
-    onNameBlur(): void {
-        const daten = this.#createGefaesstypDaten();
-        if (!daten) {
-            return;
-        }
-
-        const ctrl = this.form.controls.name;
-        if (!ctrl) {
-            return;
-        }
-
-        this.nameNichtEindeutig = this.facade.isNameNichtEindeutig(daten, this.#currentUuid);
-
-        if (this.nameNichtEindeutig) {
-            ctrl.setErrors({ ...(ctrl.errors ?? {}), notUnique: true });
-            ctrl.markAsTouched();
-            queueMicrotask(() => this.nameInput?.focus());
-        } else {
-            const errors = { ...(ctrl.errors ?? {}) };
-            delete (errors as Record<string, unknown>).notUnique;
-            ctrl.setErrors(Object.keys(errors).length ? errors : null);
-        }
-    }
-
-    onVolumenBlur(): void {
-        const daten = this.#createGefaesstypDaten();
-        if (!daten) {
-            return;
-        }
-
-        const ctrl = this.form.controls.volumen;
-        if (!ctrl) {
-            return;
-        }
-
-        this.volumenNichtEindeutig = this.facade.isVolumenNichtEindeutig(daten, this.#currentUuid);
-
-        if (this.volumenNichtEindeutig) {
-            ctrl.setErrors({ ...(ctrl.errors ?? {}), notUnique: true });
-            ctrl.markAsTouched();
-            queueMicrotask(() => this.volumenInput?.focus());
-        } else {
-            const errors = { ...(ctrl.errors ?? {}) };
-            delete (errors as Record<string, unknown>).notUnique;
-            ctrl.setErrors(Object.keys(errors).length ? errors : null);
-        }
-    }
-
     #createGefaesstypDaten(): GefaesstypDaten | null {
         if (!this.form) {
             return null;
@@ -194,6 +158,23 @@ export class EditGefaesstypComponent implements OnInit, OnDestroy, AfterViewInit
             anzahl,
             backgroundColor,
             version: null,
+        };
+    }
+
+    #gefaesstypValidator(): ValidatorFn {
+        return (group: AbstractControl): ValidationErrors | null => {
+            const name = group.get('name')?.value;
+            const volumen = group.get('volumen')?.value;
+
+            if (!name || volumen == null) {
+                return null;
+            }
+
+            const uniqueKey: GefaesstypUniqueKey = { name, volumen };
+
+            const nichtEindeutig = this.facade.isGefaesstypNichtEindeutig(uniqueKey, this.#currentUuid);
+
+            return nichtEindeutig ? { gefaesstypNichtEindeutig: true } : null;
         };
     }
 }

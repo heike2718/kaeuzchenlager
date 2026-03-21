@@ -23,6 +23,12 @@
         gap: 1.5rem;
     }
 
+    &__error {
+        &--duplicate {
+            // bewusst leer – nur für Tests/Selektor
+        }
+    }
+
     &__grid {
         display: grid;
         grid-template-columns: 1fr;
