@@ -1,26 +1,6 @@
-#!/usr/bin/env sh
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-
-echo "🚀 Running comprehensive pre-push checks..."
-
-nvm use 22 >/dev/null 2>&1 || {
-  echo "❌ Node 22 required"
-  exit 1
-}
-
-# FRONTEND: Build (development) + Tests (CI mode)
-echo "🔬 Frontend: building (development)..."
-npx nx run kaeuzchenlager:fe-build
-
-echo "📊 Frontend: running CI tests..."
-npx nx run frontend:test-ci
-
-# BACKEND: Tests
-echo "☕ Backend: running tests..."
-npx nx run kaeuzchenlager:be-test
-
-echo "✅ All pre-push checks passed!"
-exit 0
+echo "🚀 pre-push: running checks and tests"
+npm run -s check
+echo "✅ pre-push: OK"

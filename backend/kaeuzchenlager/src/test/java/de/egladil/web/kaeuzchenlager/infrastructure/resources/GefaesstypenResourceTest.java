@@ -5,6 +5,7 @@
 
 package de.egladil.web.kaeuzchenlager.infrastructure.resources;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -253,13 +254,13 @@ public class GefaesstypenResourceTest {
 
     @Test
     @Order(7)
-    void should_anlegen_be_rejected_when_volumen_exists() {
+    void should_anlegen_be_rejected_when_name_und_volumen_exists() {
 
         // arrange
         final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(300)
-                .name("Gefäßtyp 3")
+                .name("Gefäßtyp zum Ändern")
                 .backgroundColor("#ccffff")
                 .anzahl(4)
                 .version(null)
@@ -284,18 +285,18 @@ public class GefaesstypenResourceTest {
 
         // assert
         assertAll(() -> assertEquals(ErrorLevel.WARN, errorResponseDto.getErrorLevel()),
-                () -> assertEquals("Es gibt bereits einen Gefäßtyp mit diesem Volumen.",
+                () -> assertEquals("Diese Kombination aus Name und Volumen existiert bereits.",
                         errorResponseDto.getMessage()));
     }
 
     @Test
     @Order(8)
-    void should_anlegen_be_rejected_when_name_exists() {
+    void should_anlegen_not_be_rejected_when_name_exists() {
 
         // arrange
         final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
-                .volumen(500)
+                .volumen(123)
                 .name("Gefäßtyp 1")
                 .backgroundColor("#ccffff")
                 .anzahl(4)
@@ -308,34 +309,103 @@ public class GefaesstypenResourceTest {
                 .daten(daten)
                 .build();
 
-        // act
-        final ErrorResponseDto errorResponseDto = given()
+        final GefaesstypDto gefaesstypDto = given()
                 .header("API-Version", 1)
                 .contentType(ContentType.JSON)
                 .body(requestPayload)
                 .post()
                 .then()
-                .statusCode(412)
+                .statusCode(201)
                 .extract()
-                .as(ErrorResponseDto.class);
+                .as(GefaesstypDto.class);
 
         // assert
-        assertAll(() -> assertEquals(ErrorLevel.WARN, errorResponseDto.getErrorLevel()),
-                () -> assertEquals("Es gibt bereits einen Gefäßtyp mit diesem Namen. Bitte wähl einen anderen.",
-                        errorResponseDto.getMessage()));
+        final GefaesstypDaten resultDaten = gefaesstypDto.getDaten();
+
+        assertAll(() -> assertNotNull(gefaesstypDto.getUuid()), () -> assertNotNull(resultDaten),
+                () -> assertEquals("Gefäßtyp 1", resultDaten.getName()),
+                () -> assertEquals(123, resultDaten.getVolumen()), () -> assertEquals(4, resultDaten.getAnzahl()),
+                () -> assertEquals("#ccffff", resultDaten.getBackgroundColor()));
+
+        final String uuid = gefaesstypDto.getUuid();
+
+        final Optional<Gefaesstyp> optEntity = this.gefaesstypDao.findById(uuid);
+
+        assertTrue(optEntity.isPresent());
+
+        final Gefaesstyp entity = optEntity.get();
+
+        assertAll(() -> assertEquals(uuid, entity.getUuid()), () -> assertEquals("Gefäßtyp 1", entity.getName()),
+                () -> assertEquals(123, entity.getVolumen()), () -> assertEquals(4, entity.getAnzahl()),
+                () -> assertEquals("#ccffff", entity.getBackgroundColor()), () -> assertNotNull(entity.getCreatedBy()),
+                () -> assertNotNull(entity.getCreatedAt()), () -> assertNull(entity.getUpdatedBy()),
+                () -> assertNull(entity.getUpdatedAt()));
     }
 
     @Test
     @Order(9)
-    void should_aendern_be_rejected_when_volumen_exists() {
+    void should_anlegen_not_be_rejected_when_volumen_exists() {
+
+        // arrange
+        final GefaesstypDaten daten = GefaesstypDaten
+                .builder()
+                .volumen(40)
+                .name("Gefäßtyp 5")
+                .backgroundColor("#5ada23")
+                .anzahl(9)
+                .version(null)
+                .build();
+
+        final GefaesstypDto requestPayload = GefaesstypDto
+                .builder()
+                .uuid(UUID.randomUUID().toString())
+                .daten(daten)
+                .build();
+
+        final GefaesstypDto gefaesstypDto = given()
+                .header("API-Version", 1)
+                .contentType(ContentType.JSON)
+                .body(requestPayload)
+                .post()
+                .then()
+                .statusCode(201)
+                .extract()
+                .as(GefaesstypDto.class);
+
+        // assert
+        final GefaesstypDaten resultDaten = gefaesstypDto.getDaten();
+
+        assertAll(() -> assertNotNull(gefaesstypDto.getUuid()), () -> assertNotNull(resultDaten),
+                () -> assertEquals("Gefäßtyp 5", resultDaten.getName()),
+                () -> assertEquals(40, resultDaten.getVolumen()), () -> assertEquals(9, resultDaten.getAnzahl()),
+                () -> assertEquals("#5ada23", resultDaten.getBackgroundColor()));
+
+        final String uuid = gefaesstypDto.getUuid();
+
+        final Optional<Gefaesstyp> optEntity = this.gefaesstypDao.findById(uuid);
+
+        assertTrue(optEntity.isPresent());
+
+        final Gefaesstyp entity = optEntity.get();
+
+        assertAll(() -> assertEquals(uuid, entity.getUuid()), () -> assertEquals("Gefäßtyp 5", entity.getName()),
+                () -> assertEquals(40, entity.getVolumen()), () -> assertEquals(9, entity.getAnzahl()),
+                () -> assertEquals("#5ada23", entity.getBackgroundColor()), () -> assertNotNull(entity.getCreatedBy()),
+                () -> assertNotNull(entity.getCreatedAt()), () -> assertNull(entity.getUpdatedBy()),
+                () -> assertNull(entity.getUpdatedAt()));
+    }
+
+    @Test
+    @Order(10)
+    void should_aendern_be_rejected_when_name_and_volumen_exists() {
 
         // arrange
         final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(2)
-                .name("Gefäßtyp 9")
-                .backgroundColor("#ccffff")
-                .anzahl(4)
+                .name("Gefäßtyp 1")
+                .backgroundColor("#bb792c")
+                .anzahl(7)
                 .version(0)
                 .build();
 
@@ -352,15 +422,23 @@ public class GefaesstypenResourceTest {
 
         // assert
         assertAll(() -> assertEquals(ErrorLevel.WARN, errorResponseDto.getErrorLevel()),
-                () -> assertEquals("Es gibt bereits einen Gefäßtyp mit diesem Volumen.",
+                () -> assertEquals("Diese Kombination aus Name und Volumen existiert bereits.",
                         errorResponseDto.getMessage()));
     }
 
     @Test
-    @Order(10)
-    void should_aendern_be_rejected_when_name_exists() {
+    @Order(11)
+    void should_aendern_not_be_rejected_when_name_exists() {
 
         // arrange
+
+        List<Gefaesstyp> all = gefaesstypDao.loadAll();
+        Optional<Gefaesstyp> optGefaesstyp = all.stream().filter(g -> "Gefäßtyp 5".equals(g.getName())).findFirst();
+
+        assertTrue(optGefaesstyp.isPresent());
+
+        String uuidZumAendern = optGefaesstyp.get().getUuid();
+
         final GefaesstypDaten daten = GefaesstypDaten
                 .builder()
                 .volumen(10)
@@ -371,24 +449,49 @@ public class GefaesstypenResourceTest {
                 .build();
 
         // act
-        final ErrorResponseDto errorResponseDto = given()
+        given()
                 .header("API-Version", 1)
                 .contentType(ContentType.JSON)
                 .body(daten)
-                .put(AENDERN_UUID)
+                .put(uuidZumAendern)
                 .then()
-                .statusCode(412)
-                .extract()
-                .as(ErrorResponseDto.class);
-
-        // assert
-        assertAll(() -> assertEquals(ErrorLevel.WARN, errorResponseDto.getErrorLevel()),
-                () -> assertEquals("Es gibt bereits einen Gefäßtyp mit diesem Namen. Bitte wähl einen anderen.",
-                        errorResponseDto.getMessage()));
+                .statusCode(200);
     }
 
     @Test
-    @Order(11)
+    @Order(12)
+    void should_aendern_not_be_rejected_when_volumen_exists() {
+
+        // arrange
+
+        List<Gefaesstyp> all = gefaesstypDao.loadAll();
+        Optional<Gefaesstyp> optGefaesstyp = all.stream().filter(g -> "Gefäßtyp 1".equals(g.getName())).findFirst();
+
+        assertTrue(optGefaesstyp.isPresent());
+
+        String uuidZumAendern = optGefaesstyp.get().getUuid();
+
+        final GefaesstypDaten daten = GefaesstypDaten
+                .builder()
+                .volumen(200)
+                .name("Gefäßtyp 1")
+                .backgroundColor("#ccffff")
+                .anzahl(4)
+                .version(optGefaesstyp.get().getVersion())
+                .build();
+
+        // act
+        given()
+                .header("API-Version", 1)
+                .contentType(ContentType.JSON)
+                .body(daten)
+                .put(uuidZumAendern)
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
+    @Order(13)
     void should_aendern_fail_when_unknown_uuid() {
 
         // arrange
@@ -420,7 +523,7 @@ public class GefaesstypenResourceTest {
     }
 
     @Test
-    @Order(12)
+    @Order(14)
     void should_aendern_not_be_rejected_when_gleiche_entity() {
 
         // arrange
@@ -452,7 +555,7 @@ public class GefaesstypenResourceTest {
     }
 
     @Test
-    @Order(13)
+    @Order(15)
     void should_gefaesstypAendern_return_409_when_concurrent_update() {
 
         // arrange

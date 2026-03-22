@@ -8,38 +8,19 @@
             <!-- Name -->
             <mat-form-field appearance="outline" class="gt-editor__field">
                 <mat-label>Name</mat-label>
-                <input
-                    matInput
-                    formControlName="name"
-                    (blur)="onNameBlur()"
-                    klTrimOnBlur
-                    autocomplete="off"
-                    #nameInput />
+                <input matInput formControlName="name" klTrimOnBlur autocomplete="off" #nameInput />
                 @if (form.controls['name'].hasError('pattern')) {
                     <mat-error> Erlaubt sind nur Buchstaben, Ziffern, Leerzeichen und einfache Satzzeichen. </mat-error>
                 }
                 @if (form.controls['name'].hasError('required')) {
                     <mat-error> Name ist Pflicht </mat-error>
                 }
-                @if (nameNichtEindeutig) {
-                    <mat-error>Diesen Namen gibt es bereits.</mat-error>
-                }
             </mat-form-field>
 
             <!-- Volumen -->
             <mat-form-field appearance="outline" class="gt-editor__field">
                 <mat-label>Volumen (ml)</mat-label>
-                <input
-                    matInput
-                    type="number"
-                    formControlName="volumen"
-                    (blur)="onVolumenBlur()"
-                    min="0"
-                    step="1"
-                    #volumenInput />
-                @if (volumenNichtEindeutig) {
-                    <mat-error>Dieses Volumen gibt es bereits.</mat-error>
-                }
+                <input matInput type="number" formControlName="volumen" min="0" step="1" #volumenInput />
             </mat-form-field>
 
             <!-- Hintergrundfarbe -->
@@ -75,18 +56,17 @@
                 </button>
             </mat-form-field>
         </div>
+        @if (form.hasError('gefaesstypNichtEindeutig') && (form.get('name')?.dirty || form.get('volumen')?.dirty)) {
+            <mat-error class="gt-editor__error--duplicate"
+                >Diese Kombination aus Name und Volumen existiert bereits.
+            </mat-error>
+        }
 
         <!-- Aktionen -->
         <div class="gt-editor__actions">
             <button mat-stroked-button type="button" (click)="onCancel()">Abbrechen</button>
 
-            <button
-                mat-flat-button
-                color="primary"
-                type="submit"
-                [disabled]="form.invalid || nameNichtEindeutig || volumenNichtEindeutig">
-                Speichern
-            </button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">Speichern</button>
         </div>
     </form>
 </section>

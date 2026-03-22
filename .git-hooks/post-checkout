@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Purpose: Ensure git blame ignores formatting-only commits via .git-blame-ignore-revs
 # Place this file as:
 #   .git/hooks/post-checkout

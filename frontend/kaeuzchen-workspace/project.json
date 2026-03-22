@@ -87,10 +87,23 @@
             },
             "defaultConfiguration": "development"
         },
-        "extract-i18n": {
-            "executor": "@angular/build:extract-i18n",
+        "test": {
+            "executor": "@nx/vite:test",
+            "outputs": ["{options.reportsDirectory}"],
             "options": {
-                "buildTarget": "kaeuzchen-workspace:build"
+                "reportsDirectory": "coverage/kaeuzchen-workspace"
+            }
+        },
+        "format": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "prettier --write \"src/**/*.{ts,html,scss}\" --ignore-path .prettierignore"
+            }
+        },
+        "format-check": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "prettier --check \"**/*.{ts,html,scss}\" --ignore-path .prettierignore"
             }
         },
         "lint": {
@@ -99,21 +112,17 @@
                 "lintFilePatterns": ["./src"]
             }
         },
-        "test": {
-            "executor": "@nx/vite:test",
-            "outputs": ["{options.reportsDirectory}"],
+        "cleanup": {
+            "executor": "nx:run-commands",
+            "dependsOn": ["lint-fix", "format"],
             "options": {
-                "reportsDirectory": "coverage/kaeuzchen-workspace"
+                "command": "true"
             }
         },
-        "serve-static": {
-            "continuous": true,
-            "executor": "@nx/web:file-server",
+        "extract-i18n": {
+            "executor": "@angular/build:extract-i18n",
             "options": {
-                "buildTarget": "kaeuzchen-workspace:build",
-                "port": 4200,
-                "staticFilePath": "dist/kaeuzchen-workspace/browser",
-                "spa": true
+                "buildTarget": "kaeuzchen-workspace:build"
             }
         }
     }

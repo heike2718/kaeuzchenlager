@@ -25,7 +25,14 @@
         "command": "mvn test"
       }
     },
-    "dev-build": {
+    "cleanup": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "backend/kaeuzchenlager",
+        "command": "mvn -Pformat-apply impsort:sort@impsort-sort formatter:format@format-apply"
+      }
+    },
+    "package": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "backend/kaeuzchenlager",

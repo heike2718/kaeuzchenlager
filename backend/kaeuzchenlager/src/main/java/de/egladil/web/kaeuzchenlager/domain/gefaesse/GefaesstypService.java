@@ -32,9 +32,7 @@ import de.egladil.web.kaeuzchenlager.infrastructure.persistence.entities.Gefaess
 @ApplicationScoped
 public class GefaesstypService {
 
-    private static final String UK_NAME = "uk_gefaesstypen_name";
-
-    private static final String UK_VOLUMEN = "uk_gefaesstypen_volumen";
+    private static final String UK_GEFAESSTYPEN = "uk_gefaesstypen";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GefaesstypService.class);
 
@@ -84,20 +82,17 @@ public class GefaesstypService {
             final Gefaesstyp gefaesstyp = Gefaesstyp.builder().build();
             this.gefaesstypMapper.copyDaten(gefaesstyp, gefaesstypDto.getDaten());
             gefaesstyp.setCreatedAt(LocalDateTime.now());
-            // TODO
             gefaesstyp.setCreatedBy(securityIdentity.getPrincipal().getName());
             return this.doInsert(gefaesstyp);
         } catch (Exception e) {
             final ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
             final ErrorType errorType = errorClassification.getErrorType();
+
             switch (errorType) {
-            case UNIQUE_CONSTRAINT: {
+            case UNIQUE_CONSTRAINT -> {
                 String message = "";
-                if (UK_NAME.equals(errorClassification.getUniqueConstraintName())) {
-                    message = "Es gibt bereits einen Gefäßtyp mit diesem Namen. Bitte wähl einen anderen.";
-                }
-                if (UK_VOLUMEN.equals(errorClassification.getUniqueConstraintName())) {
-                    message = "Es gibt bereits einen Gefäßtyp mit diesem Volumen.";
+                if (UK_GEFAESSTYPEN.equals(errorClassification.getUniqueConstraintName())) {
+                    message = "Diese Kombination aus Name und Volumen existiert bereits.";
                 }
                 if (message.isEmpty()) {
                     message = "Diesen Gefäßtyp gibt es schon.";
@@ -105,11 +100,13 @@ public class GefaesstypService {
                 }
                 throw new EntityExistsException(message, e);
             }
-            case TECHNICAL:
-                throw new KaeuzchenlagerRuntimeException("unerwartete Exception beim Anlegen eines gefaesstyps: "
-                        + errorClassification.getErrorMessage(), e);
-            default:
-                // nothing
+            case VERSION_CONFLICT -> {
+                throw new ConcurrentModificationException(
+                        "Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.", e);
+            }
+            case TECHNICAL -> throw new KaeuzchenlagerRuntimeException(
+                    "unerwartete Exception beim Anlegen eines gefaesstyps: " + errorClassification.getErrorMessage(),
+                    e);
             }
             throw new KaeuzchenlagerRuntimeException("ErrorTyp für die Exception konnte nicht ermittelt werden ("
                     + errorClassification.getErrorMessage() + ")", e);
@@ -156,21 +153,25 @@ public class GefaesstypService {
             final ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
             final ErrorType errorType = errorClassification.getErrorType();
             switch (errorType) {
-            case VERSION_CONFLICT:
+            case VERSION_CONFLICT -> {
                 throw new ConcurrentModificationException(
                         "Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.", e);
-            case UNIQUE_CONSTRAINT: {
-                String message = "Es gibt bereits einen Gefäßtyp mit diesem Namen. Bitte wähl einen anderen.";
-                if (UK_VOLUMEN.equals(errorClassification.getUniqueConstraintName())) {
-                    message = "Es gibt bereits einen Gefäßtyp mit diesem Volumen.";
+            }
+            case UNIQUE_CONSTRAINT -> {
+                String message = "";
+                if (UK_GEFAESSTYPEN.equals(errorClassification.getUniqueConstraintName())) {
+                    message = "Diese Kombination aus Name und Volumen existiert bereits.";
+                }
+                if (message.isEmpty()) {
+                    message = "Diesen Gefäßtyp gibt es schon.";
+                    LOGGER.error("neues uk in der DB: {}", errorClassification.getUniqueConstraintName());
                 }
                 throw new EntityExistsException(message, e);
             }
-            case TECHNICAL:
+            case TECHNICAL -> {
                 throw new KaeuzchenlagerRuntimeException("unerwartete Exception beim Anlegen eines gefaesstyps: "
                         + errorClassification.getErrorMessage(), e);
-            default:
-                // nothing
+            }
             }
             throw new KaeuzchenlagerRuntimeException("ErrorTyp für die Exception konnte nicht ermittelt werden ("
                     + errorClassification.getErrorMessage() + ")", e);

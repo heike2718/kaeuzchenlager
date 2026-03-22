@@ -24,13 +24,14 @@ export class TrimOnBlurDirective {
             return;
         }
 
-        const trimmed = value.trim();
-        if (trimmed === value) {
+        const normalized = value.trim().replace(/\s+/g, ' ');
+
+        if (normalized === value) {
             return;
         }
 
         // Wert im FormControl aktualisieren, aber keine neue valueChanges-Welle auslösen
-        control.setValue(trimmed, { emitEvent: false });
+        control.setValue(normalized, { emitEvent: false });
         control.markAsDirty();
     }
 }

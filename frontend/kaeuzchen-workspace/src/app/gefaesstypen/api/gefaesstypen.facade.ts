@@ -4,7 +4,7 @@ import {
     createInitialGefaesstyp,
     Gefaesstyp,
     GefaesstypConflict,
-    GefaesstypDaten,
+    GefaesstypUniqueKey,
     TEMP_UUID_PREFIX,
 } from '@gefaesstypen/model';
 import { Store } from '@ngrx/store';
@@ -88,17 +88,18 @@ export class GefaesstypenFacade {
             });
     }
 
-    public isNameNichtEindeutig(gefaesstypDaten: GefaesstypDaten, uuid: string): boolean {
+    public isGefaesstypNichtEindeutig(gefaesstypUniqueKey: GefaesstypUniqueKey, uuid: string): boolean {
         const alle = this.#gefaesstypenSignal();
         const andere = alle.filter(g => g.uuid !== uuid);
 
-        return andere.some(g => g.daten.name === gefaesstypDaten.name);
+        return andere.some(
+            g =>
+                this.#normalizeString(g.daten.name) === this.#normalizeString(gefaesstypUniqueKey.name) &&
+                g.daten.volumen === gefaesstypUniqueKey.volumen
+        );
     }
 
-    public isVolumenNichtEindeutig(gefaesstypDaten: GefaesstypDaten, uuid: string): boolean {
-        const alle = this.#gefaesstypenSignal();
-        const andere = alle.filter(g => g.uuid !== uuid);
-
-        return andere.some(g => g.daten.volumen === gefaesstypDaten.volumen);
+    #normalizeString(name: string): string {
+        return name.trim().replace(/\s+/g, ' ').toLowerCase();
     }
 }

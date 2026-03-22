@@ -44,6 +44,15 @@ describe('TrimOnBlurDirective', () => {
         expect(control.value).toBe('abc');
     });
 
+    it('trimmt entfernt mehr als ein inneres Leerzeichen bei blur', () => {
+        const control = new FormControl<string>('   ab  c   de ');
+        const directive = createDirectiveWithControl(control);
+
+        directive.onBlur();
+
+        expect(control.value).toBe('ab c de');
+    });
+
     it('ändert nichts, wenn bereits getrimmt', () => {
         const control = new FormControl<string>('abc');
         const directive = createDirectiveWithControl(control);
