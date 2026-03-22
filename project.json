@@ -10,20 +10,6 @@
         "command": "nx run frontend:serve"
       }
     },
-    "fe-build": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run frontend:build"
-      },
-      "configurations": {
-        "qs": {
-          "command": "nx run frontend:build --configuration=qs"
-        },
-        "prod": {
-          "command": "nx run frontend:build --configuration=prod"
-        }
-      }
-    },
     "fe-test": {
       "executor": "nx:run-commands",
       "options": {
@@ -41,6 +27,20 @@
       "options": {
         "cwd": "frontend/kaeuzchen-workspace",
         "command": "nx graph"
+      }
+    },
+    "fe-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx run frontend:build"
+      },
+      "configurations": {
+        "qs": {
+          "command": "nx run frontend:build --configuration=qs"
+        },
+        "prod": {
+          "command": "nx run frontend:build --configuration=prod"
+        }
       }
     },
     "be-dev": {
@@ -67,7 +67,21 @@
         "command": "nx run kaeuzchenlager-api:package"
       }
     },
-    "package": {
+    "app-stage": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx run orchestrator:stage-frontend"
+      },
+      "configurations": {
+        "qs": {
+          "command": "nx run orchestrator:stage-frontend --configuration=qs"
+        },
+        "prod": {
+          "command": "nx run orchestrator:stage-frontend --configuration=prod"
+        }
+      }
+    },
+    "app-package": {
       "executor": "nx:run-commands",
       "options": {
         "command": "nx run orchestrator:package"

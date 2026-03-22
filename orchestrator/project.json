@@ -1,12 +1,13 @@
 {
   "name": "orchestrator",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
   "targets": {
     "stage-frontend": {
       "executor": "nx:run-commands",
       "dependsOn": [
         {
           "target": "build",
-          "projects": ["frontend"],
+          "projects": "frontend",
           "params": "forward"
         }
       ],
@@ -17,6 +18,10 @@
           "mkdir -p backend/kaeuzchenlager/src/main/resources/META-INF/resources/kaeuzchenlager",
           "rsync -a --delete frontend/kaeuzchen-workspace/dist/kaeuzchen-workspace/browser/ backend/kaeuzchenlager/src/main/resources/META-INF/resources/kaeuzchenlager/"
         ]
+      },
+      "configurations": {
+        "qs": {},
+        "prod": {}
       }
     },
     "package": {
@@ -33,7 +38,11 @@
         "envFile": ".secrets/secrets",
         "command": "mvn clean package -Dmaven.test.skip=true -DnvdApiDelay=8000 -DnvdApiKeyEnvironmentVariable=NVD_API_KEY"
       },
-      "outputs": ["{workspaceRoot}/backend/kaeuzchenlager/target/quarkus-app"]
+      "outputs": ["{workspaceRoot}/backend/kaeuzchenlager/target/quarkus-app"],
+      "configurations": {
+        "qs": {},
+        "prod": {}
+      }
     },
     "deploy": {
       "executor": "nx:run-commands",

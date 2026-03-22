@@ -89,24 +89,24 @@ public class GefaesstypService {
             final ErrorType errorType = errorClassification.getErrorType();
 
             switch (errorType) {
-                case UNIQUE_CONSTRAINT -> {
-                    String message = "";
-                    if (UK_GEFAESSTYPEN.equals(errorClassification.getUniqueConstraintName())) {
-                        message = "Diese Kombination aus Name und Volumen existiert bereits.";
-                    }
-                    if (message.isEmpty()) {
-                        message = "Diesen Gefäßtyp gibt es schon.";
-                        LOGGER.error("neues uk in der DB: {}", errorClassification.getUniqueConstraintName());
-                    }
-                    throw new EntityExistsException(message, e);
+            case UNIQUE_CONSTRAINT -> {
+                String message = "";
+                if (UK_GEFAESSTYPEN.equals(errorClassification.getUniqueConstraintName())) {
+                    message = "Diese Kombination aus Name und Volumen existiert bereits.";
                 }
-                case VERSION_CONFLICT -> {
-                    throw new ConcurrentModificationException(
-                            "Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.", e);
+                if (message.isEmpty()) {
+                    message = "Diesen Gefäßtyp gibt es schon.";
+                    LOGGER.error("neues uk in der DB: {}", errorClassification.getUniqueConstraintName());
                 }
-                case TECHNICAL ->
-                    throw new KaeuzchenlagerRuntimeException("unerwartete Exception beim Anlegen eines gefaesstyps: "
-                            + errorClassification.getErrorMessage(), e);
+                throw new EntityExistsException(message, e);
+            }
+            case VERSION_CONFLICT -> {
+                throw new ConcurrentModificationException(
+                        "Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.", e);
+            }
+            case TECHNICAL -> throw new KaeuzchenlagerRuntimeException(
+                    "unerwartete Exception beim Anlegen eines gefaesstyps: " + errorClassification.getErrorMessage(),
+                    e);
             }
             throw new KaeuzchenlagerRuntimeException("ErrorTyp für die Exception konnte nicht ermittelt werden ("
                     + errorClassification.getErrorMessage() + ")", e);
@@ -153,27 +153,25 @@ public class GefaesstypService {
             final ErrorClassification errorClassification = HighLevelErrorClassifier.classify(e);
             final ErrorType errorType = errorClassification.getErrorType();
             switch (errorType) {
-                case VERSION_CONFLICT -> {
-                    throw new ConcurrentModificationException(
-                            "Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.", e);
+            case VERSION_CONFLICT -> {
+                throw new ConcurrentModificationException(
+                        "Der Gefäßtyp wurde in der Zwischenzeit von jemand anderem geändert.", e);
+            }
+            case UNIQUE_CONSTRAINT -> {
+                String message = "";
+                if (UK_GEFAESSTYPEN.equals(errorClassification.getUniqueConstraintName())) {
+                    message = "Diese Kombination aus Name und Volumen existiert bereits.";
                 }
-                case UNIQUE_CONSTRAINT -> {
-                    String message = "";
-                    if (UK_GEFAESSTYPEN.equals(errorClassification.getUniqueConstraintName())) {
-                        message = "Diese Kombination aus Name und Volumen existiert bereits.";
-                    }
-                    if (message.isEmpty()) {
-                        message = "Diesen Gefäßtyp gibt es schon.";
-                        LOGGER.error("neues uk in der DB: {}", errorClassification.getUniqueConstraintName());
-                    }
-                    throw new EntityExistsException(message, e);
+                if (message.isEmpty()) {
+                    message = "Diesen Gefäßtyp gibt es schon.";
+                    LOGGER.error("neues uk in der DB: {}", errorClassification.getUniqueConstraintName());
                 }
-                case TECHNICAL -> {
-                    throw new KaeuzchenlagerRuntimeException(
-                            "unerwartete Exception beim Anlegen eines gefaesstyps: "
-                                    + errorClassification.getErrorMessage(),
-                            e);
-                }
+                throw new EntityExistsException(message, e);
+            }
+            case TECHNICAL -> {
+                throw new KaeuzchenlagerRuntimeException("unerwartete Exception beim Anlegen eines gefaesstyps: "
+                        + errorClassification.getErrorMessage(), e);
+            }
             }
             throw new KaeuzchenlagerRuntimeException("ErrorTyp für die Exception konnte nicht ermittelt werden ("
                     + errorClassification.getErrorMessage() + ")", e);
