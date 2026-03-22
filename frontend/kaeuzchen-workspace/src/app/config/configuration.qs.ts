@@ -4,5 +4,5 @@ export const configuration: KLConfiguration = {
     apiUrl: '',
     environment: 'qs',
     production: false,
-    version: '1.0.0',
+    version: '2.0.0',
 };

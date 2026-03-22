@@ -1,56 +1,28 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-FRONTEND_DIR="frontend/kaeuzchen-workspace"
-BACKEND_DIR="backend/kaeuzchenlager"
-
-# 1) Staged files (repo-root relative paths)
 STAGED="$(git diff --cached --name-only --diff-filter=ACM || true)"
 [ -z "$STAGED" ] && exit 0
 
 has_staged() {
-  # $1 = extended regex
-  echo "$STAGED" | grep -E "$1" >/dev/null 2>&1
+  printf '%s\n' "$STAGED" | grep -E "$1" >/dev/null 2>&1
 }
 
-# Re-stage only files that were originally staged and match regex
-# nur die Dateien, die vorher gestaged waren und durch prettier oder impsort/format 
-# möglicherweise geändert wurden, werden nach der Änderung wieder added
 restage_matching_from_staged() {
-  # $1 = extended regex
   printf '%s\n' "$STAGED" | grep -E "$1" | while IFS= read -r f; do
     [ -f "$f" ] && git add "$f"
   done
 }
 
-# -------- FRONTEND --------
-FRONTEND_STAGED="$(printf '%s\n' "$STAGED" | grep -E '^frontend/' || true)"
-
-FE_PRETTIER_RE='\.(html|js|ts|jsx|tsx|css|scss|json|md|yml|yaml)$'
-
-if [ -d "$FRONTEND_DIR" ] \
-  && [ -n "$FRONTEND_STAGED" ] \
-  && echo "$FRONTEND_STAGED" | grep -E "$FE_PRETTIER_RE" >/dev/null 2>&1; then
-
-  echo "🔧 Frontend: prettier on staged files"
-  (
-    cd "$FRONTEND_DIR" && \
-    printf '%s\n' "$FRONTEND_STAGED" \
-      | grep -E "$FE_PRETTIER_RE" \
-      | sed "s|^$FRONTEND_DIR/||" \
-      | xargs -r npx prettier --write
-  )
-
-  # Re-stage only staged frontend files that prettier may have changed
-  restage_matching_from_staged "^frontend/.*$FE_PRETTIER_RE"
+if has_staged '^frontend/'; then
+  echo "🔧 Frontend cleanup"
+  npm run -s cleanup:fe
+  restage_matching_from_staged '^frontend/'
 fi
 
-# -------- BACKEND --------
-if [ -d "$BACKEND_DIR" ] && has_staged '^backend/.*\.java$'; then
-  echo "☕ Backend: import sort + format"
-  (cd "$BACKEND_DIR" && mvn -Pformat-apply impsort:sort@impsort-sort formatter:format@format-apply)
-
-  # Re-stage only staged Java files under backend/
+if has_staged '^backend/.*\.java$'; then
+  echo "☕ Backend cleanup"
+  npm run -s cleanup:be
   restage_matching_from_staged '^backend/.*\.java$'
 fi
 

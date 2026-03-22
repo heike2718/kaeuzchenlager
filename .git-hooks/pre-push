@@ -1,48 +1,6 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
-FRONTEND_DIR="frontend/kaeuzchen-workspace"
-BACKEND_DIR="backend/kaeuzchenlager"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-
-echo "🚀 Running pre-push checks..."
-
-nvm use 22 >/dev/null 2>&1 || {
-  echo "❌ Node 22 required"
-  exit 1
-}
-
-# -------- FRONTEND --------
-if [ -d "$FRONTEND_DIR" ]; then
-  echo "🔎 Frontend: lint"
-  (
-    cd "$FRONTEND_DIR" && \
-    npx nx lint kaeuzchen-workspace --skip-nx-cache --max-warnings=0
-  )
-
-  echo "🔬 Frontend: build"
-  (
-    cd "$FRONTEND_DIR" && \
-    npx nx build kaeuzchen-workspace --skip-nx-cache
-  )
-
-  echo "🧪 Frontend: test"
-  (
-    cd "$FRONTEND_DIR" && \
-    npx nx test kaeuzchen-workspace --skip-nx-cache
-  )
-fi
-
-# -------- BACKEND --------
-if [ -d "$BACKEND_DIR" ]; then
-  echo "☕ Backend: test"
-  (
-    cd "$BACKEND_DIR" && \
-    mvn test
-  )
-fi
-
-echo "✅ All pre-push checks passed!"
-exit 0
+echo "🚀 pre-push: running checks and tests"
+npm run -s check
+echo "✅ pre-push: OK"

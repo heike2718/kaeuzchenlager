@@ -40,49 +40,42 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "frontend/kaeuzchen-workspace",
-        "command": "vitest --coverage"
-      }
-    },
-    "test-ci": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "frontend/kaeuzchen-workspace",
-        "command": "vitest run --coverage --bail=1"
-      }
-    },
-    "format": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "frontend/kaeuzchen-workspace",
-        "command": "prettier --write \"**/*.{ts,html,scss}\" --ignore-path .gitignore"
-      }
-    },
-    "format-check": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "frontend/kaeuzchen-workspace",
-        "command": "prettier --check \"**/*.{ts,html,scss}\" --ignore-path .gitignore"
+        "command": "nx test kaeuzchen-workspace --coverage"
       }
     },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "frontend/kaeuzchen-workspace",
-        "command": "eslint \"src/**/*.ts\""
+        "command": "nx lint kaeuzchen-workspace"
       }
     },
     "lint-fix": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "frontend/kaeuzchen-workspace",
-        "command": "eslint --fix \"src/**/*.ts\""
+        "command": "nx run kaeuzchen-workspace:lint-fix"
       }
     },
-    "fix": {
+    "format": {
       "executor": "nx:run-commands",
-      "dependsOn": ["lint-fix", "format"],
       "options": {
-        "command": "true"
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "nx run kaeuzchen-workspace:format"
+      }
+    },
+    "format-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "nx run kaeuzchen-workspace:format-check"
+      }
+    },
+    "cleanup": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "nx run kaeuzchen-workspace:cleanup"
       }
     }
   }

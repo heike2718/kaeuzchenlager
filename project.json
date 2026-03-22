@@ -4,109 +4,11 @@
   "projectType": "application",
   "root": ".",
   "targets": {
-    "fe-serve": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run frontend:serve"
-      }
-    },
-    "fe-test": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run frontend:test"
-      }
-    },
-    "fe-lint": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run frontend:lint"
-      }
-    },
     "fe-graph": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "frontend/kaeuzchen-workspace",
         "command": "nx graph"
-      }
-    },
-    "fe-build": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run frontend:build"
-      },
-      "configurations": {
-        "qs": {
-          "command": "nx run frontend:build --configuration=qs"
-        },
-        "prod": {
-          "command": "nx run frontend:build --configuration=prod"
-        }
-      }
-    },
-    "be-dev": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run kaeuzchenlager-api:dev"
-      }
-    },
-    "be-debug": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run kaeuzchenlager-api:debug"
-      }
-    },
-    "be-test": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run kaeuzchenlager-api:test"
-      }
-    },
-    "be-package": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run kaeuzchenlager-api:package"
-      }
-    },
-    "app-stage": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run orchestrator:stage-frontend"
-      },
-      "configurations": {
-        "qs": {
-          "command": "nx run orchestrator:stage-frontend --configuration=qs"
-        },
-        "prod": {
-          "command": "nx run orchestrator:stage-frontend --configuration=prod"
-        }
-      }
-    },
-    "app-package": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run orchestrator:package"
-      },
-      "configurations": {
-        "qs": {
-          "command": "nx run orchestrator:package --configuration=qs"
-        },
-        "prod": {
-          "command": "nx run orchestrator:package --configuration=prod"
-        }
-      }
-    },
-    "deploy": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "nx run orchestrator:deploy"
-      },
-      "configurations": {
-        "qs": {
-          "command": "nx run orchestrator:deploy --configuration=qs"
-        },
-        "prod": {
-          "command": "nx run orchestrator:deploy --configuration=prod"
-        }
       }
     }
   }
