@@ -7,22 +7,33 @@
     "fe-serve": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "frontend/kaeuzchen-workspace",
-        "command": "nx serve kaeuzchen-workspace"
+        "command": "nx run frontend:serve"
+      }
+    },
+    "fe-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx run frontend:build"
+      },
+      "configurations": {
+        "qs": {
+          "command": "nx run frontend:build --configuration=qs"
+        },
+        "prod": {
+          "command": "nx run frontend:build --configuration=prod"
+        }
       }
     },
     "fe-test": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "frontend/kaeuzchen-workspace",
-        "command": "nx test kaeuzchen-workspace"
+        "command": "nx run frontend:test"
       }
     },
     "fe-lint": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "frontend/kaeuzchen-workspace",
-        "command": "nx lint kaeuzchen-workspace"
+        "command": "nx run frontend:lint"
       }
     },
     "fe-graph": {
@@ -32,26 +43,6 @@
         "command": "nx graph"
       }
     },
-
-    "fe-build": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "frontend/kaeuzchen-workspace",
-        "command": "rm -rf dist/kaeuzchen-workspace && nx build kaeuzchen-workspace --configuration=development --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/"
-      },
-      "configurations": {
-        "qs": {
-          "command": "rm -rf dist/kaeuzchen-workspace && nx build kaeuzchen-workspace --configuration=qs --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/"
-        },
-        "prod": {
-          "command": "rm -rf dist/kaeuzchen-workspace && nx build kaeuzchen-workspace --configuration=production --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/"
-        }
-      },
-      "outputs": [
-        "{workspaceRoot}/frontend/kaeuzchen-workspace/dist/kaeuzchen-workspace"
-      ]
-    },
-
     "be-dev": {
       "executor": "nx:run-commands",
       "options": {
@@ -70,13 +61,26 @@
         "command": "nx run kaeuzchenlager-api:test"
       }
     },
-    "be-dev-build": {
+    "be-package": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx run kaeuzchenlager-api:dev-build"
+        "command": "nx run kaeuzchenlager-api:package"
       }
     },
-
+    "package": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx run orchestrator:package"
+      },
+      "configurations": {
+        "qs": {
+          "command": "nx run orchestrator:package --configuration=qs"
+        },
+        "prod": {
+          "command": "nx run orchestrator:package --configuration=prod"
+        }
+      }
+    },
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
