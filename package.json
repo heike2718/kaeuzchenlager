@@ -4,7 +4,7 @@
   "scripts": {
     "check-node": "node -e \"if(!process.version.startsWith('v22.')){console.error('\\n❌ Node 22 required. Current:',process.version,'\\n');process.exit(1)}\"",
     "preinstall": "npm run -s check-node",
-    "dev": "concurrently -n backend,frontend \"npm run dev:be\" \"npm run dev:fe\"",
+    "dev": "concurrently -n backend,frontend -c blue,green \"npm run dev:be\" \"npm run dev:fe\"",
     "dev:be": "nx run kaeuzchenlager-api:dev",
     "dev:debug": "nx run kaeuzchenlager-api:debug",
     "dev:fe": "nx run frontend:serve",
@@ -25,9 +25,11 @@
     "package:qs": "nx run orchestrator:package --configuration=qs",
     "package:prod": "nx run orchestrator:package --configuration=prod",
     "deploy:qs": "nx run orchestrator:deploy --configuration=qs",
-    "deploy:prod": "nx run orchestrator:deploy --configuration=prod"
+    "deploy:prod": "nx run orchestrator:deploy --configuration=prod",
+    "graph": "nx run frontend:graph"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "nx": "22.5.2"
   },
   "engines": {

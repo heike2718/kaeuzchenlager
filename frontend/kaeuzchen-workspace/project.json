@@ -21,7 +21,9 @@
                     "src/app/layout/theme.scss",
                     "src/styles.scss",
                     "node_modules/material-icons/iconfont/material-icons.css"
-                ]
+                ],
+                "baseHref": "/kaeuzchenlager/",
+                "outputHashing": "all"
             },
             "configurations": {
                 "production": {
@@ -42,8 +44,7 @@
                             "maximumWarning": "300kb",
                             "maximumError": "350kb"
                         }
-                    ],
-                    "outputHashing": "all"
+                    ]
                 },
                 "qs": {
                     "fileReplacements": [
@@ -63,8 +64,7 @@
                             "maximumWarning": "300kb",
                             "maximumError": "350kb"
                         }
-                    ],
-                    "outputHashing": "all"
+                    ]
                 },
                 "development": {
                     "optimization": false,
@@ -75,23 +75,28 @@
             "defaultConfiguration": "development"
         },
         "serve": {
-            "continuous": true,
             "executor": "@angular/build:dev-server",
             "configurations": {
-                "production": {
-                    "buildTarget": "kaeuzchen-workspace:build:production"
-                },
                 "development": {
                     "buildTarget": "kaeuzchen-workspace:build:development"
                 }
             },
-            "defaultConfiguration": "development"
+            "defaultConfiguration": "development",
+            "continuous": true
         },
         "test": {
             "executor": "@nx/vite:test",
             "outputs": ["{options.reportsDirectory}"],
             "options": {
                 "reportsDirectory": "coverage/kaeuzchen-workspace"
+            }
+        },
+        "test-coverage": {
+            "executor": "@nx/vite:test",
+            "outputs": ["{options.reportsDirectory}"],
+            "options": {
+                "reportsDirectory": "coverage/kaeuzchen-workspace",
+                "coverage": true
             }
         },
         "format": {
@@ -112,11 +117,24 @@
                 "lintFilePatterns": ["./src"]
             }
         },
+        "lint-fix": {
+            "executor": "@nx/eslint:lint",
+            "options": {
+                "lintFilePatterns": ["./src"],
+                "fix": true
+            }
+        },
         "cleanup": {
             "executor": "nx:run-commands",
             "dependsOn": ["lint-fix", "format"],
             "options": {
                 "command": "true"
+            }
+        },
+        "graph": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "nx graph"
             }
         },
         "extract-i18n": {

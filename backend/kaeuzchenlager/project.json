@@ -36,7 +36,8 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "backend/kaeuzchenlager",
-        "command": "mvn -DskipTests package"
+        "envFile": ".secrets/secrets",
+        "command": "mvn -DskipTests -DnvdApiDelay=8000 -DnvdApiKeyEnvironmentVariable=NVD_API_KEY clean package"
       },
       "outputs": ["{workspaceRoot}/backend/kaeuzchenlager/target"]
     }
