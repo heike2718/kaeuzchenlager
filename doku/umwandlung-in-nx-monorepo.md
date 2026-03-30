@@ -115,7 +115,7 @@ Symptom:
 
 
 > @kaeuzchen-workspace/source@1.0.0 build:local
-> nx build --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/
+> nx build --base-href=/kaeuzchenlager/
 
 
  NX   Failed to process project graph.

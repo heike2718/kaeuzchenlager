@@ -15,14 +15,14 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "frontend/kaeuzchen-workspace",
-        "command": "rm -rf dist/kaeuzchen-workspace && nx build kaeuzchen-workspace --configuration=development --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/"
+        "command": "nx run kaeuzchen-workspace:build:development"
       },
       "configurations": {
         "qs": {
-          "command": "rm -rf dist/kaeuzchen-workspace && nx build kaeuzchen-workspace --configuration=qs --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/"
+          "command": "nx run kaeuzchen-workspace:build:qs"
         },
         "prod": {
-          "command": "rm -rf dist/kaeuzchen-workspace && nx build kaeuzchen-workspace --configuration=production --base-href=/kaeuzchenlager/ --deploy-url=/kaeuzchenlager/"
+          "command": "nx run kaeuzchen-workspace:build:production"
         }
       },
       "outputs": [
@@ -33,28 +33,21 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "frontend/kaeuzchen-workspace",
-        "command": "nx test kaeuzchen-workspace"
+        "command": "nx run kaeuzchen-workspace:test"
       }
     },
     "test-coverage": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "frontend/kaeuzchen-workspace",
-        "command": "nx test kaeuzchen-workspace --coverage"
+        "command": "nx run kaeuzchen-workspace:test-coverage"
       }
     },
     "lint": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "frontend/kaeuzchen-workspace",
-        "command": "nx lint kaeuzchen-workspace"
-      }
-    },
-    "lint-fix": {
-      "executor": "nx:run-commands",
-      "options": {
-        "cwd": "frontend/kaeuzchen-workspace",
-        "command": "nx run kaeuzchen-workspace:lint-fix"
+        "command": "nx run kaeuzchen-workspace:lint"
       }
     },
     "format": {
@@ -76,6 +69,13 @@
       "options": {
         "cwd": "frontend/kaeuzchen-workspace",
         "command": "nx run kaeuzchen-workspace:cleanup"
+      }
+    },
+    "graph": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "frontend/kaeuzchen-workspace",
+        "command": "nx run kaeuzchen-workspace:graph"
       }
     }
   }

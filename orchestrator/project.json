@@ -35,10 +35,8 @@
       ],
       "options": {
         "cwd": "backend/kaeuzchenlager",
-        "envFile": ".secrets/secrets",
-        "command": "mvn clean package -Dmaven.test.skip=true -DnvdApiDelay=8000 -DnvdApiKeyEnvironmentVariable=NVD_API_KEY"
+        "command": "npx nx run kaeuzchenlager-api:package"
       },
-      "outputs": ["{workspaceRoot}/backend/kaeuzchenlager/target/quarkus-app"],
       "configurations": {
         "qs": {},
         "prod": {}
