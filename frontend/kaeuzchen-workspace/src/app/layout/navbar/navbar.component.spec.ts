@@ -19,7 +19,7 @@ import { User } from '@shared/auth/model';
 describe('NavbarComponent', () => {
     let loader: HarnessLoader;
     let fixture: ComponentFixture<NavbarComponent>;
-    let activatedRouteStub: Partial<ActivatedRoute>;
+    const activatedRouteStub: Partial<ActivatedRoute> = {};
 
     describe('NavbarComponent handset', () => {
         const authFacadeMock: Pick<AuthFacade, 'login' | 'logout'> & Partial<AuthFacade> = {
